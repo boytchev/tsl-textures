@@ -15,6 +15,7 @@
     "tsl",
     "three.js"
   ],
+  "homepage": "https://boytchev.github.io/tsl-textures/",
   "author": "Pavel Boytchev",
   "files": [
     "LICENSE",
