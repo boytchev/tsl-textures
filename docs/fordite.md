@@ -36,7 +36,7 @@ import { fordite } from "tsl-textures/fordite.js";
 model.material.colorNode = fordite ( {
 	scale: 2,
 	color: new THREE.Color(0),
-	seed: 0,
+	seed: 0
 } );
 ```
 

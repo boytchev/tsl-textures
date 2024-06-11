@@ -8,7 +8,7 @@ import { dynamic } from 'tsl-textures/tsl-utils.js';
 
 
 
-const HOME_URL = 'https://boytchev.github.io/tsl-textures/';
+const HOME_URL = './';
 
 
 var params = {},
@@ -21,7 +21,7 @@ var params = {},
 var renderer = new WebGPURenderer( { antialias: true } );
 renderer.setSize( innerWidth, innerHeight );
 renderer.setAnimationLoop( animationLoop );
-renderer.toneMapping = THREE.LinearToneMapping;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
 document.body.appendChild( renderer.domElement );
 
 var scene = new THREE.Scene();
@@ -40,7 +40,7 @@ controls.enableDamping = true;
 
 var model = new THREE.Mesh(
 	new THREE.IcosahedronGeometry( 1, 20 ),
-	new MeshPhysicalNodeMaterial( { side: THREE.DoubleSide } )
+	new MeshPhysicalNodeMaterial(  )
 );
 scene.add( model );
 

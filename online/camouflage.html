@@ -1,0 +1,66 @@
+﻿<!DOCTYPE html>
+
+
+<html>
+
+
+<head>
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+	<link rel="shortcut icon" type="image/png" href="../assets/logo/logo.png"/>
+	<link rel="stylesheet" href="styles.css">
+
+	<script type="importmap">
+	  {
+		"imports": {
+			"three": "https://cdn.jsdelivr.net/npm/three@0.164.0/build/three.module.js",
+			"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.164.0/examples/jsm/",
+			"three/nodes": "https://cdn.jsdelivr.net/npm/three@0.164.0/examples/jsm/nodes/Nodes.js",
+			"tsl-textures/": "../src/"
+		}
+	  }
+	</script>
+</head>
+
+
+<body>
+
+	<script type="module">
+
+		import { light, install, params, dynamics } from "./online.js";
+		import { camouflage } from "tsl-textures/camouflage.js";
+
+
+		var gui = install( camouflage, update );
+		
+		gui.add( params, 'scale' )
+			.min( 0 ).max( 4 )
+			.name( 'Scale' );
+
+		gui.addColor( params, 'colorA' )
+			.name( 'Colors <right>A</right>' )
+			.$text.classList.add( 'top' );
+		
+		gui.addColor( params, 'colorB' )
+			.name( '<right>B</right>' );
+		
+		gui.addColor( params, 'colorC' )
+			.name( '<right>C</right>' );
+		
+		gui.addColor( params, 'colorD' )
+			.name( '<right>D</right>' )
+			.$text.classList.add( 'bottom' );
+		
+
+		function update()
+		{
+			dynamics.scale.value = params.scale;
+			dynamics.colorA.value.set( params.colorA );
+			dynamics.colorB.value.set( params.colorB );
+			dynamics.colorC.value.set( params.colorC );
+			dynamics.colorD.value.set( params.colorD );
+		}
+		
+	</script>
+</body>
+</html>

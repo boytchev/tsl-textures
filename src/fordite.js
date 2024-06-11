@@ -1,7 +1,5 @@
 ﻿
-//	Procedural Equirectangular Textures
-//	Fordite Pattern
-//
+//	TSL-Textures: Fordite
 
 
 
@@ -11,11 +9,9 @@ import { noise, hsl } from 'tsl-textures/tsl-utils.js';
 
 
 
-
-
 var fordite = tslFn( ( params ) => {
 
-	var pos = positionLocal.mul( exp( params.scale ) ).add( params.seed );
+	var pos = positionLocal.mul( exp( params.scale ) ).add( params.seed ).toVar( );
 
 	var k = noise(
 		vec3(
@@ -23,7 +19,7 @@ var fordite = tslFn( ( params ) => {
 			noise( pos ).mul( 2 ),
 			noise( pos ).mul( 3 ),
 		)
-	);
+	).toVar( );
 
 	return hsl(
 		k,
