@@ -28,9 +28,7 @@ a snapshot to open it online.
 
 
 
-### Code example
-
-Code template of parameters with their default values.
+### Code template
 
 ```js
 import { fordite } from "tsl-textures/fordite.js";
@@ -45,8 +43,6 @@ model.material.colorNode = fordite ( {
 
 
 ### Parameters
-
-The parameters of the texture generator are:
 
 * `scale` &ndash; level of details of the pattern, higher value generates finer details, suggested range [0, 4]
 * `color` &ndash; color added to the texture, this may shift the hue of the patter
