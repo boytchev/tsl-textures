@@ -4,7 +4,7 @@ if not defined in_subprocess (cmd /k set in_subprocess=y ^& %0 %*) & exit )
 
 call npx eslint --fix src\*.js
 
-call npx eslint --fix demos\*.js
+call npx eslint --fix online\*.js
 
 pause
 exit
