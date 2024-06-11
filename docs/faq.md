@@ -1,6 +1,6 @@
 ﻿<img class="logo" src="../assets/logo/logo.png">
 
-# Procedural Equirectangular Textures
+# TSL Textures
 
 
 ## Frequently Asked Questions
@@ -10,5 +10,5 @@ No questions asked so far.
 
 
 <div class="footnote">
-	<a href="#" onclick="window.history.back(); return false;">Back</a>
+	<a href="../">Home</a>
 </div>

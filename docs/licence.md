@@ -3,7 +3,7 @@
 # TSL Textures
 
 
-## Texture Licence
+## Image Licence
 	
 	
 You can use TSL textures to generate images for textures. You are allowed:
@@ -17,7 +17,7 @@ However, we hope that:
 	
 * the images are not used in any immoral, illegal, misleading or diceptive context;
 * you understand that anyone could recreate the exact same images, that you have already created with pasion and love;
-* you find the textures useful.
+* you find this software useful.
 
 
 ## Software Licence
@@ -27,5 +27,5 @@ The software for TSL textures is licenced under
 
 
 <div class="footnote">
-	<a href="./">Home</a>
+	<a href="../">Home</a>
 </div>

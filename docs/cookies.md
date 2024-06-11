@@ -18,5 +18,5 @@ or service provider between you and this site behaves.
 	
 	
 <div class="footnote">
-	<a href="./">Home</a>
+	<a href="../">Home</a>
 </div>
