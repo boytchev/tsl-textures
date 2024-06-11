@@ -1,27 +1,26 @@
 <img class="logo" src="../assets/logo/logo.png">
 
 
-# Procedural Equirectangular Textures
+# TSL Textures
 
 
 ## Fordite
-<img src="images/fordite.jpg">
 
 This texture generates [fordite stones](https://en.wikipedia.org/wiki/Fordite).
-These are buildups of layers of paints cut across the layers. The generated texture
-is intended for color maps. Click on a snapshot to open it online.
+These are buildups of layers of paints cut across the layers. Click on
+a snapshot to open it online.
 
 <p class="gallery">
 
-	<a class="style-block nocaption" href="../online/fordite.html?width=1024&height=512&scale=90&color=0">
+	<a class="style-block nocaption" href="../online/fordite.html?scale=2&color=0">
 		<img src="images/fordite-1.png">
 	</a>
 
-	<a class="style-block nocaption" href="../online/fordite.html?width=1024&height=512&scale=100&color=16722217">
+	<a class="style-block nocaption" href="../online/fordite.html?scale=0.96&color=13549056">
 		<img src="images/fordite-2.png">
 	</a>
 
-	<a class="style-block nocaption" href="../online/fordite.html?width=2048&height=1024&scale=8&color=12564678">
+	<a class="style-block nocaption" href="../online/fordite.html?scale=0&color=13500619">
 		<img src="images/fordite-3.png">
 	</a>
 
@@ -33,10 +32,20 @@ is intended for color maps. Click on a snapshot to open it online.
 Code template of parameters with their default values.
 
 ```js
-import * as PET from "pet/patterns/fordite.js";
-:
-model.material.map = PET.texture( );
-PET.material( model.material );
+<script type="importmap">
+  {
+	"imports": {
+		"three": "https://cdn.jsdelivr.net/npm/three@0.164.0/build/three.module.js",
+		"three/nodes": "https://cdn.jsdelivr.net/npm/three@0.164.0/examples/jsm/nodes/Nodes.js",
+		"tsl-textures/": "../src/"
+	}
+  }
+</script>
+	
+import { fordite } from "tsl-textures/fordite.js";
+
+model.material.colorNode = fordite ( { scale: 2, color: new THREE.Color(0), seed: 0 } );
+
 ```
 
 
@@ -44,20 +53,10 @@ PET.material( model.material );
 
 The parameters of the texture generator are:
 
-* `width` &ndash; texture width in pixels, default 1024
-* `height` &ndash; texture height in pixels, default 512
-* `scale` &ndash; pattern size [0,100], default 50
-* `color` &ndash; color added to colors of paint, default 0x000000 (black)
+* `scale` &ndash; level of details of the pattern, higher value generates finer details, suggested range [0, 4]
+* `color` &ndash; color added to the texture
+* `seed` &ndash; identifier of texture's pattern
 
-
-### API
-
-All texture modules share the same API.
-
-* `pattern( x, y, z, color, options )` &ndash; pattern implementation
-* `texture( {params} )` &ndash; generator for a texture with given parameters
-* `defaults` &ndash; object with default parameters
-* `material( ... )` &ndash; material shader patcher
 
 
 ### Online generator
@@ -67,10 +66,10 @@ All texture modules share the same API.
 
 ### Source
 
-[src/patterns/fordite.js](https://github.com/boytchev/texture-generator/blob/main/src/patterns/fordite.js)
+[src/fordite.js](https://github.com/boytchev/tsl-textures/blob/main/src/fordite.js)
 
 
 		
 <div class="footnote">
-	<a href="#" onclick="window.history.back(); return false;">Back</a>
+	<a href="./">Home</a>
 </div>

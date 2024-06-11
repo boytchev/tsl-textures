@@ -38,7 +38,7 @@ var fordite = tslFn( ( params ) => {
 fordite.defaults = {
 	$name: 'fordite',
 	scale: 2,
-	color: new Color( 0, 0, 1 ),
+	color: new Color( 0, 0, 0 ),
 	seed: 0,
 };
 
