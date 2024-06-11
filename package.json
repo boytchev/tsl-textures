@@ -16,6 +16,12 @@
     "three.js"
   ],
   "author": "Pavel Boytchev",
+  "files": [
+    "LICENSE",
+    "package.json",
+    "README.md",
+    "src"
+  ],
   "license": "MIT",
   "devDependencies": {
     "@eslint/js": "^9.4.0",
