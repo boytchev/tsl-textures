@@ -12,15 +12,15 @@ Click on a snapshot to open it online.
 
 <p class="gallery">
 
-	<a class="style-block nocaption" href="../online/camouflage.html">
+	<a class="style-block nocaption" href="../online/camouflage.html?scale=2&colorA=12762792&colorB=10258782&colorC=9610101&colorD=7435617">
 		<img src="images/camouflage-1.png">
 	</a>
 
-	<a class="style-block nocaption" href="../online/camouflage.html?">
+	<a class="style-block nocaption" href="../online/camouflage.html?scale=0.72&colorA=15519740&colorB=6910716&colorC=16662773&colorD=10456237&seed=0">
 		<img src="images/camouflage-2.png">
 	</a>
 
-	<a class="style-block nocaption" href="../online/camouflage.html?">
+	<a class="style-block nocaption" href="../online/camouflage.html?scale=3.24&colorA=16772864&colorB=16711680&colorC=65393&colorD=0&seed=0">
 		<img src="images/camouflage-3.png">
 	</a>
 
@@ -64,7 +64,7 @@ The parameters of the texture generator are:
 
 ### Source
 
-[src/patterns/camouflage.js](https://github.com/boytchev/tsl-textures/blob/main/src/patterns/camouflage.js)
+[src/patterns/camouflage.js](https://github.com/boytchev/tsl-textures/blob/main/src/camouflage.js)
 
 
 		
