@@ -38,7 +38,6 @@ model.material.colorNode = fordite ( {
 	color: new THREE.Color(0),
 	seed: 0,
 } );
-
 ```
 
 
