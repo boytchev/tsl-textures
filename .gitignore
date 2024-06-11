@@ -1,0 +1,6 @@
+
+*.bak
+examples/videos
+misc/
+node_modules/
+test/

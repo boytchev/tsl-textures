@@ -1,0 +1,166 @@
+﻿body {
+	overflow: hidden;
+	margin: 0;
+	font-family: Cordana, Calibri, sans-serif;
+}
+
+h1, h3 {
+	color: black;
+	
+	left: 0;
+	margin: 0;
+	
+	z-index: 1;
+	text-align: center;
+	width: 100%;
+	
+	font-size: 2em;
+	font-weight: bold;
+	margin-top: 1em;
+}
+
+h3 {
+	font-size: 1.25em;
+	font-weight: normal;
+}
+
+.footnote {
+	text-align: center;
+	font-size: 1em;
+	font-weight: normal;
+}
+
+.lil-gui {
+	--name-width: 6em;
+	--slider-knob-width: 0.5em;
+	--widget-padding: 0 0 0 0.5em;
+	--number-color: orange;
+}
+
+.lil-gui.root {
+	border-bottom-right-radius: 2em;
+	margin: 0em;
+	padding: 1em;
+	left: 0;
+	top: 0;
+	position: fixed;
+}
+
+.lil-gui input.top{
+	border-top-right-radius: 0.65em;
+}
+
+.lil-gui input.bottom, .lil-gui button.bottom{
+	border-bottom-right-radius: 0.65em;
+}
+
+.lil-gui .controller.option .widget div {
+	width: 9.15em;
+}
+
+.lil-gui .gap{
+	margin-bottom: 2em;
+}
+
+.lil-gui em {
+	color: Orange;
+	font-weight: bold;
+	font-style: normal;
+}
+
+.lil-gui big {
+	font-weight: bold;
+	text-transform: uppercase;
+}
+
+right {
+	color: gray;
+	font-size: 100%;
+	float: right;
+}
+
+small {
+	display: block;
+	text-align: right;
+	text-decoration: none;
+	text-transform: uppercase;
+	padding-top: 0.5em;
+}
+
+a, .link {
+	font-weight: normal;
+	color: gray;
+	padding: 0.25em;
+}
+
+a:hover, a:visited, a:link, a:active, .link:hover {
+	color: gray;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+a:hover, .link:hover {
+	text-decoration: none;
+	color: white;
+}
+
+.lil-gui .controller.string input {
+	font-family: Monospace;
+}
+
+#hud-bottom {
+	bottom: 0;
+	position: absolute;
+	z-index: 1;
+	text-align: center;
+	width: 100%;
+	pointer-events: none;
+	padding: 0.5em;
+}
+
+.style-block {
+	width: 10em;
+	height: 10em;
+	text-align: center;
+}
+
+.style-block img {
+	width: 8em;
+	border-radius: 10em;
+	/*filter: drop-shadow(0 0 0.5em);*/
+}
+
+.style-block:hover img, .style-block img:hover {
+	filter: drop-shadow(0 0 0.5em);
+}
+
+.style-block .title {
+	font-size: 1.25em;
+	font-weight: normal;
+	margin-bottom: 0.3em;
+}
+
+.fullline {
+	font-size: 1em;
+	text-align: justify;
+	height: 2.5em;
+}
+
+.fullline::after {
+  content: "";
+  display: inline-block;
+  width: 100%;
+ }
+ 
+ .fullline span svg {
+	 position: relative;
+	 height: 1.6em;
+	 top: 0.5em;
+	 fill: gray;
+	 stroke: gray;
+ }
+ 
+ .fullline span svg:hover {
+	 fill: white;
+	 stroke: white;
+ }
