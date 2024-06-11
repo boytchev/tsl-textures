@@ -115,7 +115,7 @@ function install( tslTexture, onChange ) {
 				<span id="home" class="link">HOME</span> &middot; 
 				<span id="url" class="link">LINK</span>  &middot; 
 				<span id="code" class="link">CODE</span>  &middot; 
-				<span id="info" class="link">INFO</span>  &middot; 
+				<a id="info" class="link" href="https://boytchev.github.io/tsl-textures/docs/${filename}.html">INFO</a>  &middot; 
 				<span id="refresh" class="link">AGAIN</span>
 			</small>`;
 
@@ -184,22 +184,14 @@ function getCode( event, name, filename ) {
 		else
 			js.push( `${key}: ${value}` );
 
-	js = js.join( ', ' );
+	js = js.join( ',\n   ' );
 
 	js = `
-<script type="importmap">
-  {
-	"imports": {
-		"three": "https://cdn.jsdelivr.net/npm/three@0.${__THREE__}.0/build/three.module.js",
-		"three/nodes": "https://cdn.jsdelivr.net/npm/three@0.${__THREE__}.0/examples/jsm/nodes/Nodes.js",
-		"tsl-textures/": "../src/"
-	}
-  }
-</script>
-	
 import { ${name} } from "tsl-textures/${filename}.js";
 
-model.material.colorNode = ${name} ( { ${js} } );
+model.material.colorNode = ${name} ( {
+   ${js}
+} );
 `;
 
 	console.log( js );
