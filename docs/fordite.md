@@ -27,24 +27,19 @@ a snapshot to open it online.
 </p>
 
 
+
 ### Code example
 
 Code template of parameters with their default values.
 
 ```js
-<script type="importmap">
-  {
-	"imports": {
-		"three": "https://cdn.jsdelivr.net/npm/three@0.164.0/build/three.module.js",
-		"three/nodes": "https://cdn.jsdelivr.net/npm/three@0.164.0/examples/jsm/nodes/Nodes.js",
-		"tsl-textures/": "../src/"
-	}
-  }
-</script>
-	
 import { fordite } from "tsl-textures/fordite.js";
 
-model.material.colorNode = fordite ( { scale: 2, color: new THREE.Color(0), seed: 0 } );
+model.material.colorNode = fordite ( {
+	scale: 2,
+	color: new THREE.Color(0),
+	seed: 0,
+} );
 
 ```
 
@@ -54,8 +49,8 @@ model.material.colorNode = fordite ( { scale: 2, color: new THREE.Color(0), seed
 The parameters of the texture generator are:
 
 * `scale` &ndash; level of details of the pattern, higher value generates finer details, suggested range [0, 4]
-* `color` &ndash; color added to the texture
-* `seed` &ndash; identifier of texture's pattern
+* `color` &ndash; color added to the texture, this may shift the hue of the patter
+* `seed` &ndash; number for the random generator, each value generates specific pattern
 
 
 
@@ -72,4 +67,4 @@ The parameters of the texture generator are:
 		
 <div class="footnote">
 	<a href="./">Home</a>
-</div>
+</div>	

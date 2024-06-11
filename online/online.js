@@ -184,13 +184,23 @@ function getCode( event, name, filename ) {
 		else
 			js.push( `${key}: ${value}` );
 
-	js = js.join( ',\n   ' );
+	js = js.join( `,\n	` );
 
 	js = `
+<script type="importmap">
+	{
+		"imports": {
+			"three": "https://cdn.jsdelivr.net/npm/three@0.164.0/build/three.module.js",
+			"three/nodes": "https://cdn.jsdelivr.net/npm/three@0.164.0/examples/jsm/nodes/Nodes.js",
+			"tsl-textures/": "../src/"
+		}
+	}
+</script>
+
 import { ${name} } from "tsl-textures/${filename}.js";
 
 model.material.colorNode = ${name} ( {
-   ${js}
+	${js}
 } );
 `;
 
