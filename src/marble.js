@@ -42,7 +42,7 @@ var marble = tslFn( ( params ) => {
 
 		} );
 
-	k.assign( k.add( mul( params.noise, noise( pos.mul( 150 ) ).pow3() ) ) );
+	k.assign( k.add( mul( params.noise, noise( pos.mul( 150 ) ).abs().pow3() ) ) );
 
 	return mix( params.background, params.color, k );
 
