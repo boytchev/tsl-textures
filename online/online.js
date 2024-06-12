@@ -31,11 +31,11 @@ var camera = new THREE.PerspectiveCamera( 5, innerWidth/innerHeight );
 camera.position.set( 0, 0, 30 );
 camera.lookAt( scene.position );
 
-var light = new THREE.DirectionalLight( 'white', Math.PI/2 );
+var light = new THREE.DirectionalLight( 'white', 2 );
 light.decay = 0;
 scene.add( light );
 
-scene.add( new THREE.AmbientLight( 'white', Math.PI ) );
+scene.add( new THREE.AmbientLight( 'white', 2 ) );
 
 var controls = new OrbitControls( camera, renderer.domElement );
 controls.enableDamping = true;
@@ -111,6 +111,10 @@ function install( tslTexture, onChange ) {
 
 	var name = tslTexture.defaults.$name;
 	var filename = name.split( ' ' ).join( '-' ).toLowerCase();
+	
+	var funcname = name.split( ' ' );
+		funcname[0] = funcname[0].toLowerCase();
+		funcname = funcname.join( '' );
 
 	var title = `<big><em>${tslTexture.defaults.$name}</em> texture</big>
 			<small class="fullline">

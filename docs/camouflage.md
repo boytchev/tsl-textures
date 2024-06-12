@@ -29,8 +29,6 @@ Click on a snapshot to open it online.
 
 ### Code template
 
-Code template of parameters with their default values.
-
 ```js
 import { camouflage } from "tsl-textures/camouflage.js";
 

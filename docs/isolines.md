@@ -30,8 +30,6 @@ a snapshot to open it online.
 
 ### Code example
 
-Code template of parameters with their default values.
-
 ```js
 import { isolines } from "tsl-textures/isolines.js";
 
