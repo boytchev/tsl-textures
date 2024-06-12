@@ -61,5 +61,5 @@ model.material.colorNode = fordite ( {
 
 		
 <div class="footnote">
-	<a href="./">Home</a>
-</div>	
+	<a href="#" onclick="window.history.back(); return false;">Back</a>
+</div>
