@@ -111,10 +111,10 @@ function install( tslTexture, onChange ) {
 
 	var name = tslTexture.defaults.$name;
 	var filename = name.split( ' ' ).join( '-' ).toLowerCase();
-	
+
 	var funcname = name.split( ' ' );
-		funcname[0] = funcname[0].toLowerCase();
-		funcname = funcname.join( '' );
+	funcname[ 0 ] = funcname[ 0 ].toLowerCase();
+	funcname = funcname.join( '' );
 
 	var title = `<big><em>${tslTexture.defaults.$name}</em> texture</big>
 			<small class="fullline">
@@ -210,7 +210,6 @@ model.material.colorNode = ${name} ( {
 } );
 `;
 
-	console.log( js );
 	navigator.clipboard.writeText( js );
 
 	alert( `Javascript code for this ${name} copied to the clipboard.` );
