@@ -121,7 +121,7 @@ function install( tslTexture, onChange ) {
 				<span id="home" class="link">HOME</span> &middot; 
 				<span id="url" class="link">LINK</span>  &middot; 
 				<span id="code" class="link">CODE</span>  &middot; 
-				<a id="info" class="link" href="../docs/${filename}.html">INFO</a>  &middot; 
+				<span id="info" class="link">INFO</span>  &middot; 
 				<span id="refresh" class="link">AGAIN</span>
 			</small>`;
 
@@ -130,6 +130,7 @@ function install( tslTexture, onChange ) {
 	gui.onChange( onChange );
 
 	document.getElementById( 'home' ).addEventListener( 'click', goHome );
+	document.getElementById( 'info' ).addEventListener( 'click', ( event )=>{ goToWebPage(event,filename)} );
 	document.getElementById( 'url' ).addEventListener( 'click', ( event )=>{
 
 		shareURL( event, name );
@@ -221,6 +222,14 @@ function goHome( event ) {
 
 	event.stopPropagation();
 	window.location.assign( HOME_URL );
+
+}
+
+
+function goToWebPage( event, filename ) {
+
+	event.stopPropagation();
+	window.location.assign( `../docs/${filename}.html` );
 
 }
 
