@@ -65,5 +65,5 @@ model.material.colorNode = camouflage ( {
 
 		
 <div class="footnote">
-	<a href="./">Home</a>
+	<a href="../">Home</a>
 </div>
