@@ -1,0 +1,32 @@
+<mxfile host="Electron" modified="2024-06-12T18:38:23.040Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/23.1.5 Chrome/120.0.6099.109 Electron/28.1.0 Safari/537.36" etag="YnNzW9VrzoNJEhF4dmzp" version="23.1.5" type="device">
+  <diagram name="Page-1" id="LvSKNlYQBY2EjUd46pAL">
+    <mxGraphModel dx="184" dy="50" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="583" pageHeight="413" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="NWVAcExjQMrZu1mDIXh0-19" value="" style="endArrow=oval;html=1;rounded=1;strokeColor=#000000;strokeWidth=6;startArrow=oval;startFill=1;startSize=10;curved=0;endFill=1;targetPerimeterSpacing=0;endSize=10;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="814" y="599" as="sourcePoint" />
+            <mxPoint x="785" y="599" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="860" y="580" />
+              <mxPoint x="860" y="620" />
+              <mxPoint x="820" y="640" />
+              <mxPoint x="760" y="610" />
+              <mxPoint x="760" y="560" />
+              <mxPoint x="800" y="580" />
+              <mxPoint x="840" y="560" />
+              <mxPoint x="840" y="610" />
+              <mxPoint x="780" y="640" />
+              <mxPoint x="740" y="620" />
+              <mxPoint x="740" y="580" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="NWVAcExjQMrZu1mDIXh0-21" value="" style="ellipse;whiteSpace=wrap;html=1;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="900" y="550" width="10" height="10" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
