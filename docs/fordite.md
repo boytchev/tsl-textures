@@ -43,7 +43,7 @@ model.material.colorNode = fordite ( {
 
 ### Parameters
 
-* `scale` &ndash; level of details of the pattern, higher value generates finer details, suggested range [0, 4]
+* `scale` &ndash; level of details of the pattern, higher value generates finer details, [0, 4]
 * `color` &ndash; color added to the texture, this may shift the hue of the patter
 * `seed` &ndash; number for the random generator, each value generates specific pattern
 

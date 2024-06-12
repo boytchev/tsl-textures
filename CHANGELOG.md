@@ -3,6 +3,7 @@
 
 ## 0.2.0
 * Added Camouflage in *camouflage.js*
+* Added Isolines in *isolines.js*
 
 ## 0.1.1
 * Reduced package size by removing unnecessary files

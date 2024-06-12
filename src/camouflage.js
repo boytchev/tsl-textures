@@ -47,7 +47,7 @@ var camouflage = tslFn( ( params )=>{
 
 
 camouflage.defaults = {
-	$name: 'camouflage',
+	$name: 'Camouflage',
 
 	scale: 2,
 

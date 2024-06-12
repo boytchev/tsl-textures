@@ -8,7 +8,7 @@ import { dynamic } from 'tsl-textures/tsl-utils.js';
 
 
 
-const HOME_URL = './';
+const HOME_URL = '../';
 
 
 var params = {},
@@ -21,7 +21,7 @@ var params = {},
 var renderer = new WebGPURenderer( { antialias: true } );
 renderer.setSize( innerWidth, innerHeight );
 renderer.setAnimationLoop( animationLoop );
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
 document.body.appendChild( renderer.domElement );
 
 var scene = new THREE.Scene();
@@ -31,9 +31,11 @@ var camera = new THREE.PerspectiveCamera( 5, innerWidth/innerHeight );
 camera.position.set( 0, 0, 30 );
 camera.lookAt( scene.position );
 
-var light = new THREE.DirectionalLight( 'white', Math.PI );
+var light = new THREE.DirectionalLight( 'white', Math.PI/2 );
 light.decay = 0;
 scene.add( light );
+
+scene.add( new THREE.AmbientLight( 'white', Math.PI ) );
 
 var controls = new OrbitControls( camera, renderer.domElement );
 controls.enableDamping = true;

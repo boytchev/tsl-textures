@@ -25,7 +25,7 @@ var isolines = tslFn( ( params )=>{
 
 
 isolines.defaults = {
-	$name: 'isolines',
+	$name: 'Isolines',
 
 	scale: 2,
 	density: 40,
