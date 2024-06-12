@@ -47,8 +47,6 @@ model.material.colorNode = camouflage ( {
 
 ### Parameters
 
-The parameters of the texture generator are:
-
 * `scale` &ndash; level of details of the pattern, higher value generates finer details, suggested range [0, 4]
 * `colorA` &ndash; top color
 * `colorB` &ndash; second color

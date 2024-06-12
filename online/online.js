@@ -40,7 +40,7 @@ controls.enableDamping = true;
 
 var model = new THREE.Mesh(
 	new THREE.IcosahedronGeometry( 1, 20 ),
-	new MeshPhysicalNodeMaterial(  )
+	new MeshPhysicalNodeMaterial( )
 );
 scene.add( model );
 
@@ -115,7 +115,7 @@ function install( tslTexture, onChange ) {
 				<span id="home" class="link">HOME</span> &middot; 
 				<span id="url" class="link">LINK</span>  &middot; 
 				<span id="code" class="link">CODE</span>  &middot; 
-				<a id="info" class="link" href="https://boytchev.github.io/tsl-textures/docs/${filename}.html">INFO</a>  &middot; 
+				<a id="info" class="link" href="../docs/${filename}.html">INFO</a>  &middot; 
 				<span id="refresh" class="link">AGAIN</span>
 			</small>`;
 
