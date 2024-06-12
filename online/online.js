@@ -137,7 +137,7 @@ function install( tslTexture, onChange ) {
 	} );
 	document.getElementById( 'code' ).addEventListener( 'click', ( event )=>{
 
-		getCode( event, name, filename );
+		getCode( event, funcname, filename );
 
 	} );
 	document.getElementById( 'refresh' ).addEventListener( 'click', refreshSeed );
