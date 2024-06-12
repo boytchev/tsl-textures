@@ -66,5 +66,5 @@ The parameters of the texture generator are:
 
 		
 <div class="footnote">
-	<a href="#" onclick="window.history.back(); return false;">Back</a>
+	<a href="./">Home</a>
 </div>
