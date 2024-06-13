@@ -3,7 +3,7 @@
 //
 
 import { MathUtils } from 'three';
-import { tslFn, sub, vec3, min, max, uniform } from 'three/nodes';
+import { max, min, sub, tslFn, uniform, vec3 } from 'three/nodes';
 import { mx_perlin_noise_float as noise } from 'three/addons/nodes/materialx/lib/mx_noise.js';
 
 

@@ -31,7 +31,7 @@ var camera = new THREE.PerspectiveCamera( 5, innerWidth/innerHeight );
 camera.position.set( 0, 0, 30 );
 camera.lookAt( scene.position );
 
-var light = new THREE.DirectionalLight( 'white', 2 );
+var light = new THREE.DirectionalLight( 'white', 1.5 );
 light.decay = 0;
 scene.add( light );
 
@@ -113,7 +113,13 @@ function install( tslTexture, onChange ) {
 	var filename = name.split( ' ' ).join( '-' ).toLowerCase();
 
 	var funcname = name.split( ' ' );
-	funcname[ 0 ] = funcname[ 0 ].toLowerCase();
+	for ( var i=0; i<funcname.length; i++ ) {
+
+		funcname[ i ] = funcname[ i ].toLowerCase();
+		if ( i > 0 ) funcname[ i ] = funcname[ i ][ 0 ].toUpperCase() + funcname[ i ].slice( 1 );
+
+	}
+
 	funcname = funcname.join( '' );
 
 	var title = `<big><em>${tslTexture.defaults.$name}</em> texture</big>
@@ -130,7 +136,11 @@ function install( tslTexture, onChange ) {
 	gui.onChange( onChange );
 
 	document.getElementById( 'home' ).addEventListener( 'click', goHome );
-	document.getElementById( 'info' ).addEventListener( 'click', ( event )=>{ goToWebPage(event,filename)} );
+	document.getElementById( 'info' ).addEventListener( 'click', ( event )=>{
+
+		goToWebPage( event, filename );
+
+	} );
 	document.getElementById( 'url' ).addEventListener( 'click', ( event )=>{
 
 		shareURL( event, name );
@@ -213,7 +223,7 @@ model.material.colorNode = ${name} ( {
 
 	navigator.clipboard.writeText( js );
 
-	alert( `Javascript code for this ${name} copied to the clipboard.` );
+	alert( `Javascript code fragment for this ${name} copied to the clipboard.` );
 
 }
 

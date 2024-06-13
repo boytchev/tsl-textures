@@ -99,6 +99,14 @@ export default [
 			// "quotes": 0,						// Don't care if quotes are double or single
 			// "no-use-before-define": 0,		// don't care if something is used before it's defined.
 			// "no-underscore-dangle": 0,		// don't care if var starts with underscore
+			
+			"sort-imports": ["error", {
+				"ignoreCase": true,
+				"ignoreDeclarationSort": true,
+				"ignoreMemberSort": false,
+				"memberSyntaxSortOrder": ["none", "all", "multiple", "single"],
+				"allowSeparatedGroups": false
+			}],
 		}
 	}
 ];

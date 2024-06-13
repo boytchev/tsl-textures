@@ -1,5 +1,7 @@
 # TSL Textures
 
+## 0.3.0
+* Added Cave Art in *cave-art.js*
 
 ## 0.2.0
 * Added Camouflage in *camouflage.js*
