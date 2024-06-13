@@ -48,6 +48,7 @@ model.material.colorNode = stars ( {
 * `variation` &ndash; hue variation, [0,1]
 * `color` &ndash; color of stars
 * `background` &ndash; color of sky
+* `seed` &ndash; number for the random generator, each value generates specific pattern
 
 Darker stars *color* reduces the amount of visible stars, same like reduction
 in *density*. Hue *variation* is noticeable when the *color* of stars is not

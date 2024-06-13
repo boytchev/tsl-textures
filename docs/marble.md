@@ -49,7 +49,7 @@ model.material.colorNode = marble ( {
 * `noise` &ndash; noise of background [0,1]
 * `color` &ndash; color of lines
 * `background` &ndash; color of background
-
+* `seed` &ndash; number for the random generator, each value generates specific pattern
 
 ### Online generator
 

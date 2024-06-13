@@ -4,6 +4,7 @@
 * Added Cave Art in *cave-art.js*
 * Added Zebra Lines in *zebra-lines.js*
 * Added Stars in *stars.js*
+* Added Entangled in *entangled.js*
 * Added "spherical" to *tsl-utils.js*
 
 ## 0.2.0
