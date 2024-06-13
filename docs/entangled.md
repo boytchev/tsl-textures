@@ -58,7 +58,7 @@ model.material.colorNode = entangled ( {
 
 ### Source
 
-[src/patterns/entangled.js](https://github.com/boytchev/tsl-textures/blob/main/src/entangled.js)
+[src/entangled.js](https://github.com/boytchev/tsl-textures/blob/main/src/entangled.js)
 
 
 		
