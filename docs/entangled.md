@@ -45,7 +45,7 @@ model.material.colorNode = entangled ( {
 ### Parameters
 
 * `scale` &ndash; level of details of the pattern, higher value generates finer details, [0, 4]
-* `density` &ndash; density of lines, [0,20]
+* `density` &ndash; density of lines, [1,20]
 * `color` &ndash; color of lines
 * `background &ndash; color of background
 * `seed` &ndash; number for the random generator, each value generates specific pattern
