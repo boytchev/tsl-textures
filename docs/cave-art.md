@@ -62,7 +62,7 @@ model.material.colorNode = caveArt ( {
 
 ### Source
 
-[src/patterns/cave-art.js](https://github.com/boytchev/tsl-textures/blob/main/src/patterns/cave-art.js)
+[src/patterns/cave-art.js](https://github.com/boytchev/tsl-textures/blob/main/src/cave-art.js)
 
 
 		
