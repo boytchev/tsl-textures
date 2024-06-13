@@ -60,7 +60,6 @@ model.material.colorNode = marble ( {
 
 [src/patterns/marble.js](https://github.com/boytchev/texture-generator/blob/main/src/marble.js)
 
-
 		
 <div class="footnote">
 	<a href="../">Home</a>

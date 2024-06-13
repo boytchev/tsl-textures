@@ -3,7 +3,7 @@
 //
 
 import { MathUtils } from 'three';
-import { cos, max, min, sin, sub, tslFn, uniform, vec3 } from 'three/nodes';
+import { add, cond, cos, float, If, max, min, sin, sub, tslFn, uniform, vec3 } from 'three/nodes';
 import { mx_perlin_noise_float as noise } from 'three/addons/nodes/materialx/lib/mx_noise.js';
 
 
@@ -53,7 +53,7 @@ hslHelper.setLayout( {
 
 
 
-
+// convert from hsl to rgb
 const hsl = tslFn( ([ h, s, l ]) => {
 
 	h = h.fract().add( 1 ).fract();
@@ -77,6 +77,50 @@ hsl.setLayout( {
 		{ name: 'l', type: 'float' },
 	]
 } );
+
+
+// convert from rgb to hsl
+const toHsl = tslFn( ([ rgb ]) => {
+
+	var R = float( rgb.x ).toVar(),
+		G = float( rgb.y ).toVar(),
+		B = float( rgb.z ).toVar();
+
+	var mx = max( R, max( G, B ) ).toVar();
+	var mn = min( R, min( G, B ) ).toVar();
+
+	var H = float( 0 ).toVar(),
+		S = float( 0 ).toVar(),
+		L = add( mx, mn ).div( 2 );
+
+	If( mn.notEqual( mx ), ()=>{
+
+		const delta = sub( mx, mn ).toVar();
+
+		S.assign( cond( L.lessThanEqual( 0.5 ), delta.div( add( mn, mx ) ), delta.div( sub( 2, add( mn, mx ) ) ) ) );
+		If( mx.equal( R ), ()=>{
+
+			H.assign( sub( G, B ).div( delta ).add( cond( G.lessThanEqual( B ), 6, 0 ) ) );
+
+		} )
+			.elseif( mx.equal( G ), ()=>{
+
+				H.assign( sub( B, R ).div( delta ).add( 2 ) );
+
+			} )
+			.else( ()=>{
+
+				H.assign( sub( R, G ).div( delta ).add( 4 ) );
+
+			} );
+		H.divAssign( 6 );
+
+	} );
+	return vec3( H, S, L );
+
+} );
+
+
 
 
 
@@ -125,6 +169,7 @@ export
 	mapExp,
 	noise,
 	hsl,
+	toHsl,
 	dynamic,
 	spherical
 };
