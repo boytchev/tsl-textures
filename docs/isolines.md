@@ -42,7 +42,6 @@ model.material.colorNode = isolines ( {
 	background: new THREE.Color(0),
 	seed: 0
 } );
-
 ```
 
 
@@ -54,6 +53,7 @@ model.material.colorNode = isolines ( {
 * `thinness` &ndash; relative thinness of lines, [0,1]
 * `color` &ndash; color of lines
 * `background` &ndash; color of background
+* `seed` &ndash; number for the random generator, each value generates specific pattern
 
 
 ### Online generator
@@ -63,7 +63,7 @@ model.material.colorNode = isolines ( {
 
 ### Source
 
-[src/patterns/isolines.js](https://github.com/boytchev/tsl-textures/blob/main/src/isolines.js)
+[src/isolines.js](https://github.com/boytchev/tsl-textures/blob/main/src/isolines.js)
 
 
 		

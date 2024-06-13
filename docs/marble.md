@@ -39,7 +39,6 @@ model.material.colorNode = marble ( {
 	background: new THREE.Color(15792383),
 	seed: 0
 } );
-
 ```
 
 
@@ -59,7 +58,7 @@ model.material.colorNode = marble ( {
 
 ### Source
 
-[src/patterns/marble.js](https://github.com/boytchev/texture-generator/blob/main/src/patterns/marble.js)
+[src/patterns/marble.js](https://github.com/boytchev/texture-generator/blob/main/src/marble.js)
 
 
 		

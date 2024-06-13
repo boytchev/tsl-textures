@@ -53,14 +53,14 @@ model.material.colorNode = camouflage ( {
 * `seed` &ndash; number for the random generator, each value generates specific pattern
 
 
-
 ### Online generator
 
 [online/camouflage.html](../online/camouflage.html)
 
+
 ### Source
 
-[src/patterns/camouflage.js](https://github.com/boytchev/tsl-textures/blob/main/src/camouflage.js)
+[src/camouflage.js](https://github.com/boytchev/tsl-textures/blob/main/src/camouflage.js)
 
 
 		

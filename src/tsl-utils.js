@@ -3,7 +3,7 @@
 //
 
 import { MathUtils } from 'three';
-import { max, min, sub, tslFn, uniform, vec3 } from 'three/nodes';
+import { cos, max, min, sin, sub, tslFn, uniform, vec3 } from 'three/nodes';
 import { mx_perlin_noise_float as noise } from 'three/addons/nodes/materialx/lib/mx_noise.js';
 
 
@@ -98,11 +98,33 @@ function dynamic( params ) {
 
 
 
+// convert phi-theta angles to position on unit sphere
+const spherical = tslFn( ([ phi, theta ]) => {
+
+	return vec3(
+		sin( theta ).mul( sin( phi ) ),
+		cos( phi ),
+		cos( theta ).mul( sin( phi ) )
+	);
+
+} );
+
+spherical.setLayout( {
+	name: 'spherical',
+	type: 'vec3',
+	inputs: [
+		{ name: 'phi', type: 'float' },
+		{ name: 'theta', type: 'float' },
+	]
+} );
+
+
 export
 {
 	map,
 	mapExp,
 	noise,
 	hsl,
-	dynamic
+	dynamic,
+	spherical
 };

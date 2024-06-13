@@ -2,6 +2,8 @@
 
 ## 0.3.0
 * Added Cave Art in *cave-art.js*
+* Added Zebra Lines in *zebra-lines.js*
+* Added "spherical" to *tsl-utils.js*
 
 ## 0.2.0
 * Added Camouflage in *camouflage.js*

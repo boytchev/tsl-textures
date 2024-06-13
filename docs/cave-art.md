@@ -42,7 +42,6 @@ model.material.colorNode = caveArt ( {
 	background: new THREE.Color(16775408),
 	seed: 0
 } );
-
 ```
 
 
@@ -53,6 +52,7 @@ model.material.colorNode = caveArt ( {
 * `noise` &ndash; noise of background [0,1]
 * `color` &ndash; color of paintings
 * `background` &ndash; color of background
+* `seed` &ndash; number for the random generator, each value generates specific pattern
 
 
 ### Online generator
@@ -62,7 +62,7 @@ model.material.colorNode = caveArt ( {
 
 ### Source
 
-[src/patterns/cave-art.js](https://github.com/boytchev/tsl-textures/blob/main/src/cave-art.js)
+[src/cave-art.js](https://github.com/boytchev/tsl-textures/blob/main/src/cave-art.js)
 
 
 		

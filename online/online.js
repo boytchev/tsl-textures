@@ -125,11 +125,18 @@ function install( tslTexture, onChange ) {
 	var title = `<big><em>${tslTexture.defaults.$name}</em> texture</big>
 			<small class="fullline">
 				<span id="home" class="link">HOME</span> &middot; 
-				<span id="url" class="link">LINK</span>  &middot; 
-				<span id="code" class="link">CODE</span>  &middot; 
-				<span id="info" class="link">INFO</span>  &middot; 
-				<span id="refresh" class="link">AGAIN</span>
-			</small>`;
+				<span id="url" class="link">LINK</span> &middot; 
+				<span id="code" class="link">CODE</span> &middot; 
+				<span id="info" class="link">INFO</span>`;
+
+	if ( isFinite( tslTexture.defaults.seed ) ) {
+
+		title += ` &middot; 
+				<span id="refresh" class="link">AGAIN</span>`;
+
+	}
+
+	title += `</small>`;
 
 	var gui = new lil.GUI( { title: title } );
 	gui.$title.style.marginBottom = "2em";
@@ -151,7 +158,7 @@ function install( tslTexture, onChange ) {
 		getCode( event, funcname, filename );
 
 	} );
-	document.getElementById( 'refresh' ).addEventListener( 'click', refreshSeed );
+	document.getElementById( 'refresh' )?.addEventListener( 'click', refreshSeed );
 
 	onResize( );
 
