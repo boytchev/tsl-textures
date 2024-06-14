@@ -19,7 +19,7 @@ open it online.
 		<img src="images/clouds-2.png">
 	</a>
 
-	<a class="style-block nocaption" href="../online/clouds.html?scale=1.48&density=0.79&opacity=0.22&color=16711680&subcolor=16711909&seed=8318
+	<a class="style-block nocaption" href="../online/clouds.html?scale=1.48&density=0.79&opacity=0.22&color=16711680&subcolor=16711909&seed=8318">
 		<img src="images/clouds-3.png">
 	</a>
 
