@@ -29,35 +29,23 @@ Click on a snapshot to open it online.
 
 ### Code example
 
-Code template of parameters with their default values.
-
 ```js
-import * as PET from "pet/patterns/photosphere.js";
-:
-model.material.map = PET.texture( );
-PET.material( model.material );
+import { photosphere } from "tsl-textures/photosphere.js";
+
+model.material.colorNode = photosphere ( {
+	scale: 2,
+	color: new THREE.Color(16776960),
+	background: new THREE.Color(16711680),
+	seed: 0
+} );
 ```
 
 
 ### Parameters
 
-The parameters of the texture generator are:
-
-* `width` &ndash; texture width in pixels, default 1024
-* `height` &ndash; texture height in pixels, default 512
-* `scale` &ndash; pattern size [0,100], default 30
-* `color` &ndash; color of hot areas, default 0xFFFF00 (yellow)
-* `background &ndash; color of background, default 0xFF0000 (red)
-
-
-### API
-
-All texture modules share the same API.
-
-* `pattern( x, y, z, color, options )` &ndash; pattern implementation
-* `texture( {params} )` &ndash; generator for a texture with given parameters
-* `defaults` &ndash; object with default parameters
-* `material( ... )` &ndash; material shader patcher
+* `scale` &ndash; level of details of the pattern, higher value generates finer details, [0, 4]
+* `color` &ndash; color of hot areas
+* `background &ndash; color of background
 
 
 ### Online generator
@@ -67,10 +55,9 @@ All texture modules share the same API.
 
 ### Source
 
-[src/patterns/photosphere.js](https://github.com/boytchev/texture-generator/blob/main/src/patterns/photosphere.js)
-
+[src/photosphere.js](https://github.com/boytchev/tsl-textures/blob/main/src/photosphere.js)
 
 		
 <div class="footnote">
-	<a href="#" onclick="window.history.back(); return false;">Back</a>
+	<a href="../">Home</a>
 </div>
