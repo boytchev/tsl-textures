@@ -45,7 +45,7 @@ model.material.colorNode = photosphere ( {
 
 * `scale` &ndash; level of details of the pattern, higher value generates finer details, [0, 4]
 * `color` &ndash; color of hot areas
-* `background &ndash; color of background
+* `background` &ndash; color of background
 
 
 ### Online generator
