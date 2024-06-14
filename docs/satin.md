@@ -43,7 +43,7 @@ model.material.colorNode = satin ( {
 
 * `scale` &ndash; level of details of the pattern, higher value generates finer details, [0, 4]
 * `color` &ndash; main color of glossy parts
-* `background &ndash; background color of dark parts
+* `background` &ndash; background color of dark parts
 * `seed` &ndash; number for the random generator, each value generates specific pattern
 
 
