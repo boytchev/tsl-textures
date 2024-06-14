@@ -39,6 +39,18 @@ model.material.colorNode = clouds ( {
 	subcolor: new THREE.Color(10526896),
 	seed: 0
 } );
+
+model.material.transparent = true;
+model.material.opacity = 1;
+model.material.side = THREE.DoubleSide;
+model.material.opacityNode = clouds.opacity ( {
+	scale: 2,
+	density: 0.5,
+	opacity: 1,
+	color: new THREE.Color(16777215),
+	subcolor: new THREE.Color(10526896),
+	seed: 0
+} );
 ```
 
 

@@ -155,7 +155,7 @@ function install( tslTexture, onChange ) {
 	} );
 	document.getElementById( 'code' ).addEventListener( 'click', ( event )=>{
 
-		getCode( event, funcname, filename );
+		getCode( event, funcname, filename, tslTexture );
 
 	} );
 	document.getElementById( 'refresh' )?.addEventListener( 'click', refreshSeed );
@@ -206,21 +206,21 @@ function shareURL( event, name ) {
 
 
 
-function getCode( event, name, filename ) {
+function getCode( event, name, filename, tslTexture ) {
 
 	event.stopPropagation();
 
-	var js = [];
+	var paramsStr = [];
 
 	for ( const [ key, value ] of Object.entries( params ) )
 		if ( value instanceof THREE.Color )
-			js.push( `${key}: new THREE.Color(${value.getHex()})` );
+			paramsStr.push( `${key}: new THREE.Color(${value.getHex()})` );
 		else
-			js.push( `${key}: ${value}` );
+			paramsStr.push( `${key}: ${value}` );
 
-	js = js.join( `,\n	` );
+	paramsStr = paramsStr.join( `,\n	` );
 
-	js = `
+	var js = `
 <script type="importmap">
 	{
 		"imports": {
@@ -234,9 +234,21 @@ function getCode( event, name, filename ) {
 import { ${name} } from "tsl-textures/${filename}.js";
 
 model.material.colorNode = ${name} ( {
-	${js}
+	${paramsStr}
 } );
 `;
+
+	if ( tslTexture.opacity ) {
+		js += `
+model.material.transparent = true;
+model.material.opacity = 1;
+model.material.side = THREE.DoubleSide;
+model.material.opacityNode = ${name}.opacity ( {
+	${paramsStr}
+} );
+`
+	}
+
 
 	navigator.clipboard.writeText( js );
 
