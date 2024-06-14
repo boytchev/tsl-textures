@@ -239,6 +239,7 @@ model.material.colorNode = ${name} ( {
 `;
 
 	if ( tslTexture.opacity ) {
+
 		js += `
 model.material.transparent = true;
 model.material.opacity = 1;
@@ -246,7 +247,8 @@ model.material.side = THREE.DoubleSide;
 model.material.opacityNode = ${name}.opacity ( {
 	${paramsStr}
 } );
-`
+`;
+
 	}
 
 
