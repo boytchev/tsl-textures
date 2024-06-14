@@ -164,6 +164,16 @@ function install( tslTexture, onChange ) {
 
 	dynamics = dynamic( params );
 	model.material.colorNode = tslTexture( dynamics );
+
+	if ( tslTexture.opacity ) {
+
+		model.material.transparent = true;
+		model.material.opacity = 1;
+		model.material.side = THREE.DoubleSide;
+		model.material.opacityNode = tslTexture.opacity( dynamics );
+
+	}
+
 	onChange( ); // causes recalculation of dynamics
 
 	return gui.addFolder( '<big>Options</big>' );
