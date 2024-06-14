@@ -1,11 +1,14 @@
 # TSL Textures
 
+## 0.4.0
+* Added Simplex noise in *simplex-noise.js*
+
 ## 0.3.0
 * Added Cave Art in *cave-art.js*
 * Added Zebra Lines in *zebra-lines.js*
 * Added Stars in *stars.js*
 * Added Entangled in *entangled.js*
-* Added "spherical" to *tsl-utils.js*
+* Added spherical(...) to *tsl-utils.js*
 
 ## 0.2.0
 * Added Camouflage in *camouflage.js*
