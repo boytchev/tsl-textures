@@ -2,6 +2,7 @@
 
 ## 0.4.0
 * Added Simplex noise in *simplex-noise.js*
+* Added Photosphere in *photosphere.js*
 
 ## 0.3.0
 * Added Cave Art in *cave-art.js*

@@ -1,32 +1,15 @@
 ﻿
 //	Equirectangular Texture Generator - TSL Utility Functions
 //
+//	hsl( h, s, l ):vec3 			- convert from hsl to rgb
+//	toHsl( rgb:vec3 ):vec3			- convert from rgb to hsl
+//	spherical( phi, theta ):vec3	- from angles to point on unit sphere
+//	applyEuler( vec:vec3, eu:vec3 ):vec3 - apply Euler rotation to a vector
 
-import { MathUtils } from 'three';
-import { add, cond, cos, float, If, max, min, sin, sub, tslFn, uniform, vec3 } from 'three/nodes';
+
+
+import { add, cond, cos, cross, float, If, max, min, mul, sin, sub, tslFn, uniform, vec3, vec4 } from 'three/nodes';
 import { mx_perlin_noise_float as noise } from 'three/addons/nodes/materialx/lib/mx_noise.js';
-
-
-
-function map( x, toMin=0, toMax=1, fromMin=0, fromMax=100 ) {
-
-	x = MathUtils.mapLinear( x, fromMin, fromMax, toMin, toMax );
-
-	return x;
-
-}
-
-
-
-function mapExp( x, toMin, toMax, fromMin=0, fromMax=100 ) {
-
-	x = map( x, 0, 1, fromMin, fromMax );
-	x = 2**( x * Math.log2( toMax/toMin ) + Math.log2( toMin ) );
-
-	return x;
-
-}
-
 
 
 // helper function - convert hsl to rgb, ported to TSL from:
@@ -163,13 +146,53 @@ spherical.setLayout( {
 } );
 
 
+
+// apply Euler rotation to a vector
+const applyEuler = tslFn( ([ vec, eu ]) => {
+
+	var quat = quaternionFromEuler( eu );
+	return applyQuaternion( vec, quat );
+
+} );
+
+
+// convert Euler XYZ angles to quaternion
+const quaternionFromEuler = tslFn( ([ eu ]) => {
+
+	var c1 = cos( eu.x.div( 2 ) );
+	var c2 = cos( eu.y.div( 2 ) );
+	var c3 = cos( eu.z.div( 2 ) );
+
+	var s1 = sin( eu.x.div( 2 ) );
+	var s2 = sin( eu.y.div( 2 ) );
+	var s3 = sin( eu.z.div( 2 ) );
+
+	return vec4(
+		add( mul( s1, c2, c3 ), mul( c1, s2, s3 ) ),
+		sub( mul( c1, s2, c3 ), mul( s1, c2, s3 ) ),
+		add( mul( c1, c2, s3 ), mul( s1, s2, c3 ) ),
+		sub( mul( c1, c2, c3 ), mul( s1, s2, s3 ) ),
+	);
+
+} );
+
+
+// apply quaternion rotation to a vector
+const applyQuaternion = tslFn( ([ vec, quat ]) => {
+
+	var t = cross( quat, vec ).mul( 2 ).toVar( );
+
+	return add( vec, t.mul( quat.w ), cross( quat.xyz, t ) );
+
+} );
+
+
 export
 {
-	map,
-	mapExp,
 	noise,
 	hsl,
 	toHsl,
 	dynamic,
-	spherical
+	spherical,
+	applyEuler
 };
