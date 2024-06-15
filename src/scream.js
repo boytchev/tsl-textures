@@ -23,7 +23,7 @@ var scream = tslFn( ( params ) => {
 
 	var HSL = toHsl( col ).toVar();
 	
-	return hsl( add(HSL.x, params.variety.mul(sin(k.mul(Math.PI))).mul(0.5)), HSL.y.mul(0.8), HSL.z.add(0.1) );
+	return hsl( add(HSL.x, params.variety.mul(sin(k.mul(Math.PI))).mul(0.5)), HSL.y, HSL.z );
 
 });
 

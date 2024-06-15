@@ -11,15 +11,15 @@ by Edvard Munch. Click on a snapshot to open it online.
 
 <p class="gallery">
 
-	<a class="style-block nocaption" href="../online/scream.html?scale=1.4&variety=1&color=15790176&background=13668496">
+	<a class="style-block nocaption" href="../online/scream.html?scale=1.5&variety=1&color=15790176&background=13668496">
 		<img src="images/scream-1.png">
 	</a>
 
-	<a class="style-block nocaption" href="../online/scream.html?http://localhost/online/scream?scale=1.592&variety=0&color=16777215&background=5330612">
+	<a class="style-block nocaption" href="../online/scream.html?scale=1.592&variety=0&color=16777215&background=5490660">
 		<img src="images/scream-2.png">
 	</a>
 
-	<a class="style-block nocaption" href="../online/scream.html?http://localhost/online/scream?scale=1.6&variety=1&color=16711909&background=13752561">
+	<a class="style-block nocaption" href="../online/scream.html?scale=1.5&variety=1&color=12386262&background=15858153">
 		<img src="images/scream-3.png">
 	</a>
 
