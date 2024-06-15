@@ -11,15 +11,15 @@ by Edvard Munch. Click on a snapshot to open it online.
 
 <p class="gallery">
 
-	<a class="style-block nocaption" href="../online/scream.html?">
+	<a class="style-block nocaption" href="../online/scream.html?scale=1.4&variety=1&color=15790176&background=13668496">
 		<img src="images/scream-1.png">
 	</a>
 
-	<a class="style-block nocaption" href="../online/scream.html?">
+	<a class="style-block nocaption" href="../online/scream.html?http://localhost/online/scream?scale=1.592&variety=0&color=16777215&background=5330612">
 		<img src="images/scream-2.png">
 	</a>
 
-	<a class="style-block nocaption" href="../online/scream.html?">
+	<a class="style-block nocaption" href="../online/scream.html?http://localhost/online/scream?scale=1.6&variety=1&color=16711909&background=13752561">
 		<img src="images/scream-3.png">
 	</a>
 
@@ -36,7 +36,7 @@ model.material.colorNode = scream ( {
 	variety: 1,
 	color: new THREE.Color(15790176),
 	background: new THREE.Color(13668496),
-	seed: 0
+	seed: 0,
 } );
 ```
 
