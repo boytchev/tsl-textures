@@ -58,7 +58,7 @@ The parameters of the texture generator are:
 
 ### Source
 
-[src/scream.js](https://github.com/boytchev/texture-generator/blob/main/src/scream.js)
+[src/scream.js](https://github.com/boytchev/tsl-textures/blob/main/src/scream.js)
 
 
 <div class="footnote">

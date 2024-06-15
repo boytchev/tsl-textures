@@ -58,7 +58,7 @@ model.material.colorNode = marble ( {
 
 ### Source
 
-[src/patterns/marble.js](https://github.com/boytchev/texture-generator/blob/main/src/marble.js)
+[src/marble.js](https://github.com/boytchev/tsl-textures/blob/main/src/marble.js)
 
 		
 <div class="footnote">
