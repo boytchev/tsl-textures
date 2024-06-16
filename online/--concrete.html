@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+
+
+<html>
+
+
+<head>
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+	<link rel="shortcut icon" type="image/png" href="../assets/logo/logo.png"/>
+	<link rel="stylesheet" href="styles.css">
+
+	<script type="importmap">
+	  {
+		"imports": {
+			"three": "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js",
+			"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/",
+			"three/nodes": "https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/nodes/Nodes.js",
+			"tsl-textures/": "../src/"
+		}
+	  }
+	</script>
+</head>
+
+
+<body>
+	
+	<script type="module">
+
+		import { install, params, dynamics } from "./online.js";
+		import { concrete } from "tsl-textures/concrete.js";
+
+		var gui = install( concrete, update );
+		
+		gui.add( params, 'scale' )
+			.name( 'Bumps<right>scale</right>' ).min( 0 ).max( 4 )
+			.$input.classList.add( 'top' );
+		
+		gui.add( params, 'density' )
+			.name( '<right>density</right>' ).min( 0 ).max( 1 );
+		
+		gui.add( params, 'bump' )
+			.name( '<right>bumpiness</right>' ).min( 0 ).max( 1 )
+			.$input.classList.add( 'bottom' );
+
+		
+		function update()
+		{
+			dynamics.scale.value = params.scale;
+			dynamics.density.value = params.density;
+			dynamics.bump.value = params.bump;
+		}
+
+	</script>
+</body>
+</html>

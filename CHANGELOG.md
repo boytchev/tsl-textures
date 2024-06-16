@@ -1,9 +1,12 @@
 # TSL Textures
 
+## 0.6.0
+* Added Neon lights in *neon-lights.js*
+
 ## 0.5.0
 * Added Scream in *scream.js*
-*
-*
+* Added Grid in *grid.js*
+* Added Concrete in *concrete.js*
 
 ## 0.4.0
 * Added Simplex noise in *simplex-noise.js*
