@@ -8,7 +8,7 @@
 
 
 
-import { add, cond, cos, cross, float, If, max, min, mul, sin, sub, tslFn, uniform, vec3, vec4 } from 'three/nodes';
+import { add, cond, cos, cross, div, float, floor, If, log2, max, min, mul, pow, remap, sin, sub, tslFn, uniform, vec3, vec4 } from 'three/nodes';
 import { mx_perlin_noise_float as noise } from 'three/addons/nodes/materialx/lib/mx_noise.js';
 
 
@@ -187,6 +187,35 @@ const applyQuaternion = tslFn( ([ vec, quat ]) => {
 } );
 
 
+// calculate modulo (missing in TSL?)
+const mod = tslFn( ([ x, y ]) => {
+
+	return sub( x, floor( div( x, y ) ).mul( y ) );
+
+} );
+
+
+
+// exponential version of remap
+const remapExp = tslFn( ([ x, fromMin, fromMax, toMin, toMax ]) => {
+
+	x = remap( x, fromMin, fromMax, 0, 1 );
+	x = pow( 2, mul( x, log2( toMax.div( toMin ) ) ).add( log2( toMin ) ) );
+	return x;
+	/*
+
+function mapExp( x, toMin, toMax, fromMin=0, fromMax=100 ) {
+
+	x = map( x, 0, 1, fromMin, fromMax );
+	x = 2**( x * Math.log2( toMax/toMin ) + Math.log2( toMin ) );
+
+	return x;
+
+}
+*/
+
+} );
+
 export
 {
 	noise,
@@ -194,5 +223,7 @@ export
 	toHsl,
 	dynamic,
 	spherical,
-	applyEuler
+	applyEuler,
+	mod,
+	remapExp
 };

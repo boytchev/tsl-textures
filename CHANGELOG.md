@@ -2,6 +2,7 @@
 
 ## 0.6.0
 * Added Neon lights in *neon-lights.js*
+* Added Scepter head in *scepter-head.js*
 
 ## 0.5.0
 * Added Scream in *scream.js*

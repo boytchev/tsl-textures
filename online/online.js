@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import * as lil from "three/addons/libs/lil-gui.module.min.js";
 import WebGPURenderer from 'three/addons/renderers/webgpu/WebGPURenderer.js';
-import { MeshPhysicalNodeMaterial, bumpMap, float } from 'three/nodes';
+import { MeshPhysicalNodeMaterial } from 'three/nodes';
 import { dynamic } from 'tsl-textures/tsl-utils.js';
 
 

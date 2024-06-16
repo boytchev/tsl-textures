@@ -4,54 +4,55 @@
 
 
 import { Color } from "three";
-import { add, div, exp, sin,cos,If, cond,mix,sub, mul, oneMinus, vec3,sqrt,abs,positionLocal, pow, tslFn } from 'three/nodes';
-import { noise, hsl, toHsl } from 'tsl-textures/tsl-utils.js';
+import { abs, cond, exp, oneMinus, positionLocal, sqrt, tslFn, vec3 } from 'three/nodes';
+import { hsl, noise, toHsl } from 'tsl-textures/tsl-utils.js';
 
 
 
 var neonLights = tslFn( ( params ) => {
 
 	var pos = positionLocal;//.mul( exp( params.scale ) ).add( params.seed ).toVar( );
-	
-	var scale = exp( params.scale.remap(0,4,2,-2) ).toVar();
-	var thinness = exp(params.thinness.remap(0,1,1.5,0)).toVar();
-	
-	var color = params.background.toVar();
-	var neon = vec3(0).toVar();
-	
-var x = noise(pos.xyz).toVar();
-var y = noise(pos.yzx).toVar();
-var z = noise(pos.zxy).toVar();
 
-	var k = noise( vec3(x,y,z).mul( scale ).add( params.seed ) ).toVar();
-	k.assign(  oneMinus( sqrt(abs(k)) ).pow(3) );
+	var scale = exp( params.scale.remap( 0, 4, 2, -2 ) ).toVar();
+	var thinness = exp( params.thinness.remap( 0, 1, 1.5, 0 ) ).toVar();
+
+	var color = params.background.toVar();
+	var neon = vec3( 0 ).toVar();
+
+	var x = noise( pos.xyz ).toVar();
+	var y = noise( pos.yzx ).toVar();
+	var z = noise( pos.zxy ).toVar();
+
+	var k = noise( vec3( x, y, z ).mul( scale ).add( params.seed ) ).toVar();
+	k.assign( oneMinus( sqrt( abs( k ) ) ).pow( 3 ) );
 
 	neon.assign( params.colorA );
 	var HSL = toHsl( neon );
-	neon.assign( hsl(HSL.x, HSL.y, HSL.z.mul(k)) );
+	neon.assign( hsl( HSL.x, HSL.y, HSL.z.mul( k ) ) );
 
-	color.addAssign( cond(params.mode.equal(0), neon, neon.negate()).mul(thinness) );
+	color.addAssign( cond( params.mode.equal( 0 ), neon, neon.negate() ).mul( thinness ) );
 
-	k.assign( noise( vec3(y,z,x).mul( scale ).sub( params.seed ) ));
-	k.assign(  oneMinus( sqrt(abs(k)) ).pow(3) );
+	k.assign( noise( vec3( y, z, x ).mul( scale ).sub( params.seed ) ) );
+	k.assign( oneMinus( sqrt( abs( k ) ) ).pow( 3 ) );
 
 	neon.assign( params.colorB );
 	var HSL = toHsl( neon );
-	neon.assign( hsl(HSL.x, HSL.y, HSL.z.mul(k)) );
+	neon.assign( hsl( HSL.x, HSL.y, HSL.z.mul( k ) ) );
 
-	color.addAssign( cond(params.mode.equal(0), neon, neon.negate()).mul(thinness) );
+	color.addAssign( cond( params.mode.equal( 0 ), neon, neon.negate() ).mul( thinness ) );
 
 
-	k.assign( noise( vec3(z,x,y.negate()).mul( scale ).add( params.seed ) ));
-	k.assign(  oneMinus( sqrt(abs(k)) ).pow(3) );
+	k.assign( noise( vec3( z, x, y.negate() ).mul( scale ).add( params.seed ) ) );
+	k.assign( oneMinus( sqrt( abs( k ) ) ).pow( 3 ) );
 
 	neon.assign( params.colorC );
 	var HSL = toHsl( neon );
-	neon.assign( hsl(HSL.x, HSL.y, HSL.z.mul(k)) );
+	neon.assign( hsl( HSL.x, HSL.y, HSL.z.mul( k ) ) );
 
-	color.addAssign( cond(params.mode.equal(0), neon, neon.negate()).mul(thinness) );
+	color.addAssign( cond( params.mode.equal( 0 ), neon, neon.negate() ).mul( thinness ) );
 
 	return color;
+
 } );
 
 
@@ -67,7 +68,7 @@ neonLights.defaults = {
 	colorB: new Color( 0x00FF00 ),
 	colorC: new Color( 0x0000FF ),
 	background: new Color( 0x000000 ),
-	
+
 	seed: 0,
 };
 
