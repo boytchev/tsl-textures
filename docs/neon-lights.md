@@ -14,7 +14,7 @@ up to three neon colors. Click on a snapshot to open it online.
 		<img src="images/neon-lights-1.png">
 	</a>
 
-	<a class="style-block nocaption" href="../online/neon-lights.html?scale=0.88&thinness=0.66&mode=0&colorA=15198183&colorB=16711895&colorC=903374&background=29183>
+	<a class="style-block nocaption" href="../online/neon-lights.html?scale=0.88&thinness=0.66&mode=0&colorA=15198183&colorB=16711895&colorC=903374&background=29183">
 		<img src="images/neon-lights-2.png">
 	</a>
 
