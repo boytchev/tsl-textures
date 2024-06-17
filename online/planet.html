@@ -1,0 +1,122 @@
+﻿<!DOCTYPE html>
+
+
+<html>
+
+
+<head>
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+	<link rel="shortcut icon" type="image/png" href="../assets/logo/logo.png"/>
+	<link rel="stylesheet" href="styles.css">
+
+	<script type="importmap">
+	  {
+		"imports": {
+			"three": "https://cdn.jsdelivr.net/npm/three@0.164.0/build/three.module.js",
+			"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.164.0/examples/jsm/",
+			"three/nodes": "https://cdn.jsdelivr.net/npm/three@0.164.0/examples/jsm/nodes/Nodes.js",
+			"tsl-textures/": "../src/"
+		}
+	  }
+	</script>
+</head>
+
+
+<body>
+	
+	<script type="module">
+
+		import { install, params, dynamics } from "./online.js";
+		import { planet } from "tsl-textures/planet.js";
+
+
+		var gui = install( planet, update );
+		
+		gui.add( params, 'scale' )
+			.name( 'Scale' ).min( 0 ).max( 4 );
+
+		gui.add( params, 'iterations' )
+			.name( 'Iterations' ).min( 0 ).max( 10 ).step(1);
+
+		var guiA = gui.addFolder( '<big>Altitudes</big>' )//.close();
+
+		guiA.add( params, 'levelSea' )
+			.name( '<right>sea level</right>' ).min( 0 ).max( 1 )
+			.$input.classList.add( 'top' );
+			
+		guiA.add( params, 'levelMountain' )
+			.name( '<right>highland</right>' ).min( 0 ).max( 1 )
+			.$input.classList.add( 'bottom' );
+
+		var guiW = gui.addFolder( '<big>Water colors</big>' )//.close();
+
+		// deep waters
+		guiW.addColor( params, 'colorDeep' )
+			.name( '<right>deep</right>' )
+			.$text.classList.add( 'top' );
+
+		guiW.add( params, 'balanceWater' )
+			.name( '<right>balance</right>' ).min(0).max(1)
+			.$input.classList.add( 'bottom' );
+
+		// shallow waters
+		guiW.addColor( params, 'colorShallow' )
+			.name( '<right>shallow</right>' )
+			.$text.classList.add( 'bottom' );
+
+		var guiL = gui.addFolder( '<big>Land colors</big>' )//.close();
+
+		// beach
+		guiL.addColor( params, 'colorBeach' )
+			.name( '<right>beach</right>' )
+			.$text.classList.add( 'top' );
+
+		guiL.add( params, 'balanceSand' )
+			.name( '<right>balance</right>' ).min(0).max(1)
+			.$input.classList.add( 'top' );
+
+		// grass
+		guiL.addColor( params, 'colorGrass' )
+			.name( '<right>grass</right>' )
+			.$text.classList.add( 'top' );
+
+		var guiM = gui.addFolder( '<big>Highland colors</big>' )//.close();
+
+		// forest
+		guiM.addColor( params, 'colorForest' )
+			.name( '<right>forest</right>' )
+			.$text.classList.add( 'top' );
+		
+		guiM.add( params, 'balanceSnow' )
+			.name( '<right>balance</right>' ).min( 0 ).max( 1 )
+			.$input.classList.add( 'bottom' );
+
+		// snow
+		guiM.addColor( params, 'colorSnow' )
+			.name( '<right>snow</right>' );
+
+
+		function update()
+		{
+			dynamics.scale.value = params.scale;
+			dynamics.iterations.value = params.iterations;
+
+			dynamics.levelSea.value = params.levelSea;
+			dynamics.levelMountain.value = params.levelMountain;
+			
+			dynamics.balanceWater.value = params.balanceWater;
+			dynamics.balanceSand.value = params.balanceSand;
+			dynamics.balanceSnow.value = params.balanceSnow;
+			
+			dynamics.colorDeep.value.set( params.colorDeep );
+			dynamics.colorShallow.value.set( params.colorShallow );
+			dynamics.colorBeach.value.set( params.colorBeach );
+			dynamics.colorGrass.value.set( params.colorGrass );
+			dynamics.colorForest.value.set( params.colorForest );
+			dynamics.colorSnow.value.set( params.colorSnow );			
+		}
+
+	</script>
+</body>
+</html>

@@ -1,5 +1,8 @@
 # TSL Textures
 
+## 0.6.0
+* Added "Planet" in "planet.js"
+
 ## 0.5.0
 * Added Neon lights in *neon-lights.js*
 * Added Scepter head in *scepter-head.js*

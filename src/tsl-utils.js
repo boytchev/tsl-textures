@@ -216,6 +216,9 @@ function mapExp( x, toMin, toMax, fromMin=0, fromMax=100 ) {
 
 } );
 
+
+
+
 export
 {
 	noise,
