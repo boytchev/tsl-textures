@@ -27,10 +27,10 @@
 	
 	<script type="module">
 
-		import { install, params, dynamics } from "./online.js";
+		import { install, params } from "./online.js";
 		import { scepterHead } from "tsl-textures/scepter-head.js";
 
-		var gui = install( scepterHead, update );
+		var gui = install( scepterHead );
 
 		gui.add( params, 'xFactor' )
 			.name( 'Framing <right>x</right>' ).min( 0 ).max( 100 ).step( 1 )
@@ -53,17 +53,6 @@
 		gui.addColor( params, 'colorB' )
 			.name( '<right>ascendant</right>' )
 			.$text.classList.add( 'bottom' );
-
-		
-		function update()
-		{
-			dynamics.xFactor.value = params.xFactor;
-			dynamics.yFactor.value = params.yFactor;
-			dynamics.zFactor.value = params.zFactor;
-			dynamics.colorRim.value.set( params.colorRim );
-			dynamics.colorA.value.set( params.colorA );
-			dynamics.colorB.value.set( params.colorB );
-		}
 		
 	</script>
 </body>

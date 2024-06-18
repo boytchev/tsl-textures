@@ -27,10 +27,10 @@
 	
 	<script type="module">
 
-		import { install, params, dynamics } from "./online.js";
+		import { install, params } from "./online.js";
 		import { zebraLines } from "tsl-textures/zebra-lines.js";
 
-		var gui = install( zebraLines, update );
+		var gui = install( zebraLines );
 
 		gui.add( params, 'scale' )
 			.min( 0 ).max( 4 )
@@ -59,17 +59,6 @@
 		gui.addColor( params, 'background' )
 			.name( '<right>background</right>' )
 			.$text.classList.add( 'bottom' );
-
-		
-		function update()
-		{
-			dynamics.scale.value = params.scale;
-			dynamics.thinness.value = params.thinness;
-			dynamics.phi.value = params.phi;
-			dynamics.theta.value = params.theta;
-			dynamics.color.value.set( params.color );
-			dynamics.background.value.set( params.background );
-		}
 		
 	</script>
 </body>

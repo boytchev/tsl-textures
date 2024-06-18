@@ -79,7 +79,7 @@ function animationLoop( /*t*/ ) {
 
 
 
-function install( tslTexture, onChange ) {
+function install( tslTexture ) {
 
 	// process URL options
 	var urlAddress = window.location.search.split( '#' )[ 0 ], // skip all after #
@@ -140,7 +140,7 @@ function install( tslTexture, onChange ) {
 
 	var gui = new lil.GUI( { title: title } );
 	gui.$title.style.marginBottom = "2em";
-	gui.onChange( onChange );
+	gui.onChange( processParameters );
 
 	document.getElementById( 'home' ).addEventListener( 'click', goHome );
 	document.getElementById( 'info' ).addEventListener( 'click', ( event )=>{
@@ -174,12 +174,26 @@ function install( tslTexture, onChange ) {
 
 	}
 
-	onChange( ); // causes recalculation of dynamics
+	processParameters( ); // causes recalculation of dynamics
 
 	return gui.addFolder( '<big>Options</big>' );
 
 }
 
+
+
+function processParameters( ) {
+	// copy all numeric parameters from params to dynamics
+	// cobvert all color parameters to THREE.Color
+	// ignore parameter called '$...' and 'seed'
+
+	for ( const [ key, value ] of Object.entries( dynamics ) )
+		if( key != 'seed' && key[0] != '$' )
+		if ( value instanceof THREE.Color )
+			dynamics[key].value.set( params[key] )
+		else
+			dynamics[key].value = params[key];
+}
 
 
 function shareURL( event, name ) {
@@ -289,4 +303,4 @@ function refreshSeed( event ) {
 
 
 
-export { model, install, params, light, dynamics };
+export { model, install, params };

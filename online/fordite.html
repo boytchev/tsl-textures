@@ -27,11 +27,11 @@
 
 	<script type="module">
 
-		import { install, params, dynamics } from "./online.js";
+		import { install, params } from "./online.js";
 		import { fordite } from "tsl-textures/fordite.js";
 
 
-		var gui = install( fordite, update );
+		var gui = install( fordite );
 		
 		gui.add( params, 'scale' )
 			.min( 0 ).max( 4 )
@@ -41,13 +41,6 @@
 		gui.addColor( params, 'color' )
 			.name( 'Color' )
 			.$text.classList.add( 'bottom' );
-		
-
-		function update()
-		{
-			dynamics.scale.value = params.scale;
-			dynamics.color.value.set( params.color );
-		}
 		
 	</script>
 </body>

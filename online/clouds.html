@@ -28,7 +28,7 @@
 	<script type="module">
 
 		import * as THREE from "three";
-		import { install, model, params, dynamics } from "./online.js";
+		import { install, model, params } from "./online.js";
 		import { clouds } from "tsl-textures/clouds.js";
 
 		var cnv = document.createElement( 'CANVAS' );
@@ -53,7 +53,7 @@
 		model.add( core );
 		
 		
-		var gui = install( clouds, update );
+		var gui = install( clouds );
 		
 		
 		gui.add( params, 'scale' )
@@ -77,16 +77,6 @@
 		gui.addColor( params, 'subcolor' )
 			.name( '<right>secondary</right>' )
 			.$text.classList.add( 'bottom' );
-		
-		
-		function update()
-		{
-			dynamics.scale.value = params.scale;
-			dynamics.density.value = params.density;
-			dynamics.opacity.value = params.opacity;
-			dynamics.color.value.set( params.color );
-			dynamics.subcolor.value.set( params.subcolor );
-		}
 		
 	</script>
 </body>

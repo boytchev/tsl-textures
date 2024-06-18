@@ -27,10 +27,10 @@
 
 	<script type="module">
 
-		import { install, params, dynamics } from "./online.js";
+		import { install, params } from "./online.js";
 		import { marble } from "tsl-textures/marble.js";
 
-		var gui = install( marble, update );
+		var gui = install( marble );
 		
 		gui.add( params, 'scale' )
 			.min( 0 ).max( 4 )
@@ -53,16 +53,6 @@
 		gui.addColor( params, 'background' )
 			.name( '<right>background</right>' )
 			.$text.classList.add( 'bottom' );
-
-		
-		function update()
-		{
-			dynamics.scale.value = params.scale;
-			dynamics.thinness.value = params.thinness;
-			dynamics.noise.value = params.noise;
-			dynamics.color.value.set( params.color );
-			dynamics.background.value.set( params.background );
-		}
 		
 	</script>
 </body>

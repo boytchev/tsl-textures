@@ -27,10 +27,10 @@
 
 	<script type="module">
 
-		import { install, params, dynamics } from "./online.js";
+		import { install, params } from "./online.js";
 		import { grid } from "tsl-textures/grid.js";
 
-		var gui = install( grid, update );
+		var gui = install( grid );
 		
 		gui.add( params, 'countU' )
 			.min( 6 ).max( 100 ).step( 1 )
@@ -54,16 +54,6 @@
 		gui.addColor( params, 'background' )
 			.name( '<right>background</right>' )
 			.$text.classList.add( 'bottom' );
-		
-		
-		function update()
-		{
-			dynamics.countU.value = params.countU;
-			dynamics.countV.value = params.countV;
-			dynamics.thinness.value = params.thinness;
-			dynamics.color.value.set( params.color );
-			dynamics.background.value.set( params.background );
-		}
 		
 	</script>
 </body>

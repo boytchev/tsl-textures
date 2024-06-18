@@ -27,10 +27,10 @@
 	
 	<script type="module">
 
-		import { install, params, dynamics } from "./online.js";
+		import { install, params } from "./online.js";
 		import { neonLights } from "tsl-textures/neon-lights.js";
 
-		var gui = install( neonLights, update );
+		var gui = install( neonLights );
 		
 		gui.add( params, 'scale' )
 			.name( 'Lines <right>scale</right>' ).min( 0 ).max( 4 );
@@ -55,18 +55,6 @@
 		gui.addColor( params, 'background' )
 			.name( '' )
 			.$text.classList.add( 'bottom' );
-
-		
-		function update()
-		{
-			dynamics.scale.value = params.scale;
-			dynamics.thinness.value = params.thinness;
-			dynamics.mode.value = params.mode;
-			dynamics.colorA.value.set( params.colorA );
-			dynamics.colorB.value.set( params.colorB );
-			dynamics.colorC.value.set( params.colorC );
-			dynamics.background.value.set( params.background );
-		}
 
 	</script>
 </body>

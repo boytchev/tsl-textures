@@ -27,11 +27,11 @@
 	
 	<script type="module">
 
-		import { install, params, dynamics } from "./online.js";
+		import { install, params } from "./online.js";
 		import { planet } from "tsl-textures/planet.js";
 
 
-		var gui = install( planet, update );
+		var gui = install( planet );
 		
 		gui.add( params, 'scale' )
 			.name( 'Scale' ).min( 0 ).max( 4 );
@@ -95,27 +95,6 @@
 		// snow
 		guiM.addColor( params, 'colorSnow' )
 			.name( '<right>snow</right>' );
-
-
-		function update()
-		{
-			dynamics.scale.value = params.scale;
-			dynamics.iterations.value = params.iterations;
-
-			dynamics.levelSea.value = params.levelSea;
-			dynamics.levelMountain.value = params.levelMountain;
-			
-			dynamics.balanceWater.value = params.balanceWater;
-			dynamics.balanceSand.value = params.balanceSand;
-			dynamics.balanceSnow.value = params.balanceSnow;
-			
-			dynamics.colorDeep.value.set( params.colorDeep );
-			dynamics.colorShallow.value.set( params.colorShallow );
-			dynamics.colorBeach.value.set( params.colorBeach );
-			dynamics.colorGrass.value.set( params.colorGrass );
-			dynamics.colorForest.value.set( params.colorForest );
-			dynamics.colorSnow.value.set( params.colorSnow );			
-		}
 
 	</script>
 </body>

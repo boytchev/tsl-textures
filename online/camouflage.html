@@ -27,11 +27,11 @@
 
 	<script type="module">
 
-		import { install, params, dynamics } from "./online.js";
+		import { install, params } from "./online.js";
 		import { camouflage } from "tsl-textures/camouflage.js";
 
 
-		var gui = install( camouflage, update );
+		var gui = install( camouflage );
 		
 		gui.add( params, 'scale' )
 			.min( 0 ).max( 4 )
@@ -50,16 +50,6 @@
 		gui.addColor( params, 'colorD' )
 			.name( '<right>D</right>' )
 			.$text.classList.add( 'bottom' );
-		
-
-		function update()
-		{
-			dynamics.scale.value = params.scale;
-			dynamics.colorA.value.set( params.colorA );
-			dynamics.colorB.value.set( params.colorB );
-			dynamics.colorC.value.set( params.colorC );
-			dynamics.colorD.value.set( params.colorD );
-		}
 		
 	</script>
 </body>

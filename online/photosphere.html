@@ -27,10 +27,10 @@
 
 	<script type="module">
 
-		import { install, params, dynamics } from "./online.js";
+		import { install, params } from "./online.js";
 		import { photosphere } from "tsl-textures/photosphere.js";
 
-		var gui = install( photosphere, update );
+		var gui = install( photosphere );
 		
 		gui.add( params, 'scale' )
 			.min( 0 ).max( 4 )
@@ -44,14 +44,6 @@
 		gui.addColor( params, 'background' )
 			.name( '<right>background</right>' )
 			.$text.classList.add( 'bottom' );
-		
-		
-		function update()
-		{
-			dynamics.scale.value = params.scale;
-			dynamics.color.value.set( params.color );
-			dynamics.background.value.set( params.background );
-		}
 		
 	</script>
 </body>

@@ -27,10 +27,10 @@
 
 	<script type="module">
 
-		import { install, params, dynamics } from "./online.js";
+		import { install, params } from "./online.js";
 		import { entangled } from "tsl-textures/entangled.js";
 
-		var gui = install( entangled, update );
+		var gui = install( entangled );
 		
 		gui.add( params, 'scale' )
 			.min( 0 ).max( 4 )
@@ -49,15 +49,6 @@
 		gui.addColor( params, 'background' )
 			.name( '<right>background</right>' )
 			.$text.classList.add( 'bottom' );
-		
-		
-		function update()
-		{
-			dynamics.scale.value = params.scale;
-			dynamics.density.value = params.density;
-			dynamics.color.value.set( params.color );
-			dynamics.background.value.set( params.background );
-		}
 
 	</script>
 </body>
