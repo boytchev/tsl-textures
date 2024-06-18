@@ -183,16 +183,18 @@ function install( tslTexture ) {
 
 
 function processParameters( ) {
+
 	// copy all numeric parameters from params to dynamics
 	// cobvert all color parameters to THREE.Color
 	// ignore parameter called '$...' and 'seed'
 
 	for ( const [ key, value ] of Object.entries( dynamics ) )
-		if( key != 'seed' && key[0] != '$' )
-		if ( value instanceof THREE.Color )
-			dynamics[key].value.set( params[key] )
-		else
-			dynamics[key].value = params[key];
+		if ( key != 'seed' && key[ 0 ] != '$' )
+			if ( value instanceof THREE.Color )
+				dynamics[ key ].value.set( params[ key ]);
+			else
+				dynamics[ key ].value = params[ key ];
+
 }
 
 
