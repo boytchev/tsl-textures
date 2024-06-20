@@ -4,3 +4,5 @@ examples/videos
 misc/
 node_modules/
 test/
+src/temp.js
+online/temp.html

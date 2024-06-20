@@ -1,6 +1,9 @@
 # TSL Textures
 
 
+## 0.7.0
+* Added "Polka dots" in "polka-dots.js"
+
 ## 0.6.0
 * Added "Planet" in "planet.js"
 
