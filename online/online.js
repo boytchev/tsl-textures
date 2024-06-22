@@ -3,9 +3,10 @@ import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import * as lil from "three/addons/libs/lil-gui.module.min.js";
 import WebGPURenderer from 'three/addons/renderers/webgpu/WebGPURenderer.js';
-import { MeshPhysicalNodeMaterial } from 'three/nodes';
+import { MeshPhysicalNodeMaterial, modelNormalMatrix } from 'three/nodes';
+import { mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js';
 import { dynamic } from 'tsl-textures/tsl-utils.js';
-
+import { concrete } from "tsl-textures/concrete.js";
 
 
 const HOME_URL = '../';
@@ -35,13 +36,18 @@ var light = new THREE.DirectionalLight( 'white', 1.5 );
 light.decay = 0;
 scene.add( light );
 
-scene.add( new THREE.AmbientLight( 'white', 2 ) );
+var ambientLight = new THREE.AmbientLight( 'white', 2 );
+scene.add( ambientLight );
 
 var controls = new OrbitControls( camera, renderer.domElement );
 controls.enableDamping = true;
 
+var geometry = new THREE.IcosahedronGeometry( 1, 20 );
+geometry = mergeVertices( geometry );
+geometry.computeTangents();
+
 var model = new THREE.Mesh(
-	new THREE.IcosahedronGeometry( 1, 20 ),
+	geometry,
 	new MeshPhysicalNodeMaterial( )
 );
 scene.add( model );
@@ -163,14 +169,33 @@ function install( tslTexture ) {
 	onResize( );
 
 	dynamics = dynamic( params );
-	model.material.colorNode = tslTexture( dynamics );
 
-	if ( tslTexture.opacity ) {
+	switch ( tslTexture ) {
 
-		model.material.transparent = true;
-		model.material.opacity = 1;
-		model.material.side = THREE.DoubleSide;
-		model.material.opacityNode = tslTexture.opacity( dynamics );
+		case concrete:
+			ambientLight.intensity = 3;
+			light.intensity = 1;
+			model.material.roughness = 1;
+			model.material.metalness = 0.3;
+			break;
+
+	}
+
+	if ( tslTexture.defaults.$normalNode ) {
+
+		model.material.normalNode = modelNormalMatrix.mul( tslTexture( dynamics ) );
+
+	} else {
+
+		model.material.colorNode = tslTexture( dynamics );
+		if ( tslTexture.opacity ) {
+
+			model.material.transparent = true;
+			model.material.opacity = 1;
+			model.material.side = THREE.DoubleSide;
+			model.material.opacityNode = tslTexture.opacity( dynamics );
+
+		}
 
 	}
 
@@ -248,8 +273,16 @@ function getCode( event, name, filename, tslTexture ) {
 </script>
 
 import { ${name} } from "tsl-textures/${filename}.js";
+`;
+	if ( tslTexture.defaults.$normalNode )
+		js += `import { modelNormalMatrix } from "three/nodes";
 
-model.material.colorNode = ${name} ( {
+model.material.normalNode = modelNormalMatrix.mul( ${name} ( {
+	${paramsStr}
+} ) );
+`;
+	else
+		js += `model.material.colorNode = ${name} ( {
 	${paramsStr}
 } );
 `;

@@ -1,6 +1,10 @@
 # TSL Textures
 
 
+## 0.8.0
+* Added "Concrete" in "concrete.js"
+* Support for TSL normal maps
+
 ## 0.7.0
 * Added "Polka dots" in "polka-dots.js"
 
