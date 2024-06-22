@@ -6,5 +6,7 @@ call npx eslint src\*.js
 
 call npx eslint online\*.js
 
+call npx eslint examples\*.js
+
 pause
 exit

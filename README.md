@@ -12,3 +12,12 @@ for both the planet and its moon; and [stars.js](https://boytchev.github.io/tsl-
 for the stars. Click on the image for a live demo.
 
 [<img src="https://boytchev.github.io/tsl-textures/examples/example-planet.jpg">](https://boytchev.github.io/tsl-textures/examples/example-planet.html)
+
+
+#### Example "Normal map"
+
+Uses tsl-utils.js to generate two normal maps and the transition between them.
+The normal are created directly without using any of the TSL texture generators.
+Click on the image for a live demo.
+
+[<img src="https://boytchev.github.io/tsl-textures/examples/example-normal-map.jpg">](https://boytchev.github.io/tsl-textures/examples/example-normal-map.html)

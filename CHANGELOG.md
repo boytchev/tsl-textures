@@ -2,7 +2,7 @@
 
 
 ## 0.8.0
-* Added "Concrete" in "concrete.js"
+* Added "Concrete" in *concrete.js*
 * Support for TSL normal maps
 
 ## 0.7.0
