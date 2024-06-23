@@ -48,7 +48,7 @@ model.material.normalNode = waterDrops ( {
 * `scale` &ndash; level of details of the pattern, higher value generates smaller drops, [0, 4]
 * `density` &ndash; density of drops [0,1]
 * `bump` &ndash; bumpiness (height) of drops [0,1]
-
+* `seed` &ndash; number for the random generator, each value generates specific pattern
 
 ### Online generator
 

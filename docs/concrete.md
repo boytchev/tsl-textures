@@ -46,7 +46,7 @@ model.material.normalNode = concrete ( {
 * `scale` &ndash; level of details of the pattern, higher value generates finer details, [0, 4]
 * `density` &ndash; pattern density [0,1]
 * `bump` &ndash; bumpiness (height) of grains, negative bumps make dents [-2,2]
-
+* `seed` &ndash; number for the random generator, each value generates specific pattern
 
 ### Online generator
 

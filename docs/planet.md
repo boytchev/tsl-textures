@@ -59,6 +59,7 @@ model.material.colorNode = planet ( {
 * `iterations` &ndash; number of granulations of terrain, [0, 10]
 * `levelSea` &ndash; relative altitude for sea level, higer value generates more water [0, 1]
 * `levelMountain` &ndash; relative altitude for where a mountain starts, higer value generates less mountains [0, 1]
+* `seed` &ndash; number for the random generator, each value generates specific pattern
 
 Water parameters:
 
