@@ -14,15 +14,15 @@ snapshot to open it online.
 
 <p class="gallery">
 
-	<a class="style-block nocaption" href="../online/water-drops.html?">
+	<a class="style-block nocaption" href="../online/water-drops.html?scale=1&density=0.5&bump=0.6">
 		<img src="images/water-drops-1.png">
 	</a>
 
-	<a class="style-block nocaption" href="../online/water-drops.html?">
+	<a class="style-block nocaption" href="../online/water-drops.html?scale=0&density=0.82&bump=0.6&seed=4223">
 		<img src="images/water-drops-2.png">
 	</a>
 
-	<a class="style-block nocaption" href="../online/water-drops.html?">
+	<a class="style-block nocaption" href="../online/water-drops.html?scale=3.68&density=0.77&bump=0.29&seed=4223">
 		<img src="images/water-drops-3.png">
 	</a>
 
@@ -35,7 +35,7 @@ snapshot to open it online.
 import { waterDrops } from "tsl-textures/water-drops.js";
 
 model.material.normalNode = waterDrops ( {
-	scale: 1,
+	scale: 1.4,
 	density: 0.5,
 	bump: 0.6,
 	seed: 0

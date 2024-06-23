@@ -22,7 +22,7 @@ var waterDrops = tslFn( ( params ) => {
 
 	var eps = 0.001;
 
-	var position = positionLocal.mul( exp( params.scale.div( 2 ).add( 2 ) ) ).toVar( ),
+	var position = positionLocal.mul( exp( params.scale.div( 1 ).add( 1 ) ) ).toVar( ),
 		normal = normalLocal.normalize().toVar(),
 		tangent = tangentLocal.normalize().mul( eps ).toVar(),
 		bitangent = cross( normal, tangent ).normalize().mul( eps ).toVar();
@@ -48,7 +48,7 @@ waterDrops.defaults = {
 	$name: 'Water Drops',
 	$normalNode: true,
 
-	scale: 1,
+	scale: 1.4,
 	density: 0.5,
 	bump: 0.6,
 
