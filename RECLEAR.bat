@@ -1,3 +1,6 @@
 @ECHO OFF
 
 DEL /S *.bak
+DEL CHANGELOG.md.bak
+DEL README.md.bak
+DEL RECLEAR.bat.bak
