@@ -27,11 +27,16 @@
 	
 	<script type="module">
 
-		import { install, params } from "./online.js";
+		import { install, params, model, light, ambientLight } from "./online.js";
 		import { concrete } from "tsl-textures/concrete.js";
 
 		var gui = install( concrete );
-		
+
+		ambientLight.intensity = 3;
+		light.intensity = 1;
+		model.material.roughness = 1;
+		model.material.metalness = 0.3;
+			
 		gui.add( params, 'scale' )
 			.name( 'Bumps<right>scale</right>' ).min( 0 ).max( 4 )
 			.$input.classList.add( 'top' );

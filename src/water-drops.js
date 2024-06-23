@@ -1,25 +1,38 @@
 ﻿
-// TSL-Textures: Concrete
+// TSL-Textures: Water Drops
 
 
 
-import { abs, cos, cross, exp, normalLocal, positionLocal, pow, remap, sin, sub, tangentLocal, tslFn, vec3, modelNormalMatrix } from 'three/nodes';
+import { abs, cos, cond,cross, exp, min, If,max, normalLocal, positionLocal, pow, remap, sin, sub, tangentLocal, tslFn, vec3, modelNormalMatrix } from 'three/nodes';
 import { noise } from 'tsl-textures/tsl-utils.js';
+
+
+
+/*function pattern( x, y, z, color, options ) {
+
+	var k = noise( x, y, z, options.scale ) + options.density;
+	k = Math.min( 1, k );
+	k = Math.max( 0, k )**0.5;
+
+	k = -( Math.cos( Math.PI*k )-1 )/2;
+
+	color.lerpColors( options.background, options.color, k );
+
+}*/
 
 
 
 var surfacePos = tslFn( ([ pos, normal, bump, density, seed ]) => {
 
-	var k = noise( pos.add( seed ) ).mul( 0.5 ).add( 0.5 );
-	k = bump.mul( pow( abs( k ), density ) );
+	var k = noise( pos.add( seed ) ).add( density ).clamp(0,1);
+	k = cos(k.mul(Math.PI)).add(1).pow(0.5).toVar();
 
-	return pos.add( k.mul( normal ) );
+	return pos.add( k.mul( normal, bump ) );
 
 } );
 
 
-var concrete = tslFn( ( params ) => {
-
+var waterDrops = tslFn( ( params ) => {
 	var eps = 0.001;
 
 	var position = positionLocal.mul( exp( params.scale.div( 2 ).add( 2 ) ) ).toVar( ),
@@ -27,10 +40,11 @@ var concrete = tslFn( ( params ) => {
 		tangent = tangentLocal.normalize().mul( eps ).toVar(),
 		bitangent = cross( normal, tangent ).normalize().mul( eps ).toVar();
 
-	var density = remap( params.density, 0, 1, 10, 0.5 ).toVar();
+	var density = remap( params.density, 0, 1, 1.5, 0.7 ).toVar();
 	var seed = vec3( sin( params.seed ).mul( 100 ), cos( params.seed.div( 2 ) ).mul( 100 ), sin( params.seed.div( 3 ) ).mul( 100 ) ).toVar();
 
 	var pos = surfacePos( position, normal, params.bump, density, seed );
+
 	var posU = surfacePos( position.add( tangent ), normal, params.bump, density, seed );
 	var posV = surfacePos( position.add( bitangent ), normal, params.bump, density, seed );
 
@@ -43,17 +57,17 @@ var concrete = tslFn( ( params ) => {
 
 
 
-concrete.defaults = {
-	$name: 'Concrete',
+waterDrops.defaults = {
+	$name: 'Water Drops',
 	$normalNode: true,
 
-	scale: 2,
+	scale: 1,
 	density: 0.5,
-	bump: 0.5,
+	bump: 0.6,
 
 	seed: 0,
 };
 
 
 
-export { concrete };
+export { waterDrops };

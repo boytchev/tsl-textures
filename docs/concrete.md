@@ -31,14 +31,13 @@ open it online.
 ### Code example
 ```js
 import { concrete } from "tsl-textures/concrete.js";
-import { modelNormalMatrix } from "three/nodes";
 
-model.material.normalNode = modelNormalMatrix.mul( concrete ( {
+model.material.normalNode = concrete ( {
 	scale: 2,
 	density: 0.5,
 	bump: 0.5,
 	seed: 0
-} ) );
+} );
 ```
 
 

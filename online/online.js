@@ -3,10 +3,9 @@ import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import * as lil from "three/addons/libs/lil-gui.module.min.js";
 import WebGPURenderer from 'three/addons/renderers/webgpu/WebGPURenderer.js';
-import { MeshPhysicalNodeMaterial, modelNormalMatrix } from 'three/nodes';
+import { MeshPhysicalNodeMaterial } from 'three/nodes';
 import { mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js';
 import { dynamic } from 'tsl-textures/tsl-utils.js';
-import { concrete } from "tsl-textures/concrete.js";
 
 
 const HOME_URL = '../';
@@ -128,7 +127,7 @@ function install( tslTexture ) {
 
 	funcname = funcname.join( '' );
 
-	var title = `<big><em>${tslTexture.defaults.$name}</em> texture</big>
+	var title = `<big><em>${tslTexture.defaults.$name}</em> TSL texture</big>
 			<small class="fullline">
 				<span id="home" class="link">HOME</span> &middot; 
 				<span id="url" class="link">LINK</span> &middot; 
@@ -170,20 +169,10 @@ function install( tslTexture ) {
 
 	dynamics = dynamic( params );
 
-	switch ( tslTexture ) {
-
-		case concrete:
-			ambientLight.intensity = 3;
-			light.intensity = 1;
-			model.material.roughness = 1;
-			model.material.metalness = 0.3;
-			break;
-
-	}
 
 	if ( tslTexture.defaults.$normalNode ) {
 
-		model.material.normalNode = modelNormalMatrix.mul( tslTexture( dynamics ) );
+		model.material.normalNode = tslTexture( dynamics );
 
 	} else {
 
@@ -275,11 +264,10 @@ function getCode( event, name, filename, tslTexture ) {
 import { ${name} } from "tsl-textures/${filename}.js";
 `;
 	if ( tslTexture.defaults.$normalNode )
-		js += `import { modelNormalMatrix } from "three/nodes";
-
-model.material.normalNode = modelNormalMatrix.mul( ${name} ( {
+		js += `
+model.material.normalNode = ${name} ( {
 	${paramsStr}
-} ) );
+} );
 `;
 	else
 		js += `model.material.colorNode = ${name} ( {
@@ -338,4 +326,4 @@ function refreshSeed( event ) {
 
 
 
-export { model, install, params };
+export { scene, model, install, params, light, ambientLight };
