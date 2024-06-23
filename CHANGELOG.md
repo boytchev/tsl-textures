@@ -1,6 +1,9 @@
 # TSL Textures
 
 
+## 0.9.0
+* Added "Water drops" in *water-drops.js*
+
 ## 0.8.0
 * Added "Concrete" in *concrete.js*
 * Support for TSL normal maps

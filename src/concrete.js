@@ -3,7 +3,7 @@
 
 
 
-import { abs, cos, cross, exp, normalLocal, positionLocal, pow, remap, sin, sub, tangentLocal, tslFn, vec3, modelNormalMatrix } from 'three/nodes';
+import { abs, cos, cross, exp, modelNormalMatrix, normalLocal, positionLocal, pow, remap, sin, sub, tangentLocal, tslFn, vec3 } from 'three/nodes';
 import { noise } from 'tsl-textures/tsl-utils.js';
 
 
@@ -37,7 +37,7 @@ var concrete = tslFn( ( params ) => {
 	var dU = sub( posU, pos ),
 		dV = sub( posV, pos );
 
-	return modelNormalMatrix.mul(cross( dU, dV ).normalize());
+	return modelNormalMatrix.mul( cross( dU, dV ).normalize() );
 
 } );
 

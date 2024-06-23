@@ -3,29 +3,15 @@
 
 
 
-import { abs, cos, cond,cross, exp, min, If,max, normalLocal, positionLocal, pow, remap, sin, sub, tangentLocal, tslFn, vec3, modelNormalMatrix } from 'three/nodes';
+import { cos, cross, exp, modelNormalMatrix, normalLocal, positionLocal, remap, sin, sub, tangentLocal, tslFn, vec3 } from 'three/nodes';
 import { noise } from 'tsl-textures/tsl-utils.js';
-
-
-
-/*function pattern( x, y, z, color, options ) {
-
-	var k = noise( x, y, z, options.scale ) + options.density;
-	k = Math.min( 1, k );
-	k = Math.max( 0, k )**0.5;
-
-	k = -( Math.cos( Math.PI*k )-1 )/2;
-
-	color.lerpColors( options.background, options.color, k );
-
-}*/
 
 
 
 var surfacePos = tslFn( ([ pos, normal, bump, density, seed ]) => {
 
-	var k = noise( pos.add( seed ) ).add( density ).clamp(0,1);
-	k = cos(k.mul(Math.PI)).add(1).pow(0.5).toVar();
+	var k = noise( pos.add( seed ) ).add( density ).clamp( 0, 1 );
+	k = cos( k.mul( Math.PI ) ).add( 1 ).pow( 0.5 ).toVar();
 
 	return pos.add( k.mul( normal, bump ) );
 
@@ -33,6 +19,7 @@ var surfacePos = tslFn( ([ pos, normal, bump, density, seed ]) => {
 
 
 var waterDrops = tslFn( ( params ) => {
+
 	var eps = 0.001;
 
 	var position = positionLocal.mul( exp( params.scale.div( 2 ).add( 2 ) ) ).toVar( ),
@@ -51,7 +38,7 @@ var waterDrops = tslFn( ( params ) => {
 	var dU = sub( posU, pos ),
 		dV = sub( posV, pos );
 
-	return modelNormalMatrix.mul(cross( dU, dV ).normalize());
+	return modelNormalMatrix.mul( cross( dU, dV ).normalize() );
 
 } );
 
