@@ -1,9 +1,11 @@
 # TSL Textures
 
 
+## 0.10.0
+* Added "Circles" in *circles.js*
+
 ## 0.9.1
 * Removed the custom mod() from *tsl-utils.js* as there is mod() in TSL
-
 
 ## 0.9.0
 * Added "Water drops" in *water-drops.js*

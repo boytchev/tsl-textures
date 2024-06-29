@@ -57,10 +57,10 @@ model.material.opacityNode = clouds.opacity ( {
 ### Parameters
 
 * `scale` &ndash; level of details of the pattern, higher value generates finer details, [0, 4]
-* `density` &ndash; density of clouds, [0,1]
-* `opacity` &ndash; opacity of clouds, [0,1]
-* `color` &ndash; color of clouds
+* `variety` &ndash; hue variety of the color, [0,1]
+* `color` &ndash; color of circles
 * `subcolor` &ndash; secondary color for thin clouds
+* `seed` &ndash; number for the random generator, each value generates specific pattern
 
 
 ### Online generator

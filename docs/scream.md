@@ -43,12 +43,11 @@ model.material.colorNode = scream ( {
 
 ### Parameters
 
-The parameters of the texture generator are:
-
 * `scale` &ndash; level of details of the pattern, higher value generates finer details, [0, 4]
 * `variety` &ndash; hue variety of colors, [0, 1]
 * `color` &ndash; main color
 * `background` &ndash; secondary color
+* `seed` &ndash; number for the random generator, each value generates specific pattern
 
 
 ### Online generator
