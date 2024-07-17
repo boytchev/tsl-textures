@@ -1,6 +1,9 @@
 # TSL Textures
 
 
+## 0.11.0
+* Added "Wood" in *wood.js*
+
 ## 0.10.0
 * Added "Circles" in *circles.js*
 
