@@ -52,7 +52,6 @@ model.material.colorNode = wood ( {
 * `angle` &ndash; angle of the ring pattern, in degrees, [-90, 90]
 * `fibers` &ndash; visibility of fibers, [0, 1]
 * `fibersDensity` &ndash; density of fibers, [2, 15]
-
 * `color` &ndash; main color
 * `background` &ndash; secondary color
 * `seed` &ndash; number for the random generator, each value generates specific pattern
