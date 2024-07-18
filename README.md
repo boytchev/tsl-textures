@@ -29,6 +29,6 @@ Uses [wood.js](https://boytchev.github.io/tsl-textures/docs/wood.html) texture
 to convert flat-color 3D models (an ambulance, a race car and a luxury SUV from
 Car Kit (1.4) by Kenney [www.kenney.nl](https://www.kenney.nl/)) into wooden toys.
 All the wood textures are procedurally generated in real-time. Click on the image
-for a live demo.
+for a live demo. (Note: non-WebGPU browsers might need 30+ seconds to start up.)
 
 [<img src="https://boytchev.github.io/tsl-textures/examples/example-wooden-toys.jpg">](https://boytchev.github.io/tsl-textures/examples/example-wooden-toys.html)
