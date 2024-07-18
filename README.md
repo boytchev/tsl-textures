@@ -21,3 +21,13 @@ The normal are created directly without using any of the TSL texture generators.
 Click on the image for a live demo.
 
 [<img src="https://boytchev.github.io/tsl-textures/examples/example-normal-map.jpg">](https://boytchev.github.io/tsl-textures/examples/example-normal-map.html)
+
+
+#### Example "Wooden toys"
+
+Uses [wood.js](https://boytchev.github.io/tsl-textures/docs/wood.html) texture
+to convert flat-color 3D models (an ambulance,a race car and a luxury SUV) into
+wooden toys. All the wood textures are procedurally generated in real-time.
+Click on the image for a live demo.
+
+[<img src="https://boytchev.github.io/tsl-textures/examples/example-wooden-toys.jpg">](https://boytchev.github.io/tsl-textures/examples/example-wooden-toys.html)
