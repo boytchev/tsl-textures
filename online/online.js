@@ -9,7 +9,7 @@ import { dynamic } from 'tsl-textures/tsl-utils.js';
 
 
 const HOME_URL = '../';
-
+const USE_BALL = true;
 
 var params = {},
 	dynamics = {};
@@ -27,8 +27,8 @@ document.body.appendChild( renderer.domElement );
 var scene = new THREE.Scene();
 scene.background = new THREE.Color( 'white' );
 
-var camera = new THREE.PerspectiveCamera( 5, innerWidth/innerHeight );
-camera.position.set( 0, 0, 30 );
+var camera = new THREE.PerspectiveCamera( USE_BALL?5:60, innerWidth/innerHeight );
+camera.position.set( 0, 0, USE_BALL?30:4 );
 camera.lookAt( scene.position );
 
 var light = new THREE.DirectionalLight( 'white', 1.5 );
@@ -41,7 +41,11 @@ scene.add( ambientLight );
 var controls = new OrbitControls( camera, renderer.domElement );
 controls.enableDamping = true;
 
-var geometry = new THREE.IcosahedronGeometry( 1, 20 );
+if ( USE_BALL )
+	var geometry = new THREE.IcosahedronGeometry( 1, 20 );
+else
+	var geometry = new THREE.BoxGeometry( 2, 2, 2 );
+
 geometry = mergeVertices( geometry );
 geometry.computeTangents();
 

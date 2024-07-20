@@ -1,6 +1,9 @@
 # TSL Textures
 
 
+## 0.12.0
+* Added "Voronoi cells" in *voronoi-cells.js*
+
 ## 0.11.0
 * Added "Wood" in *wood.js*
 
