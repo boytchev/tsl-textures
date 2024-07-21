@@ -50,7 +50,6 @@ model.material.colorNode = cork ( {
 * `noise` &ndash; amound of additional small particles, [0, 1]
 * `color` &ndash; one of the colors of the cork
 * `background` &ndash; the other color of the cork
-* `balanceWater` &ndash; ratio between deep water and shallow water, [0,1]
 * `seed` &ndash; number for the random generator, each value generates specific pattern
 
 
