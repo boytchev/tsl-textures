@@ -16,7 +16,12 @@ export default [
 		
 		files: ["**/*.html", "**/*.js"],
 		plugins: {html},
-
+"settings": {
+        "html/indent": "0",   // code should start at the beginning of the line (no initial indentation).
+ //       "html/indent": "+2",  // indentation is the <script> indentation plus two spaces.
+ //       "html/indent": "tab", // indentation is one tab at the beginning of the line.
+    },
+	
 		"rules": {
 			"array-bracket-spacing": ["error", "always", { "singleValue": true, "arraysInArrays": false }],
 			"block-spacing": ["error", "always"],

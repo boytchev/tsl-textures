@@ -1,6 +1,9 @@
 # TSL Textures
 
 
+## 0.14.0
+* Added "Dyson sphere" in *dyson-sphere.js*
+
 ## 0.13.0
 * Added "Cork" in *cork.js*
 
