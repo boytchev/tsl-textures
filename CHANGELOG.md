@@ -1,6 +1,9 @@
 # TSL Textures
 
 
+## 0.15.0
+* Added "Tiger fur" in *tiger-fur.js*
+
 ## 0.14.0
 * Added "Dyson sphere" in *dyson-sphere.js*
 
