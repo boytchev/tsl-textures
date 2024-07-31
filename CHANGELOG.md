@@ -1,6 +1,9 @@
 # TSL Textures
 
 
+## 0.16.0
+* Added "Gas giant" in *gas-giant.js*
+
 ## 0.15.0
 * Added "Tiger fur" in *tiger-fur.js*
 
