@@ -4,7 +4,8 @@
 # TSL Textures
 
 
-## wood
+## Wood
+
 This texture attempts imitate the pattern of wood. Click on
 a snapshot to open it online.
 

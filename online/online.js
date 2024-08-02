@@ -147,7 +147,11 @@ function install( tslTexture ) {
 
 	title += `</small>`;
 
-	var gui = new lil.GUI( { title: title } );
+	var guiOptions = { title: title };
+	if ( tslTexture.defaults.$width )
+		guiOptions.width = tslTexture.defaults.$width;
+
+	var gui = new lil.GUI( guiOptions );
 	gui.$title.style.marginBottom = "2em";
 	gui.onChange( processParameters );
 
