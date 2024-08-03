@@ -1,8 +1,11 @@
 # TSL Textures
 
 
+## 0.18.0
+* Added "Rust" in *rust.js*
+
 ## 0.17.0
-* Added "Processed wood" in *processed wood.js*
+* Added "Processed wood" in *processed-wood.js*
 
 ## 0.16.0
 * Added "Gas giant" in *gas-giant.js*
