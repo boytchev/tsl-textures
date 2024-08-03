@@ -7,7 +7,7 @@
 ## Rust
 
 This texture generates a rust pattern. Depending on colors,
-it may also look like frost. The texturs has opacity layer.
+it may also look like frost. The texture has opacity layer.
 Click on a snapshot to open it online.
 
 <p class="gallery">
