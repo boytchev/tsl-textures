@@ -74,7 +74,8 @@
 
 		gui.add( params, 'noiseScale' )
 			.min( 0 ).max( 1 )
-			.name( '<right>scale</right>' );
+			.name( '<right>scale</right>' )
+			.$input.classList.add( 'bottom' );
 
 		gui.addColor( params, 'color' )
 			.name( 'Color <right>main</right>' )

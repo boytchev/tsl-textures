@@ -65,7 +65,7 @@ model.material.opacityNode = rust.opacity ( {
 
 * `scale` &ndash; level of details of the pattern, higher value generates finer details, [0, 14]
 * `iterations` &ndash; number of iteration of generation, higher value generates finer details, [4, 10]
-* `amount` &ndash; amount or rusty surface, [-1, 1]
+* `amount` &ndash; amount of rusty surface, [-1, 1]
 * `opacity` &ndash; opacity of periferal areas of rust, [0, 1]
 * `noise` &ndash; amount of noise on rusty surface, [0, 1]
 * `noiseScale` &ndash; density of noise, [0, 1]

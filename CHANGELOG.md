@@ -1,6 +1,9 @@
 # TSL Textures
 
 
+## 0.19.0
+* Added "Protozoa" in *protozoa.js*
+
 ## 0.18.0
 * Added "Rust" in *rust.js*
 
