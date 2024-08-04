@@ -7,8 +7,8 @@
 ## Protozoa
 
 This texture generates a pool full of [protozoa organisms](https://en.wikipedia.org/wiki/Protozoa).
-The position and shape of protozoa depends on the viewing position. Thus mere
-rotation of the pool (or the camera) induces motion of the protozoa. Click on
+The position and shape of protozoa depend on the viewing position. Thus a mere
+rotation of the scene or the camera induces motion of the protozoa. Click on
 a snapshot to open it online.
 
 <p class="gallery">
