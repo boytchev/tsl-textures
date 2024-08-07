@@ -32,3 +32,13 @@ All the wood textures are procedurally generated in real-time. Click on the imag
 for a live demo. (Note: non-WebGPU browsers might need 30+ seconds to start up.)
 
 [<img src="https://boytchev.github.io/tsl-textures/examples/example-wooden-toys.jpg">](https://boytchev.github.io/tsl-textures/examples/example-wooden-toys.html)
+
+
+#### Example "Protozoa"
+
+Uses [protozoa.js](https://boytchev.github.io/tsl-textures/docs/protozoa.html)
+texture to create a dynamic blob with microorganisms floating innside. A space
+station is constructed arounnd the blob. The surface of the station is made of
+a Dyson sphere texture from [dysonn-texture.js](https://boytchev.github.io/tsl-textures/docs/dyson-sphere.html).
+
+[<img src="https://boytchev.github.io/tsl-textures/examples/example-protozoa.jpg">](https://boytchev.github.io/tsl-textures/examples/example-protozoa.html)

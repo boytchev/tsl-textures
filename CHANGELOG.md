@@ -1,6 +1,9 @@
 # TSL Textures
 
 
+## 0.19.1
+* Added "Example Protozoa" in *example-protozoa.js*
+
 ## 0.19.0
 * Added "Protozoa" in *protozoa.js*
 
