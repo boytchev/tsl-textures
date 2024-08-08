@@ -8,5 +8,7 @@ call npx eslint online\*.js
 
 call npx eslint examples\*.js
 
+call npx eslint examples\movies\protozoa\*.js
+
 pause
 exit

@@ -6,3 +6,6 @@ node_modules/
 test/
 src/temp.js
 online/temp.html
+examples/movies/protozoa/protozoa.mp4
+/examples/movies/protozoa/sounds
+examples/movies/protozoa/textures/window-frame.pptx
