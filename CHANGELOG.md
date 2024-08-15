@@ -1,6 +1,9 @@
 # TSL Textures
 
 
+## 0.21.0
+* Added "Dalmatian spots" in *dalmatian-spots.js*
+
 ## 0.20.0
 * Added "Karst rock" in *karst-rock.js*
 

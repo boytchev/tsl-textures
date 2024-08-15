@@ -1,0 +1,55 @@
+﻿<!DOCTYPE html>
+
+
+<html>
+
+
+<head>
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+	<link rel="shortcut icon" type="image/png" href="../assets/logo/logo.png"/>
+	<link rel="stylesheet" href="styles.css">
+
+	<script type="importmap">
+	  {
+		"imports": {
+			"three": "https://cdn.jsdelivr.net/npm/three@0.164.0/build/three.module.js",
+			"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.164.0/examples/jsm/",
+			"three/nodes": "https://cdn.jsdelivr.net/npm/three@0.164.0/examples/jsm/nodes/Nodes.js",
+			"tsl-textures/": "../src/"
+		}
+	  }
+	</script>
+</head>
+
+
+<body>
+
+	<script type="module">
+
+		import { install, params } from "../online/online.js";
+		import { dalmatianSpots } from "tsl-textures/dalmatian-spots.js";
+
+		var gui = install( dalmatianSpots );
+		
+		gui.add( params, 'scale' )
+			.min( 0 ).max( 4 )
+			.name( 'Spots <right>scale</right>' )
+			.$input.classList.add( 'top' );
+		
+		gui.add( params, 'density' )
+			.min( 0 ).max( 1 )
+			.name( '<right>density</right>' )
+			.$input.classList.add( 'bottom' );
+			
+		gui.addColor( params, 'color' )
+			.name( 'Color <right>main</right>' )
+			.$text.classList.add( 'top' );
+		
+		gui.addColor( params, 'background' )
+			.name( '<right>background</right>' )
+			.$text.classList.add( 'bottom' );
+			
+	</script>
+</body>
+</html>
