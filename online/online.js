@@ -1,6 +1,7 @@
 ﻿
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import * as lil from "three/addons/libs/lil-gui.module.min.js";
 import WebGPURenderer from 'three/addons/renderers/webgpu/WebGPURenderer.js';
 import { MeshPhysicalNodeMaterial } from 'three/nodes';
@@ -9,7 +10,10 @@ import { dynamic } from 'tsl-textures/tsl-utils.js';
 
 
 const HOME_URL = '../';
-const USE_BALL = true;
+const USE_BALL = 0;
+const USE_CUBE = 1;
+const USE_HEAD = 2;
+const USE_GEOMETRY = USE_BALL;
 
 var params = {},
 	dynamics = {};
@@ -27,8 +31,8 @@ document.body.appendChild( renderer.domElement );
 var scene = new THREE.Scene();
 scene.background = new THREE.Color( 'white' );
 
-var camera = new THREE.PerspectiveCamera( USE_BALL?5:60, innerWidth/innerHeight );
-camera.position.set( 0, 0, USE_BALL?30:4 );
+var camera = new THREE.PerspectiveCamera( USE_GEOMETRY == USE_BALL?5:60, innerWidth/innerHeight );
+camera.position.set( 0, 0, USE_GEOMETRY == USE_BALL?30:4 );
 camera.lookAt( scene.position );
 
 var light = new THREE.DirectionalLight( 'white', 1.5 );
@@ -41,10 +45,23 @@ scene.add( ambientLight );
 var controls = new OrbitControls( camera, renderer.domElement );
 controls.enableDamping = true;
 
-if ( USE_BALL )
-	var geometry = new THREE.IcosahedronGeometry( 1, 20 );
-else
-	var geometry = new THREE.BoxGeometry( 2, 2, 2 );
+var geometry;
+
+switch ( USE_GEOMETRY ) {
+
+	case USE_BALL:
+		geometry = new THREE.IcosahedronGeometry( 1, 20 );
+		break;
+	case USE_CUBE:
+		geometry = new THREE.BoxGeometry( 2, 2, 2 );
+		break;
+	case USE_HEAD:
+		var result = await new GLTFLoader().loadAsync(
+			'../assets/models/LeePerrySmith/LeePerrySmith.glb' );
+		geometry = result.scene.children[ 0 ].geometry;
+		break;
+
+}
 
 geometry = mergeVertices( geometry );
 geometry.computeTangents();
@@ -54,6 +71,15 @@ var model = new THREE.Mesh(
 	new MeshPhysicalNodeMaterial( )
 );
 scene.add( model );
+
+if ( USE_GEOMETRY == USE_HEAD ) {
+
+	model.scale.setScalar( 0.45 );
+	model.rotation.set( 0.2, -0.4, 0 );
+
+}
+
+
 
 
 // manage window resizes
@@ -331,7 +357,6 @@ function refreshSeed( event ) {
 	}
 
 }
-
 
 
 export { scene, model, install, params, light, ambientLight };
