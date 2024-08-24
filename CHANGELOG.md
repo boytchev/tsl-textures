@@ -1,6 +1,9 @@
 # TSL Textures
 
 
+## 1.0.0
+* Converted to r167 and *three.webgpu.js*
+
 ## 0.21.0
 * Added "Dalmatian spots" in *dalmatian-spots.js*
 

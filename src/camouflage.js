@@ -4,7 +4,7 @@
 
 
 import { Color } from 'three';
-import { exp, If, positionLocal, round, tslFn, vec3 } from 'three/nodes';
+import { exp, If, positionLocal, round, tslFn, vec3 } from 'three';
 import { noise } from 'tsl-textures/tsl-utils.js';
 
 

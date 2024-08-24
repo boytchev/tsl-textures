@@ -1,6 +1,4 @@
 ﻿import * as THREE from "three";
-import WebGPURenderer from "three/addons/renderers/webgpu/WebGPURenderer.js";
-import * as NODES from "three/nodes";
 
 import { planet } from "tsl-textures/planet.js";
 import { stars } from "tsl-textures/stars.js";
@@ -15,7 +13,7 @@ scene.background = new THREE.Color( "black" );
 var camera = new THREE.PerspectiveCamera( 30, innerWidth / innerHeight );
 camera.position.set( 0, 0, 6 );
 
-var renderer = new WebGPURenderer( { antialias: true } );
+var renderer = new THREE.WebGPURenderer( { antialias: true } );
 renderer.setSize( innerWidth, innerHeight );
 document.body.appendChild( renderer.domElement );
 
@@ -46,7 +44,7 @@ var skyParams = {
 
 var sky = new THREE.Mesh(
 	new THREE.SphereGeometry( 10, 60, 30 ),
-	new NODES.MeshBasicNodeMaterial( {
+	new THREE.MeshBasicNodeMaterial( {
 		side: THREE.BackSide,
 		colorNode: stars( skyParams )
 	} )
@@ -57,12 +55,12 @@ var earthParams = {
 	...planet.defaults,
 	iterations: 3,
 	scale: 1,
-	seed: NODES.uniform( 0 )
+	seed: THREE.uniform( 0 )
 };
 
 var earth = new THREE.Mesh(
 	new THREE.SphereGeometry( 1, 60, 30 ),
-	new NODES.MeshPhysicalNodeMaterial( {
+	new THREE.MeshPhysicalNodeMaterial( {
 		colorNode: planet( earthParams )
 	} )
 );
@@ -82,12 +80,12 @@ var moonParams = {
 	colorGrass: new THREE.Color( 10427420 ),
 	colorForest: new THREE.Color( 16621056 ),
 	colorSnow: new THREE.Color( 16770304 ),
-	seed: NODES.uniform( 0 )
+	seed: THREE.uniform( 0 )
 };
 
 var moon = new THREE.Mesh(
 	new THREE.SphereGeometry( 0.3, 30, 15 ),
-	new NODES.MeshBasicNodeMaterial( {
+	new THREE.MeshBasicNodeMaterial( {
 		colorNode: planet( moonParams )
 	} )
 );

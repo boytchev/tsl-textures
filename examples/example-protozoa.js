@@ -1,6 +1,4 @@
 ﻿import * as THREE from "three";
-import * as NODES from "three/nodes";
-import WebGPURenderer from "three/addons/renderers/webgpu/WebGPURenderer.js";
 import { mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js';
 import { SimplexNoise } from "three/addons/math/SimplexNoise.js";
 
@@ -19,7 +17,7 @@ scene.background = new THREE.Color( "black" );
 var camera = new THREE.PerspectiveCamera( 30, innerWidth / innerHeight, 0.01 );
 camera.position.set( 0, 0, 10 );
 
-var renderer = new WebGPURenderer( { antialias: true } );
+var renderer = new THREE.WebGPURenderer( { antialias: true } );
 renderer.setSize( innerWidth, innerHeight );
 document.body.appendChild( renderer.domElement );
 
@@ -58,7 +56,7 @@ var stationParams = {
 
 var station = new THREE.Mesh(
 	new THREE.TorusGeometry( 2, 0.2, 20, 100 ).scale( 1, 1, 1.5 ),
-	new NODES.MeshPhysicalNodeMaterial( {
+	new THREE.MeshPhysicalNodeMaterial( {
 		colorNode: dysonSphere( stationParams ),
 	} )
 );
@@ -82,12 +80,12 @@ var blobParams = {
 	fat: 0.3,
 	amount: 0.5,
 	background: new THREE.Color( 'azure' ),
-	seed: NODES.uniform( 0 )
+	seed: THREE.uniform( 0 )
 };
 
 var blob = new THREE.Mesh(
 	new THREE.IcosahedronGeometry( 1, 20 ),
-	new NODES.MeshPhysicalNodeMaterial( {
+	new THREE.MeshPhysicalNodeMaterial( {
 		colorNode: protozoa( blobParams ).mul( 2 ),
 
 		roughness: 0.6,

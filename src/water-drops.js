@@ -3,7 +3,7 @@
 
 
 
-import { cos, cross, exp, modelNormalMatrix, normalLocal, positionLocal, remap, sin, sub, tangentLocal, tslFn, vec3 } from 'three/nodes';
+import { cos, cross, exp, modelNormalMatrix, normalLocal, positionLocal, remap, sin, sub, tangentLocal, tslFn, vec3 } from 'three';
 import { noise } from 'tsl-textures/tsl-utils.js';
 
 

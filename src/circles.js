@@ -4,7 +4,7 @@
 
 
 import { Color } from "three";
-import { acos, clamp, cond, exp, float, positionLocal, sin, tslFn } from 'three/nodes';
+import { acos, clamp, cond, exp, float, positionLocal, sin, tslFn } from 'three';
 import { hsl, toHsl } from 'tsl-textures/tsl-utils.js';
 
 
@@ -20,8 +20,12 @@ var circles = tslFn( ( params ) => {
 	var x = angle.div( 3000 ).mul( scale );
 
 	var k = float( params.seed.sin().mul( 100 ) ).toVar();
-	for ( var n=0; n<=10; n++ )
+
+	for ( var n=0; n<=10; n++ ) {
+
 		k.addAssign( sin( x.mul( 2**n ).sub( Math.PI*n/2 ) ).mul( -n*( n+1 )/2 ) );
+
+	}
 
 	k.assign( k.div( 200 ).clamp( -2, 2 ) );
 

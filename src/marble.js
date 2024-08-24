@@ -4,7 +4,7 @@
 
 
 import { Color } from "three";
-import { add, div, exp, If, mix, mul, oneMinus, positionLocal, pow, tslFn } from 'three/nodes';
+import { add, div, exp, If, mix, mul, oneMinus, positionLocal, pow, tslFn } from 'three';
 import { noise } from 'tsl-textures/tsl-utils.js';
 
 
@@ -19,7 +19,7 @@ var marble = tslFn( ( params ) => {
 		noise( pos.mul( 6 ) ).mul( 0.1 )
 	);
 
-	var k = oneMinus( k.abs().pow( 2.5 ) );
+	var k = oneMinus( k.abs().pow( 2.5 ) ).toVar();
 
 	var	maxSmooth = oneMinus( pow( 0.5, params.thinness.add( 7 ) ) ).toVar(),
 		minSmooth = oneMinus( pow( 0.5, params.thinness.add( 7 ).mul( 0.5 ) ) ).toVar();

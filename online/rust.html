@@ -13,9 +13,8 @@
 	<script type="importmap">
 	  {
 		"imports": {
-			"three": "https://cdn.jsdelivr.net/npm/three@0.164.0/build/three.module.js",
-			"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.164.0/examples/jsm/",
-			"three/nodes": "https://cdn.jsdelivr.net/npm/three@0.164.0/examples/jsm/nodes/Nodes.js",
+			"three": "https://cdn.jsdelivr.net/npm/three@0.167.0/build/three.webgpu.js",
+			"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.167.0/examples/jsm/",
 			"tsl-textures/": "../src/"
 		}
 	  }
@@ -28,7 +27,6 @@
 	<script type="module">
 
 		import * as THREE from "three";
-		import { MeshPhysicalNodeMaterial } from 'three/nodes';
 		import { install, model, params } from "./online.js";
 		import { rust } from "tsl-textures/rust.js";
 		import { concrete } from "tsl-textures/concrete.js";
@@ -37,7 +35,7 @@
 		
 		var core = new THREE.Mesh(
 			model.geometry,
-			new MeshPhysicalNodeMaterial( {
+			new THREE.MeshPhysicalMaterial( {
 				color: new THREE.Color(1.2,1.2,1.2),
 				normalNode: concrete( {...concrete.defaults,scale:6} ),
 				roughness: 0.3,

@@ -4,7 +4,7 @@
 
 
 import { Color } from 'three';
-import { exp, float, loop, mix, positionLocal, tslFn, vec3 } from 'three/nodes';
+import { exp, float, loop, mix, positionLocal, tslFn, vec3 } from 'three';
 
 
 

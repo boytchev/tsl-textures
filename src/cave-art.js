@@ -4,7 +4,7 @@
 
 
 import { Color } from "three";
-import { abs, add, exp, float, If, mix, or, positionLocal, pow2, sub, tslFn } from 'three/nodes';
+import { abs, add, exp, float, If, mix, or, positionLocal, pow2, sub, tslFn } from 'three';
 import { noise } from 'tsl-textures/tsl-utils.js';
 
 
@@ -12,8 +12,8 @@ var caveArt = tslFn( ( params ) => {
 
 	var pos = positionLocal.mul( exp( params.scale ) ).add( params.seed ).toVar( );
 
-	var k1 = noise( pos ).mul( 4 ).sin().toVar();
-	var k2 = noise( pos.mul( 1.5 ) ).mul( 4 ).cos().toVar();
+	var k1 = noise( pos, 4 ).sin().toVar();
+	var k2 = noise( pos.mul( 1.5 ), 4 ).cos().toVar();
 
 	var thinness = exp( sub( float( 3 ), params.thinness ) );
 	var k = sub( thinness, pow2( abs( add( k1, k2 ) ) ).mul( 20 ) ).toVar();

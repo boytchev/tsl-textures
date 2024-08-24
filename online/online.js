@@ -3,8 +3,6 @@ import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import * as lil from "three/addons/libs/lil-gui.module.min.js";
-import WebGPURenderer from 'three/addons/renderers/webgpu/WebGPURenderer.js';
-import { MeshPhysicalNodeMaterial } from 'three/nodes';
 import { mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js';
 import { dynamic } from 'tsl-textures/tsl-utils.js';
 
@@ -22,7 +20,7 @@ var params = {},
 
 // setting up the scene
 
-var renderer = new WebGPURenderer( { antialias: true } );
+var renderer = new THREE.WebGPURenderer( { antialias: true } );
 renderer.setSize( innerWidth, innerHeight );
 renderer.setAnimationLoop( animationLoop );
 renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
@@ -32,14 +30,20 @@ var scene = new THREE.Scene();
 scene.background = new THREE.Color( 'white' );
 
 var camera = new THREE.PerspectiveCamera( USE_GEOMETRY == USE_BALL?5:60, innerWidth/innerHeight );
-camera.position.set( 0, 0, USE_GEOMETRY == USE_BALL?30:4 );
+if ( USE_GEOMETRY == USE_BALL )
+	camera.position.set( 0, 0, 30 );
+else if ( USE_GEOMETRY == USE_HEAD )
+	camera.position.set( 0, 0, 10 );
+else
+	camera.position.set( 0, 0, 4 );
+
 camera.lookAt( scene.position );
 
-var light = new THREE.DirectionalLight( 'white', 1.5 );
+var light = new THREE.DirectionalLight( 'white', USE_GEOMETRY == USE_HEAD?3.5:1.5 );
 light.decay = 0;
 scene.add( light );
 
-var ambientLight = new THREE.AmbientLight( 'white', 2 );
+var ambientLight = new THREE.AmbientLight( 'white', USE_GEOMETRY == USE_HEAD?0.5:2 );
 scene.add( ambientLight );
 
 var controls = new OrbitControls( camera, renderer.domElement );
@@ -53,7 +57,7 @@ switch ( USE_GEOMETRY ) {
 		geometry = new THREE.IcosahedronGeometry( 1, 20 );
 		break;
 	case USE_CUBE:
-		geometry = new THREE.BoxGeometry( 2, 2, 2 );
+		geometry = new THREE.BoxGeometry( 2, 2, 2, 100, 100, 100 );
 		break;
 	case USE_HEAD:
 		var result = await new GLTFLoader().loadAsync(
@@ -68,14 +72,19 @@ geometry.computeTangents();
 
 var model = new THREE.Mesh(
 	geometry,
-	new MeshPhysicalNodeMaterial( )
+	new THREE.MeshPhysicalMaterial( {} )
 );
 scene.add( model );
 
 if ( USE_GEOMETRY == USE_HEAD ) {
 
-	model.scale.setScalar( 0.45 );
-	model.rotation.set( 0.2, -0.4, 0 );
+	var wireframe = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial( {
+		color: 'gray',
+		wireframe: true,
+	} ) );
+	scene.add( wireframe );
+	//	model.scale.setScalar( 3 );
+	//	model.rotation.set( 0.2, -0.4, 0 );
 
 }
 
@@ -203,24 +212,35 @@ function install( tslTexture ) {
 
 	dynamics = dynamic( params );
 
-
 	if ( tslTexture.defaults.$normalNode ) {
 
 		model.material.normalNode = tslTexture( dynamics );
 
-	} else {
+	} else
 
-		model.material.colorNode = tslTexture( dynamics );
-		if ( tslTexture.opacity ) {
+		if ( tslTexture.defaults.$positionNode ) {
 
-			model.material.transparent = true;
-			model.material.opacity = 1;
-			model.material.side = THREE.DoubleSide;
-			model.material.opacityNode = tslTexture.opacity( dynamics );
+			model.material.positionNode = tslTexture( dynamics );
+			wireframe.material.positionNode = tslTexture( dynamics );
+			if ( tslTexture.normal ) {
+
+				model.material.normalNode = tslTexture.normal( dynamics );
+
+			}
+
+		} else {
+
+			model.material.colorNode = tslTexture( dynamics );
+			if ( tslTexture.opacity ) {
+
+				model.material.transparent = true;
+				model.material.opacity = 1;
+				model.material.side = THREE.DoubleSide;
+				model.material.opacityNode = tslTexture.opacity( dynamics );
+
+			}
 
 		}
-
-	}
 
 	processParameters( ); // causes recalculation of dynamics
 

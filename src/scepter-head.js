@@ -4,7 +4,7 @@
 
 
 import { Color } from "three";
-import { abs, add, cos, floor, max, mix, mod, mul, positionLocal, remapClamp, sign, tan, tslFn, vec3 } from 'three/nodes';
+import { abs, add, cos, floor, max, mix, mod, mul, positionLocal, remapClamp, sign, tan, tslFn, vec3 } from 'three';
 import { hsl, noise, remapExp, toHsl } from 'tsl-textures/tsl-utils.js';
 
 

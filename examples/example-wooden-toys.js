@@ -1,6 +1,4 @@
 ﻿import * as THREE from "three";
-import WebGPURenderer from "three/addons/renderers/webgpu/WebGPURenderer.js";
-import * as NODES from "three/nodes";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { MeshEdgesGeometry } from "https://cdn.jsdelivr.net/npm/meshedgesgeometry@latest/src/MeshEdgesGeometry.js";
@@ -39,7 +37,7 @@ if ( !NODECO ) {
 var camera = new THREE.PerspectiveCamera( 30, innerWidth / innerHeight );
 camera.position.set( 6, 2, -12 );
 
-var renderer = new WebGPURenderer( { antialias: true } );
+var renderer = new THREE.WebGPURenderer( { antialias: true } );
 renderer.setSize( innerWidth, innerHeight );
 if ( NODECO ) renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
 document.body.appendChild( renderer.domElement );
@@ -68,7 +66,7 @@ scene.add( light );
 
 // define 4 wood materials
 
-var materialNormal = new NODES.MeshPhysicalNodeMaterial( {
+var materialNormal = new THREE.MeshPhysicalNodeMaterial( {
 	colorNode: wood( { ...wood.defaults,
 		color: new THREE.Color( 0 ), //0xffaa55 ),
 		background: new THREE.Color( 0x89593f ),
@@ -83,7 +81,7 @@ var materialNormal = new NODES.MeshPhysicalNodeMaterial( {
 	roughness: 0.5,
 } );
 
-var materialLight = new NODES.MeshPhysicalNodeMaterial( {
+var materialLight = new THREE.MeshPhysicalNodeMaterial( {
 	colorNode: wood( { ...wood.defaults,
 		color: new THREE.Color( 0xffdab5 ),
 		background: new THREE.Color( 0xa38363 ),
@@ -94,7 +92,7 @@ var materialLight = new NODES.MeshPhysicalNodeMaterial( {
 	roughness: 0.5,
 } );
 
-var materialGray = new NODES.MeshPhysicalNodeMaterial( {
+var materialGray = new THREE.MeshPhysicalNodeMaterial( {
 	colorNode: wood( { ...wood.defaults,
 		color: new THREE.Color( 'sienna' ),
 		background: new THREE.Color( 'peru' ),
@@ -105,7 +103,7 @@ var materialGray = new NODES.MeshPhysicalNodeMaterial( {
 	roughness: 0.5,
 } );
 
-var materialGround = new NODES.MeshPhysicalNodeMaterial( {
+var materialGround = new THREE.MeshPhysicalNodeMaterial( {
 	colorNode: wood( { ...wood.defaults,
 		color: new THREE.Color( 'black' ),
 		background: new THREE.Color( 'SaddleBrown' ),

@@ -13,9 +13,8 @@
 	<script type="importmap">
 	  {
 		"imports": {
-			"three": "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js",
-			"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/",
-			"three/nodes": "https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/nodes/Nodes.js",
+			"three": "https://cdn.jsdelivr.net/npm/three@0.167.0/build/three.webgpu.js",
+			"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.167.0/examples/jsm/",
 			"tsl-textures/": "../src/"
 		}
 	  }
@@ -30,7 +29,6 @@
 		import * as THREE from "three";
 		import { install, scene, model, params, light, ambientLight } from "./online.js";
 		import { waterDrops } from "tsl-textures/water-drops.js";
-		import { MeshPhysicalNodeMaterial } from 'three/nodes';
 
 
 		light.intensity = 10;
@@ -49,7 +47,7 @@
 
 		var core = new THREE.Mesh(
 			new THREE.SphereGeometry( 0.95 ),
-			new MeshPhysicalNodeMaterial( {color:'midnightblue'} )
+			new THREE.MeshPhysicalMaterial( {color:'midnightblue'} )
 		);
 		scene.add( core );
 		
@@ -66,55 +64,7 @@
 		gui.add( params, 'bump' )
 			.name( '<right>bumpiness</right>' ).min( 0 ).max( 1 )
 			.$input.classList.add( 'bottom' );
-/*
-		noiseSeed( seed );
-		var map = PET.texture(
-			PET.pattern,
-			canvas,
-			true,
-			params
-		);
 
-		noiseSeed( seed );
-		var rcanvas = document.createElement( 'canvas' );
-
-		model.material = ( new THREE.MeshPhysicalMaterial( {
-			color: 'white',
-			metalness: 0.1,
-			transmission: 1,
-			ior: 1.5,
-			thickness: 1,
-
-			roughness: 1,
-
-			//roughnessMap: // created later
-
-			bumpMap: map,
-			bumpScale: 11,
-		} ) );
-
-		function auxOnChange( ) {
-
-			noiseSeed( seed );
-			model.material.bumpScale = params.scale/10;
-
-			model.material.roughnessMap = PET.texture(
-				PET.pattern,
-				rcanvas,
-				true,
-				{ scale: params.scale,
-					density: params.density,
-					//color: 0x808080,
-					color: 0x909090,
-					background: 0xe0e0e0,
-				}
-			);
-			model.material.specularIntensityMap = model.material.roughnessMap;
-
-		}
-
-		auxOnChange( );
-*/		
 	</script>
 </body>
 </html>

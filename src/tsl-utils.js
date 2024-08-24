@@ -8,8 +8,8 @@
 
 
 
-import { add, cond, cos, cross, float, If, log2, max, min, mul, pow, remap, sin, sub, tslFn, uniform, vec3, vec4 } from 'three/nodes';
-import { mx_perlin_noise_float as noise } from 'three/addons/nodes/materialx/lib/mx_noise.js';
+import { add, cond, cos, cross, float, If, log2, max, min, mul, pow, remap, sin, sub, tslFn, uniform, vec3, vec4 } from 'three';
+//import { mx_perlin_noise_float as noise } from 'https://cdn.jsdelivr.net/npm/three@0.167.0/src/nodes/materialx/lib/mx_noise.js';
 
 
 // helper function - convert hsl to rgb, ported to TSL from:
@@ -220,7 +220,11 @@ const vnoise = tslFn( ([ v ])=>{
 
 export
 {
-	noise,
+	mx_noise_float as noise
+} from 'three';
+
+export
+{
 	vnoise,
 	hsl,
 	toHsl,
