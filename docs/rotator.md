@@ -63,7 +63,7 @@ model.material.normalNode = rotator.normal ( {
 
 * `angles(x,y,z)` &ndash; Euler angles for rotation of vertices (in radians)
 * `center(x,y,z)` &ndash; 3D pivot point used for rotation
-* `selectorAngles(φ,θ)` &ndash; spherical coordinates angles for rotation of the selection layer, φ&in;[0, &pi;], θ&in;[-2&pi;, 2&pi;]
+* `selectorAngles(φ,θ)` &ndash; spherical coordinates angles for rotation of the selection layer, φ=[0, &pi;], θ=[-2&pi;, 2&pi;]
 * `selectorCenter(x,y,z)` &ndash; 3D pivot point for the selection layer
 * `selectorWidth` &ndash; number for the selection layer width, [0.1, 4]
 

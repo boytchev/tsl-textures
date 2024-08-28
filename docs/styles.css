@@ -83,7 +83,7 @@ li a {
 .style-block:hover img {
 	width: 8em;
 	/*border-radius: 10em;*/
-	filter: drop-shadow(white 0.5em 0 0.2em);
+	/*filter: drop-shadow(white 0.5em 0 0.2em);*/
 }
 
 .style-block:hover {
