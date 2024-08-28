@@ -1,7 +1,7 @@
 ﻿import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-import {SimplexNoise} from "three/addons/math/SimplexNoise.js";
+import { SimplexNoise } from "three/addons/math/SimplexNoise.js";
 
 import { rotator } from "tsl-textures/rotator.js";
 
@@ -50,42 +50,42 @@ var model;
 // next comment
 
 var neck = {
-	angles: THREE.uniform( new THREE.Vector3(0,1,0) ),
-	center: new THREE.Vector3(0,0,0),
-	selectorCenter: new THREE.Vector3(0,-1.2,0),
-	selectorAngles: new THREE.Vector2(0.63,0),
+	angles: THREE.uniform( new THREE.Vector3( 0, 1, 0 ) ),
+	center: new THREE.Vector3( 0, 0, 0 ),
+	selectorCenter: new THREE.Vector3( 0, -1.2, 0 ),
+	selectorAngles: new THREE.Vector2( 0.63, 0 ),
 	selectorWidth: 2.5
 };
 
 
 new GLTFLoader().load( `../assets/models/LeePerrySmith/LeePerrySmith.glb`, gltf => {
 
-	model = gltf.scene.children[0];
+	model = gltf.scene.children[ 0 ];
 
-	model.material = new THREE.MeshPhysicalNodeMaterial({
+	model.material = new THREE.MeshPhysicalNodeMaterial( {
 		map: new THREE.TextureLoader().load( "../assets/models/LeePerrySmith/Map-COL.jpg" ),
-		positionNode: rotator ( neck ),
-		normalNode: rotator.normal ( neck ),
-	});
-	
+		positionNode: rotator( neck ),
+		normalNode: rotator.normal( neck ),
+	} );
+
 	scene.add( model );
-	
+
 	renderer.setAnimationLoop( animationLoop );
 
 } );
 
 
 function animationLoop( t ) {
-	
+
 	t /= 2000;
-	
+
 	neck.angles.value.set(
-		0.5*simplex.noise(t, 0),
-		1.0*simplex.noise(t, 1),
-		0.4*simplex.noise(t, 2),
+		0.5*simplex.noise( t, 0 ),
+		1.0*simplex.noise( t, 1 ),
+		0.4*simplex.noise( t, 2 ),
 	);
-	
-	if( model ) model.rotation.y = 2*simplex.noise(t/3, 3);
+
+	if ( model ) model.rotation.y = 2*simplex.noise( t/3, 3 );
 
 	controls.update( );
 	light.position.copy( camera.position );
