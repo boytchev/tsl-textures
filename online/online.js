@@ -4,17 +4,22 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import * as lil from "three/addons/libs/lil-gui.module.min.js";
 import { mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js';
-import { dynamic } from 'tsl-textures/tsl-utils.js';
+import { dynamic, overlayPlanar } from 'tsl-textures/tsl-utils.js';
 
+const THREEJS = '0.167.0';
+const TSLTEXTURES = '1.1.0';
 
 const HOME_URL = '../';
 const USE_BALL = 0;
 const USE_CUBE = 1;
 const USE_HEAD = 2;
-const USE_GEOMETRY = USE_BALL;
+
+const ADD_NOTHING = 0;
+const ADD_GRID = 1;
 
 var params = {},
-	dynamics = {};
+	dynamics = {},
+	selectorParams = { show: false };
 
 
 
@@ -29,64 +34,26 @@ document.body.appendChild( renderer.domElement );
 var scene = new THREE.Scene();
 scene.background = new THREE.Color( 'white' );
 
-var camera = new THREE.PerspectiveCamera( USE_GEOMETRY == USE_BALL?5:60, innerWidth/innerHeight );
-if ( USE_GEOMETRY == USE_BALL )
-	camera.position.set( 0, 0, 30 );
-else if ( USE_GEOMETRY == USE_HEAD )
-	camera.position.set( 0, 0, 10 );
-else
-	camera.position.set( 0, 0, 4 );
-
+var camera = new THREE.PerspectiveCamera( 60, innerWidth/innerHeight );
 camera.lookAt( scene.position );
 
-var light = new THREE.DirectionalLight( 'white', USE_GEOMETRY == USE_HEAD?3.5:1.5 );
+var light = new THREE.DirectionalLight( 'white', 1.5 );
 light.decay = 0;
 scene.add( light );
 
-var ambientLight = new THREE.AmbientLight( 'white', USE_GEOMETRY == USE_HEAD?0.5:2 );
+var ambientLight = new THREE.AmbientLight( 'white', 2 );
 scene.add( ambientLight );
 
 var controls = new OrbitControls( camera, renderer.domElement );
 controls.enableDamping = true;
 
-var geometry;
-
-switch ( USE_GEOMETRY ) {
-
-	case USE_BALL:
-		geometry = new THREE.IcosahedronGeometry( 1, 20 );
-		break;
-	case USE_CUBE:
-		geometry = new THREE.BoxGeometry( 2, 2, 2, 100, 100, 100 );
-		break;
-	case USE_HEAD:
-		var result = await new GLTFLoader().loadAsync(
-			'../assets/models/LeePerrySmith/LeePerrySmith.glb' );
-		geometry = result.scene.children[ 0 ].geometry;
-		break;
-
-}
-
-geometry = mergeVertices( geometry );
-geometry.computeTangents();
+var geometry = new THREE.BufferGeometry();
 
 var model = new THREE.Mesh(
 	geometry,
 	new THREE.MeshPhysicalMaterial( {} )
 );
 scene.add( model );
-
-if ( USE_GEOMETRY == USE_HEAD ) {
-
-	var wireframe = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial( {
-		color: 'gray',
-		wireframe: true,
-	} ) );
-	scene.add( wireframe );
-	//	model.scale.setScalar( 3 );
-	//	model.rotation.set( 0.2, -0.4, 0 );
-
-}
 
 
 
@@ -123,7 +90,102 @@ function animationLoop( /*t*/ ) {
 
 
 
-function install( tslTexture ) {
+function install( tslTexture, useGeometry=USE_BALL, addTexture=ADD_NOTHING ) {
+
+	var USE_GEOMETRY = useGeometry;
+
+	// adjust camera
+	if ( USE_GEOMETRY == USE_BALL ) {
+
+		camera.fov = 5;
+		camera.position.set( 0, 0, 30 );
+
+	} else if ( USE_GEOMETRY == USE_HEAD ) {
+
+		camera.fov = 60;
+		camera.position.set( 0, 0, 10 );
+
+	} else {
+
+		camera.fov = 60;
+		camera.position.set( 2, 2, 4 );
+
+	}
+
+	camera.updateProjectionMatrix();
+
+
+	// adjust lights
+	if ( USE_GEOMETRY == USE_CUBE ) {
+
+		light.intensity = 3;
+		ambientLight.intensity = 1;
+
+	} else if ( USE_GEOMETRY == USE_HEAD ) {
+
+		light.intensity = 2.5;
+		ambientLight.intensity = 0.5;
+
+	}
+
+
+	var texture;
+	if ( addTexture == ADD_GRID ) {
+
+		texture = new THREE.TextureLoader().load( '../assets/textures/grid.png' );
+		texture.wrapS = THREE.RepeatWrapping;
+		texture.wrapT = THREE.RepeatWrapping;
+		texture.anisotropy = 16; // cannot find capabilities.getMaxAnisotropy() for WebGPU
+
+	}
+
+
+	// adjust geometry
+	switch ( USE_GEOMETRY ) {
+
+		case USE_BALL:
+			geometry = new THREE.IcosahedronGeometry( 1, 20 );
+			geometry = mergeVertices( geometry );
+			geometry.computeTangents();
+			if ( addTexture !== ADD_NOTHING ) {
+
+				texture.repeat.set( 6, 3 );
+				model.material.map = texture;
+
+			}
+
+			break;
+		case USE_CUBE:
+			geometry = new THREE.BoxGeometry( 2, 2, 2, 100, 100, 100 );
+			//geometry = mergeVertices( geometry );
+			geometry.computeTangents();
+			if ( addTexture !== ADD_NOTHING ) {
+
+				texture.repeat.set( 2, 2 );
+				model.material.map = texture;
+
+			}
+
+			break;
+		case USE_HEAD:
+			geometry = new THREE.BoxGeometry( 2, 2, 2 );
+			new GLTFLoader().load(
+				'../assets/models/LeePerrySmith/LeePerrySmith.glb', ( result )=>{
+
+					geometry = result.scene.children[ 0 ].geometry;
+					geometry = mergeVertices( geometry );
+					geometry.computeTangents();
+					scene.remove( model );
+					model = new THREE.Mesh( geometry, model.material );
+					geometry.needsUpdate = true;
+					scene.add( model );
+
+				} );
+			break;
+
+	}
+
+	model.geometry = geometry;
 
 	// process URL options
 	var urlAddress = window.location.search.split( '#' )[ 0 ], // skip all after #
@@ -138,7 +200,19 @@ function install( tslTexture ) {
 			if ( value == 'false' )
 				url[ key ] = false;
 			else
-				url[ key ] = parseFloat( value );
+				if ( value.indexOf( ',' )>0 ) {
+
+					var split = value.split( ',' ).map( x=>parseFloat( x ) );
+					if ( split.length==2 )
+						url[ key ] = new THREE.Vector2( ...split );
+					else
+						if ( split.length==3 )
+							url[ key ] = new THREE.Vector3( ...split );
+						else
+							url[ key ] = split;
+
+				} else
+					url[ key ] = parseFloat( value );
 
 	}
 
@@ -148,7 +222,12 @@ function install( tslTexture ) {
 			if ( value.isColor )
 				params[ key ] = new THREE.Color( url[ key ] ?? value );
 			else
-				params[ key ] = url[ key ] ?? value;
+				if ( value.isVector3 || value.isVector2 ) {
+
+					params[ key ] = url[ key ] ?? value;
+
+				} else
+					params[ key ] = url[ key ] ?? value;
 
 		}
 
@@ -212,6 +291,7 @@ function install( tslTexture ) {
 
 	dynamics = dynamic( params );
 
+
 	if ( tslTexture.defaults.$normalNode ) {
 
 		model.material.normalNode = tslTexture( dynamics );
@@ -221,12 +301,19 @@ function install( tslTexture ) {
 		if ( tslTexture.defaults.$positionNode ) {
 
 			model.material.positionNode = tslTexture( dynamics );
-			wireframe.material.positionNode = tslTexture( dynamics );
 			if ( tslTexture.normal ) {
 
 				model.material.normalNode = tslTexture.normal( dynamics );
 
 			}
+
+			if ( tslTexture.defaults.$selectorPlanar ) {
+
+				model.material.emissiveNode = overlayPlanar( dynamics );
+				dynamics.selectorShow = THREE.uniform( 0 );
+
+			}
+
 
 		} else {
 
@@ -261,7 +348,19 @@ function processParameters( ) {
 			if ( value instanceof THREE.Color )
 				dynamics[ key ].value.set( params[ key ]);
 			else
-				dynamics[ key ].value = params[ key ];
+				if ( params[ key ] instanceof THREE.Vector3 )
+					dynamics[ key ].value.copy( params[ key ]);
+				else
+					if ( params[ key ] instanceof THREE.Vector2 )
+						dynamics[ key ].value.copy( params[ key ]);
+					else
+						dynamics[ key ].value = params[ key ];
+
+	if ( typeof dynamics.selectorShow !=='undefined' ) {
+
+		dynamics.selectorShow.value = selectorParams.show?1:0;
+
+	}
 
 }
 
@@ -276,7 +375,13 @@ function shareURL( event, name ) {
 		if ( value instanceof THREE.Color )
 			url.push( `${key}=${value.getHex()}` );
 		else
-			url.push( `${key}=${value}` );
+			if ( value instanceof THREE.Vector3 )
+				url.push( `${key}=${value.x},${value.y},${value.z}` );
+			else
+				if ( value instanceof THREE.Vector2 )
+					url.push( `${key}=${value.x},${value.y}` );
+				else
+					url.push( `${key}=${value}` );
 
 	url = url.join( '&' );
 
@@ -300,7 +405,13 @@ function getCode( event, name, filename, tslTexture ) {
 		if ( value instanceof THREE.Color )
 			paramsStr.push( `${key}: new THREE.Color(${value.getHex()})` );
 		else
-			paramsStr.push( `${key}: ${value}` );
+			if ( value instanceof THREE.Vector3 )
+				paramsStr.push( `${key}: new THREE.Vector3(${value.x},${value.y},${value.z})` );
+			else
+				if ( value instanceof THREE.Vector2 )
+					paramsStr.push( `${key}: new THREE.Vector2(${value.x},${value.y})` );
+				else
+					paramsStr.push( `${key}: ${value}` );
 
 	paramsStr = paramsStr.join( `,\n	` );
 
@@ -308,13 +419,13 @@ function getCode( event, name, filename, tslTexture ) {
 <script type="importmap">
 	{
 		"imports": {
-			"three": "https://cdn.jsdelivr.net/npm/three@0.164.0/build/three.module.js",
-			"three/nodes": "https://cdn.jsdelivr.net/npm/three@0.164.0/examples/jsm/nodes/Nodes.js",
-			"tsl-textures/": "../src/"
+		"three": "https://cdn.jsdelivr.net/npm/three@${THREEJS}/build/three.module.js",
+			"tsl-textures/": "https://cdn.jsdelivr.net/npm/tsl-textures@${TSLTEXTURES}/src/"
 		}
 	}
 </script>
 
+import * as THREE from "three";
 import { ${name} } from "tsl-textures/${filename}.js";
 `;
 	if ( tslTexture.defaults.$normalNode )
@@ -324,7 +435,25 @@ model.material.normalNode = ${name} ( {
 } );
 `;
 	else
-		js += `model.material.colorNode = ${name} ( {
+		if ( tslTexture.defaults.$positionNode ) {
+
+			js += `
+model.material.positionNode = ${name} ( {
+	${paramsStr}
+} );
+`;
+			if ( tslTexture.normal ) {
+
+				js += `
+model.material.normalNode = ${name}.normal ( {
+	${paramsStr}
+} );
+`;
+
+			}
+
+		} else
+			js += `model.material.colorNode = ${name} ( {
 	${paramsStr}
 } );
 `;
@@ -379,4 +508,4 @@ function refreshSeed( event ) {
 }
 
 
-export { scene, model, install, params, light, ambientLight };
+export { scene, model, install, params, light, ambientLight, USE_BALL, USE_CUBE, USE_HEAD, ADD_NOTHING, ADD_GRID, selectorParams };

@@ -27,25 +27,25 @@
 	<script type="module">
 
 		import * as THREE from "three";
-		import { install, model, params } from "./online.js";
+		import { install, model, params, scene } from "./online.js";
 		import { rust } from "tsl-textures/rust.js";
 		import { concrete } from "tsl-textures/concrete.js";
 
-		
+		var gui = install( rust );
 		
 		var core = new THREE.Mesh(
 			model.geometry,
-			new THREE.MeshPhysicalMaterial( {
+			new THREE.MeshPhysicalNodeMaterial( {
 				color: new THREE.Color(1.2,1.2,1.2),
 				normalNode: concrete( {...concrete.defaults,scale:6} ),
 				roughness: 0.3,
 				metalness: 0.6,
 			} )
 		);
-		model.add( core );
+		
+		scene.add( core );
 		
 		
-		var gui = install( rust );
 		
 		gui.add( params, 'scale' )
 			.min( 0 ).max( 14 )

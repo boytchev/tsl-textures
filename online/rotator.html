@@ -1,0 +1,98 @@
+﻿<!DOCTYPE html>
+
+
+<html>
+
+
+<head>
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+	<link rel="shortcut icon" type="image/png" href="../assets/logo/logo.png"/>
+	<link rel="stylesheet" href="styles.css">
+
+	<script type="importmap">
+	  {
+		"imports": {
+			"three": "https://cdn.jsdelivr.net/npm/three@0.167.0/build/three.webgpu.js",
+			"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.167.0/examples/jsm/",
+			"tsl-textures/": "../src/"
+		}
+	  }
+	</script>
+</head>
+
+
+<body>
+
+	<script type="module">
+		import * as THREE from "three";
+		import { install, params, USE_CUBE, ADD_GRID, scene, selectorParams } from "../online/online.js";
+		import { rotator } from "../src/rotator.js";
+
+		var gui = install( rotator, USE_CUBE, ADD_GRID );
+
+		gui.add( params.angles, 'x' )
+			.min( -3.14 ).max( 3.14 ).step( 0.01 )
+			.name( 'Angle <right>x</right>' )
+			.$input.classList.add( 'top' );
+		
+		gui.add( params.angles, 'y' )
+			.min( -3.14 ).max( 3.14 ).step( 0.01 )
+			.name( '<right>y</right>' );
+		
+		gui.add( params.angles, 'z' )
+			.min( -3.14 ).max( 3.14 ).step( 0.01 )
+			.name( '<right>z</right>' )
+			.$input.classList.add( 'bottom' );
+		
+		gui.add( params.center, 'x' )
+			.min( -4 ).max( 4 )
+			.name( 'Center <right>x</right>' )
+			.$input.classList.add( 'top' );
+		
+		gui.add( params.center, 'y' )
+			.min( -4 ).max( 4 )
+			.name( '<right>y</right>' );
+		
+		gui.add( params.center, 'z' )
+			.min( -4 ).max( 4 )
+			.name( '<right>z</right>' )
+			.$input.classList.add( 'bottom' );
+
+		var guiS = gui.addFolder( '<big>Planar selector</big>' )//.close();
+
+		guiS.add( params.selectorAngles, 'x' )
+			.min( 0 ).max( Math.PI ).step(0.01)
+			.name( 'Angles <right>&phi;</right>' )
+			.$input.classList.add( 'top' );
+
+		guiS.add( params.selectorAngles, 'y' )
+			.min( -2*Math.PI ).max( 2*Math.PI ).step(0.01)
+			.name( '<right>&theta;</right>' )
+			.$input.classList.add( 'bottom' );
+
+		guiS.add( params.selectorCenter, 'x' )
+			.min( -4 ).max( 4 )
+			.name( 'Position <right>x</right>' )
+			.$input.classList.add( 'top' );
+		
+		guiS.add( params.selectorCenter, 'y' )
+			.min( -4 ).max( 4 )
+			.name( '<right>y</right>' );
+		
+		guiS.add( params.selectorCenter, 'z' )
+			.min( -4 ).max( 4 )
+			.name( '<right>z</right>' )
+			.$input.classList.add( 'bottom' );
+
+		guiS.add( params, 'selectorWidth' )
+			.min( 0.1 ).max( 4 )
+			.name( 'Width' );
+
+		guiS.add( selectorParams, 'show' )
+			.name( 'Show' );
+		
+
+	</script>
+</body>
+</html>

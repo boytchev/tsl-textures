@@ -8,7 +8,7 @@
 
 
 
-import { add, cond, cos, cross, float, If, log2, max, min, mul, pow, remap, sin, sub, tslFn, uniform, vec3, vec4 } from 'three';
+import { add, cond, cos, cross, float, If, log2, mat4, max, min, mul, positionLocal, pow, remap, sin, smoothstep, sub, tslFn, uniform, vec3, vec4, Vector3 } from 'three';
 //import { mx_perlin_noise_float as noise } from 'https://cdn.jsdelivr.net/npm/three@0.167.0/src/nodes/materialx/lib/mx_noise.js';
 
 
@@ -114,8 +114,14 @@ function dynamic( params ) {
 
 	for ( var [ key, value ] of Object.entries( params ) ) {
 
-		if ( key[ 0 ]!='$' )
-			result[ key ] = uniform( value );
+		if ( key[ 0 ]!='$' ) {
+
+			if ( value instanceof Vector3 )
+				result[ key ] = uniform( value, 'vec3' );
+			else
+				result[ key ] = uniform( value );
+
+		}
 
 	}
 
@@ -218,6 +224,150 @@ const vnoise = tslFn( ([ v ])=>{
 } );
 
 
+
+// generate X-rotation matrix
+const matRotX = tslFn( ([ angle ])=>{
+
+	var	cos = angle.cos().toVar(),
+		sin = angle.sin().toVar();
+
+	return mat4(
+		1, 0, 0, 0,
+		0, cos, sin, 0,
+		0, sin.negate(), cos, 0,
+		0, 0, 0, 1 );
+
+} );
+
+
+
+// generate Y-rotation matrix
+const matRotY = tslFn( ([ angle ])=>{
+
+	var	cos = angle.cos().toVar(),
+		sin = angle.sin().toVar();
+
+	return mat4(
+		cos, 0, sin.negate(), 0,
+		0, 1, 0, 0,
+		sin, 0, cos, 0,
+		0, 0, 0, 1 );
+
+} );
+
+
+
+// generate Z-rotation matrix
+const matRotZ = tslFn( ([ angle ])=>{
+
+	var	cos = angle.cos().toVar(),
+		sin = angle.sin().toVar();
+
+	return mat4(
+		cos, sin, 0, 0,
+		sin.negate(), cos, 0, 0,
+		0, 0, 1, 0,
+		0, 0, 0, 1 );
+
+} );
+
+
+
+// generate YXZ rotation matrix
+const matRotYXZ = tslFn( ([ angles ])=>{
+
+	var RX = matRotX( angles.x ),
+		RY = matRotY( angles.y ),
+		RZ = matRotZ( angles.z );
+
+	return RY.mul( RX ).mul( RZ );
+
+} );
+
+
+
+// generate translation matrix
+const matTrans = tslFn( ([ vector ])=>{
+
+	return mat4(
+		1, 0, 0, 0,
+		0, 1, 0, 0,
+		0, 0, 1, 0,
+		vector.x, vector.y, vector.z, 1 );
+
+} );
+
+
+/*
+const selectLinear = tslFn( ( [c,a,b] )=>{
+
+	// C is projected on segment AB
+	// result is [0,1] inside AB, 0 before A, 1 after B
+
+	var ca = a.sub(c),
+		ab = b.sub(a).toVar();
+
+	var caab = ca.dot(ab),
+		abab = ab.dot(ab);
+
+	var k = caab.div(abab).negate();
+
+	return smoothstep(0,1,k);
+
+} );
+*/
+
+const selectPlanar = tslFn( ([ pos, selAngles, selCenter, selWidth ])=>{
+
+	// select zone in a plane through point selCenter,
+	// rotated according to selAngles and selWidth thick
+	// result is [0,1] inside plane, 0 below plane, 1 above plane
+
+	// C is projected on segment AB
+	// result is [0,1] inside AB, 0 before A, 1 after B
+
+	/* non-optimized version
+	var s = spherical(selAngles.x,selAngles.y).mul(selWidth).toVar(),
+		c = pos,
+		a = selCenter.sub(s.div(2)),
+		b = selCenter.add(s.div(2));
+
+	var ca = a.sub(c),
+		ab = b.sub(a).toVar();
+
+	var caab = ca.dot(s),
+		abab = ab.dot(ab);
+
+	var k = caab.div(abab).negate();
+	*/
+
+	var s = spherical( selAngles.x, selAngles.y ).mul( selWidth ).toVar();
+
+	var k = selCenter.sub( s.div( 2 ) ).sub( pos ).dot( s ).div( s.dot( s ) ).negate();
+
+	return smoothstep( 0, 1, k );
+
+} );
+
+
+
+const overlayPlanar = tslFn( ( params )=>{
+
+	var zone = selectPlanar(
+		positionLocal,
+		params.selectorAngles,
+		params.selectorCenter,
+		params.selectorWidth
+	).sub( 0.5 ).mul( 2 ).abs().oneMinus().pow( 0.25 ).negate().mul(
+		params.selectorShow
+	);
+
+	return vec3( 0, zone, zone );
+
+} );
+
+
+
 export
 {
 	mx_noise_float as noise
@@ -231,5 +381,12 @@ export
 	dynamic,
 	spherical,
 	applyEuler,
-	remapExp
+	remapExp,
+	matRotX,
+	matRotY,
+	matRotZ,
+	matRotYXZ,
+	matTrans,
+	selectPlanar,
+	overlayPlanar
 };

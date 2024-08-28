@@ -76,13 +76,13 @@ li a {
 
 .style-block img {
 	width: 8em;
-	border-radius: 10em;
+	/*border-radius: 10em;*/
 	/*filter: drop-shadow(0 0 0.5em);*/
 }
 
 .style-block:hover img {
 	width: 8em;
-	border-radius: 10em;
+	/*border-radius: 10em;*/
 	filter: drop-shadow(white 0.5em 0 0.2em);
 }
 

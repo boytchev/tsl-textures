@@ -15,19 +15,19 @@ var camouflage = tslFn( ( params )=>{
 
 	var color = vec3( 0, 0, 0 ).toVar( );
 
-	If( round( noise( pos ).add( 0.2 ) ).greaterThanEqual( 1 ), () => {
+	If( round( noise( pos, 1, 0.2 ) ).greaterThanEqual( 1 ), () => {
 
 		color.assign( params.colorA );
 
 	}
 	)
-		.elseif( round( noise( pos.yzx ).add( 0.3 ) ).greaterThanEqual( 1 ), () => {
+		.elseif( round( noise( pos.yzx, 1, 0.3 ) ).greaterThanEqual( 1 ), () => {
 
 			color.assign( params.colorB );
 
 		}
 		)
-		.elseif( round( noise( pos.zxy ).add( 0.4 ) ).greaterThanEqual( 1 ), () => {
+		.elseif( round( noise( pos.zxy, 1, 0.4 ) ).greaterThanEqual( 1 ), () => {
 
 			color.assign( params.colorC );
 

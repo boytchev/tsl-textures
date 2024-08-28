@@ -1,6 +1,9 @@
 # TSL Textures
 
 
+## 1.1.0
+* Added "Rotator" in *rotator.js*
+
 ## 1.0.0
 * Converted to r167 and *three.webgpu.js*
 
