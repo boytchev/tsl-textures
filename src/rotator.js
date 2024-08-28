@@ -58,7 +58,7 @@ rotator.defaults = {
 	$positionNode: true,
 	$selectorPlanar: true,
 
-	angles: new Vector3( 0, 0, 0 ),
+	angles: new Vector3( 0.4, -0.6, 0 ),
 	center: new Vector3( 0, 0, 0 ),
 
 	selectorCenter: new Vector3( 0, 0, 0 ),
