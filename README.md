@@ -42,3 +42,14 @@ station is constructed arounnd the blob. The surface of the station is made of
 a Dyson sphere texture from [dyson-texture.js](https://boytchev.github.io/tsl-textures/docs/dyson-sphere.html).
 
 [<img src="https://boytchev.github.io/tsl-textures/examples/example-protozoa.jpg">](https://boytchev.github.io/tsl-textures/examples/example-protozoa.html)
+
+
+#### Example "Neck Massage"
+
+Uses [rotator.js](https://boytchev.github.io/tsl-textures/docs/rotator.html)
+texture that applies soft matrices on model vertices. This allows to make
+gradual rotation that looks like stretching skin and flexing muscles. The
+animation does not use skinning or morphing, the model is not preprocessed
+in any way, and no additional vertex data is added.
+
+[<img src="https://boytchev.github.io/tsl-textures/examples/example-neck-massage.jpg">](https://boytchev.github.io/tsl-textures/examples/example-neck-massage.html)
