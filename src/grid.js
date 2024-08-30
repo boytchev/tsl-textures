@@ -4,7 +4,7 @@
 
 
 import { Color } from "three";
-import { abs, add, div, equirectUV, min, mix, mul, oneMinus, positionLocal, pow, remapClamp, round, sin, smoothstep, sub, Fn } from 'three';
+import { abs, add, div, equirectUV, Fn, min, mix, mul, oneMinus, positionLocal, pow, remapClamp, round, sin, smoothstep, sub } from 'three';
 
 
 

@@ -4,7 +4,7 @@
 
 
 import { Vector2, Vector3 } from "three";
-import { cross, modelNormalMatrix, normalLocal, positionLocal, sub, tangentLocal, Fn, vec4 } from 'three';
+import { cross, Fn, modelNormalMatrix, normalLocal, positionLocal, sub, tangentLocal, vec4 } from 'three';
 import { matRotYXZ, matTrans, selectPlanar } from 'tsl-textures/tsl-utils.js';
 
 

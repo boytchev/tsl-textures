@@ -4,7 +4,7 @@
 
 
 import { Color } from "three";
-import { abs, add, select, exp, mix, positionLocal, Fn } from 'three';
+import { abs, add, exp, Fn, mix, positionLocal, select } from 'three';
 import { hsl, noise, toHsl } from 'tsl-textures/tsl-utils.js';
 
 

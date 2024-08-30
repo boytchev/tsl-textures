@@ -4,7 +4,7 @@
 
 
 import { Color } from "three";
-import { acos, add, distance, exp, float, Loop, max, min, mix, mod, mul, oneMinus, positionLocal, pow, smoothstep, Fn, } from 'three';
+import { acos, add, distance, exp, float, Fn, Loop, max, min, mix, mod, mul, oneMinus, positionLocal, pow, smoothstep, } from 'three';
 import { spherical } from 'tsl-textures/tsl-utils.js';
 
 

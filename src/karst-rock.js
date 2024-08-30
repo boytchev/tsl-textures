@@ -4,7 +4,7 @@
 
 
 import { Color } from "three";
-import { exp, mix, positionLocal, Fn } from 'three';
+import { exp, Fn, mix, positionLocal } from 'three';
 import { noise } from 'tsl-textures/tsl-utils.js';
 
 
