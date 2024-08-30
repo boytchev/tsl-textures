@@ -4,12 +4,12 @@
 
 
 import { Color } from "three";
-import { exp, mix, positionLocal, tslFn } from 'three';
+import { exp, mix, positionLocal, Fn } from 'three';
 import { noise } from 'tsl-textures/tsl-utils.js';
 
 
 
-var karstRock = tslFn( ( params )=>{
+var karstRock = Fn( ( params )=>{
 
 	var pos = positionLocal.mul( exp( params.scale ) ).add( params.seed.sin().mul( 5 ) ).toVar( );
 

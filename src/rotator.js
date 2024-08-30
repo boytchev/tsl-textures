@@ -4,12 +4,12 @@
 
 
 import { Vector2, Vector3 } from "three";
-import { cross, modelNormalMatrix, normalLocal, positionLocal, sub, tangentLocal, tslFn, vec4 } from 'three';
+import { cross, modelNormalMatrix, normalLocal, positionLocal, sub, tangentLocal, Fn, vec4 } from 'three';
 import { matRotYXZ, matTrans, selectPlanar } from 'tsl-textures/tsl-utils.js';
 
 
 
-var surfacePos = tslFn( ([ pos, params ])=>{
+var surfacePos = Fn( ([ pos, params ])=>{
 
 	var zone = selectPlanar( pos, params.selectorAngles, params.selectorCenter, params.selectorWidth );
 
@@ -23,7 +23,7 @@ var surfacePos = tslFn( ([ pos, params ])=>{
 
 
 
-var rotator = tslFn( ( params )=>{
+var rotator = Fn( ( params )=>{
 
 	return surfacePos( positionLocal, params );
 
@@ -31,7 +31,7 @@ var rotator = tslFn( ( params )=>{
 
 
 
-rotator.normal = tslFn( ( params ) => {
+rotator.normal = Fn( ( params ) => {
 
 	var eps = 0.01;
 

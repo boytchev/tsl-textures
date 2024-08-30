@@ -4,12 +4,12 @@
 
 
 import { Color } from "three";
-import { add, cos, exp, mix, positionLocal, radians, sin, sub, tslFn, vec3 } from 'three';
+import { add, cos, exp, mix, positionLocal, radians, sin, sub, Fn, vec3 } from 'three';
 import { noise } from 'tsl-textures/tsl-utils.js';
 
 
 
-var processedWood = tslFn( ( params )=>{
+var processedWood = Fn( ( params )=>{
 
 	var angle = radians( params.angle ).toVar();
 	var posLocal = vec3(

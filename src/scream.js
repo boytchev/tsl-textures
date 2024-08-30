@@ -4,12 +4,12 @@
 
 
 import { Color } from "three";
-import { add, cos, exp, mix, positionLocal, sin, tslFn } from 'three';
+import { add, cos, exp, mix, positionLocal, sin, Fn } from 'three';
 import { hsl, noise, toHsl } from 'tsl-textures/tsl-utils.js';
 
 
 
-var scream = tslFn( ( params ) => {
+var scream = Fn( ( params ) => {
 
 	var pos = positionLocal.mul( exp( params.scale ) ).add( params.seed ).toVar( );
 

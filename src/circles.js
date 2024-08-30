@@ -4,12 +4,12 @@
 
 
 import { Color } from "three";
-import { acos, clamp, cond, exp, float, positionLocal, sin, tslFn } from 'three';
+import { acos, clamp, select, exp, float, positionLocal, sin, Fn } from 'three';
 import { hsl, toHsl } from 'tsl-textures/tsl-utils.js';
 
 
 
-var circles = tslFn( ( params ) => {
+var circles = Fn( ( params ) => {
 
 	var pos = positionLocal.normalize().toVar( );
 
@@ -35,7 +35,7 @@ var circles = tslFn( ( params ) => {
 
 	var huei = hue.floor();
 	var huef = hue.sub( huei );
-	huef = cond( huef.lessThan( 0.5 ), huef.pow( 1.5 ), huef.pow( 1/1.5 ) );
+	huef = select( huef.lessThan( 0.5 ), huef.pow( 1.5 ), huef.pow( 1/1.5 ) );
 	hue.assign( huei.add( huef ) );
 
 	return hsl( hue.div( 10 ), HSL.y, HSL.z );

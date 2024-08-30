@@ -4,12 +4,12 @@
 
 
 import { Color } from 'three';
-import { add, cos, exp, float, loop, mix, mul, positionLocal, radians, reciprocal, sin, sub, tslFn, vec3 } from 'three';
+import { add, cos, exp, float, Loop, mix, mul, positionLocal, radians, reciprocal, sin, sub, Fn, vec3 } from 'three';
 import { noise } from 'tsl-textures/tsl-utils.js';
 
 
 
-var wood = tslFn( ( params ) => {
+var wood = Fn( ( params ) => {
 
 	var angle = radians( params.angle ).toVar();
 	var posLocal = vec3(
@@ -29,7 +29,7 @@ var wood = tslFn( ( params ) => {
 		scale = exp( params.scale.sub( 2 ) ).mul( vec3( 1, params.fibersDensity, 1 ) ).toVar(),
 		power = float( 2 ).toVar();
 
-	loop( 10, ()=>{
+	Loop( 10, ()=>{
 
 		kk.addAssign( mul( power, noise( posLocal.mul( scale ).add( params.seed ) ) ) );
 		sum.addAssign( power );

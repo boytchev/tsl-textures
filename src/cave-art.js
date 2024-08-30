@@ -4,11 +4,11 @@
 
 
 import { Color } from "three";
-import { abs, add, exp, float, If, mix, or, positionLocal, pow2, sub, tslFn } from 'three';
+import { abs, add, exp, float, If, mix, or, positionLocal, pow2, sub, Fn } from 'three';
 import { noise } from 'tsl-textures/tsl-utils.js';
 
 
-var caveArt = tslFn( ( params ) => {
+var caveArt = Fn( ( params ) => {
 
 	var pos = positionLocal.mul( exp( params.scale ) ).add( params.seed ).toVar( );
 

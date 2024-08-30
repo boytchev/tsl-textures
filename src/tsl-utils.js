@@ -8,14 +8,14 @@
 
 
 
-import { add, cond, cos, cross, float, If, log2, mat4, max, min, mul, positionLocal, pow, remap, sin, smoothstep, sub, tslFn, uniform, vec3, vec4, Vector3 } from 'three';
+import { add, select, cos, cross, float, If, log2, mat4, max, min, mul, positionLocal, pow, remap, sin, smoothstep, sub, Fn, uniform, vec3, vec4, Vector3 } from 'three';
 //import { mx_perlin_noise_float as noise } from 'https://cdn.jsdelivr.net/npm/three@0.167.0/src/nodes/materialx/lib/mx_noise.js';
 
 
 // helper function - convert hsl to rgb, ported to TSL from:
 // https://en.wikipedia.org/wiki/HSL_and_HSV#HSL_to_RGB_alternative
 
-const hslHelper = tslFn( ([ h, s, l, n ])=>{
+const hslHelper = Fn( ([ h, s, l, n ])=>{
 
 	var k = n.add( h.mul( 12 ) ).mod( 12 );
 	var a = s.mul( min( l, sub( 1, l ) ) );
@@ -37,7 +37,7 @@ hslHelper.setLayout( {
 
 
 // convert from hsl to rgb
-const hsl = tslFn( ([ h, s, l ]) => {
+const hsl = Fn( ([ h, s, l ]) => {
 
 	h = h.fract().add( 1 ).fract();
 	s = s.clamp( 0, 1 );
@@ -63,7 +63,7 @@ hsl.setLayout( {
 
 
 // convert from rgb to hsl
-const toHsl = tslFn( ([ rgb ]) => {
+const toHsl = Fn( ([ rgb ]) => {
 
 	var R = float( rgb.x ).toVar(),
 		G = float( rgb.y ).toVar(),
@@ -80,18 +80,18 @@ const toHsl = tslFn( ([ rgb ]) => {
 
 		const delta = sub( mx, mn ).toVar();
 
-		S.assign( cond( L.lessThanEqual( 0.5 ), delta.div( add( mn, mx ) ), delta.div( sub( 2, add( mn, mx ) ) ) ) );
+		S.assign( select( L.lessThanEqual( 0.5 ), delta.div( add( mn, mx ) ), delta.div( sub( 2, add( mn, mx ) ) ) ) );
 		If( mx.equal( R ), ()=>{
 
-			H.assign( sub( G, B ).div( delta ).add( cond( G.lessThanEqual( B ), 6, 0 ) ) );
+			H.assign( sub( G, B ).div( delta ).add( select( G.lessThanEqual( B ), 6, 0 ) ) );
 
 		} )
-			.elseif( mx.equal( G ), ()=>{
+			.ElseIf( mx.equal( G ), ()=>{
 
 				H.assign( sub( B, R ).div( delta ).add( 2 ) );
 
 			} )
-			.else( ()=>{
+			.Else( ()=>{
 
 				H.assign( sub( R, G ).div( delta ).add( 4 ) );
 
@@ -132,7 +132,7 @@ function dynamic( params ) {
 
 
 // convert phi-theta angles to position on unit sphere
-const spherical = tslFn( ([ phi, theta ]) => {
+const spherical = Fn( ([ phi, theta ]) => {
 
 	return vec3(
 		sin( theta ).mul( sin( phi ) ),
@@ -154,7 +154,7 @@ spherical.setLayout( {
 
 
 // apply Euler rotation to a vector
-const applyEuler = tslFn( ([ vec, eu ]) => {
+const applyEuler = Fn( ([ vec, eu ]) => {
 
 	var quat = quaternionFromEuler( eu );
 	return applyQuaternion( vec, quat );
@@ -163,7 +163,7 @@ const applyEuler = tslFn( ([ vec, eu ]) => {
 
 
 // convert Euler XYZ angles to quaternion
-const quaternionFromEuler = tslFn( ([ eu ]) => {
+const quaternionFromEuler = Fn( ([ eu ]) => {
 
 	var c1 = cos( eu.x.div( 2 ) );
 	var c2 = cos( eu.y.div( 2 ) );
@@ -184,7 +184,7 @@ const quaternionFromEuler = tslFn( ([ eu ]) => {
 
 
 // apply quaternion rotation to a vector
-const applyQuaternion = tslFn( ([ vec, quat ]) => {
+const applyQuaternion = Fn( ([ vec, quat ]) => {
 
 	var t = cross( quat, vec ).mul( 2 ).toVar( );
 
@@ -195,7 +195,7 @@ const applyQuaternion = tslFn( ([ vec, quat ]) => {
 
 
 // exponential version of remap
-const remapExp = tslFn( ([ x, fromMin, fromMax, toMin, toMax ]) => {
+const remapExp = Fn( ([ x, fromMin, fromMax, toMin, toMax ]) => {
 
 	x = remap( x, fromMin, fromMax, 0, 1 );
 	x = pow( 2, mul( x, log2( toMax.div( toMin ) ) ).add( log2( toMin ) ) );
@@ -217,7 +217,7 @@ function mapExp( x, toMin, toMax, fromMin=0, fromMax=100 ) {
 
 
 // simple vector noise, vec3->float[-1,1]
-const vnoise = tslFn( ([ v ])=>{
+const vnoise = Fn( ([ v ])=>{
 
 	return v.dot( vec3( 12.9898, 78.233, -97.5123 ) ).sin().mul( 43758.5453 ).fract().mul( 2 ).sub( 1 );
 
@@ -226,7 +226,7 @@ const vnoise = tslFn( ([ v ])=>{
 
 
 // generate X-rotation matrix
-const matRotX = tslFn( ([ angle ])=>{
+const matRotX = Fn( ([ angle ])=>{
 
 	var	cos = angle.cos().toVar(),
 		sin = angle.sin().toVar();
@@ -242,7 +242,7 @@ const matRotX = tslFn( ([ angle ])=>{
 
 
 // generate Y-rotation matrix
-const matRotY = tslFn( ([ angle ])=>{
+const matRotY = Fn( ([ angle ])=>{
 
 	var	cos = angle.cos().toVar(),
 		sin = angle.sin().toVar();
@@ -258,7 +258,7 @@ const matRotY = tslFn( ([ angle ])=>{
 
 
 // generate Z-rotation matrix
-const matRotZ = tslFn( ([ angle ])=>{
+const matRotZ = Fn( ([ angle ])=>{
 
 	var	cos = angle.cos().toVar(),
 		sin = angle.sin().toVar();
@@ -274,7 +274,7 @@ const matRotZ = tslFn( ([ angle ])=>{
 
 
 // generate YXZ rotation matrix
-const matRotYXZ = tslFn( ([ angles ])=>{
+const matRotYXZ = Fn( ([ angles ])=>{
 
 	var RX = matRotX( angles.x ),
 		RY = matRotY( angles.y ),
@@ -287,7 +287,7 @@ const matRotYXZ = tslFn( ([ angles ])=>{
 
 
 // generate translation matrix
-const matTrans = tslFn( ([ vector ])=>{
+const matTrans = Fn( ([ vector ])=>{
 
 	return mat4(
 		1, 0, 0, 0,
@@ -299,7 +299,7 @@ const matTrans = tslFn( ([ vector ])=>{
 
 
 /*
-const selectLinear = tslFn( ( [c,a,b] )=>{
+const selectLinear = Fn( ( [c,a,b] )=>{
 
 	// C is projected on segment AB
 	// result is [0,1] inside AB, 0 before A, 1 after B
@@ -317,7 +317,7 @@ const selectLinear = tslFn( ( [c,a,b] )=>{
 } );
 */
 
-const selectPlanar = tslFn( ([ pos, selAngles, selCenter, selWidth ])=>{
+const selectPlanar = Fn( ([ pos, selAngles, selCenter, selWidth ])=>{
 
 	// select zone in a plane through point selCenter,
 	// rotated according to selAngles and selWidth thick
@@ -351,7 +351,7 @@ const selectPlanar = tslFn( ([ pos, selAngles, selCenter, selWidth ])=>{
 
 
 
-const overlayPlanar = tslFn( ( params )=>{
+const overlayPlanar = Fn( ( params )=>{
 
 	var zone = selectPlanar(
 		positionLocal,

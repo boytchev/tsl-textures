@@ -4,12 +4,12 @@
 
 
 import { Color } from "three";
-import { abs, add, cos, floor, max, mix, mod, mul, positionLocal, remapClamp, sign, tan, tslFn, vec3 } from 'three';
+import { abs, add, cos, floor, max, mix, mod, mul, positionLocal, remapClamp, sign, tan, Fn, vec3 } from 'three';
 import { hsl, noise, remapExp, toHsl } from 'tsl-textures/tsl-utils.js';
 
 
 
-var scepterHead = tslFn( ( params ) => {
+var scepterHead = Fn( ( params ) => {
 
 	var pos = positionLocal;
 

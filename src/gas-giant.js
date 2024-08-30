@@ -4,12 +4,12 @@
 
 
 import { Color } from "three";
-import { exp, mix, positionLocal, tslFn, vec3 } from 'three';
+import { exp, mix, positionLocal, Fn, vec3 } from 'three';
 import { hsl, noise, toHsl } from 'tsl-textures/tsl-utils.js';
 
 
 
-var gasGiant = tslFn( ( params )=>{
+var gasGiant = Fn( ( params )=>{
 
 	var scale = params.scale.div( 2 ).add( 1 ).toVar();
 	var pos = positionLocal.mul( exp( scale ) ).add( params.seed ).toVar( );

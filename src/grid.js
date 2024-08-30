@@ -4,11 +4,11 @@
 
 
 import { Color } from "three";
-import { abs, add, div, equirectUV, min, mix, mul, oneMinus, positionLocal, pow, remapClamp, round, sin, smoothstep, sub, tslFn } from 'three';
+import { abs, add, div, equirectUV, min, mix, mul, oneMinus, positionLocal, pow, remapClamp, round, sin, smoothstep, sub, Fn } from 'three';
 
 
 
-var grid = tslFn( ( params ) => {
+var grid = Fn( ( params ) => {
 
 	var uv = equirectUV( positionLocal.normalize() ).toVar(),
 		a = mul( uv.x, 2*Math.PI ),

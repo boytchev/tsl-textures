@@ -4,12 +4,12 @@
 
 
 import { Color } from "three";
-import { abs, add, cond, exp, mix, positionLocal, tslFn } from 'three';
+import { abs, add, select, exp, mix, positionLocal, Fn } from 'three';
 import { hsl, noise, toHsl } from 'tsl-textures/tsl-utils.js';
 
 
 
-var stars = tslFn( ( params ) => {
+var stars = Fn( ( params ) => {
 
 	var pos = positionLocal.mul( exp( params.scale.div( 2 ).add( 3 ) ) ).add( params.seed ).toVar( );
 
@@ -17,7 +17,7 @@ var stars = tslFn( ( params ) => {
 
 	k = k.mul( exp( params.density.sub( 2 ) ) );
 
-	var dS = cond( k.greaterThan( 0.1 ), params.variation.mul( noise( pos ) ), 0 );
+	var dS = select( k.greaterThan( 0.1 ), params.variation.mul( noise( pos ) ), 0 );
 
 	var col = toHsl( mix( params.background, params.color, k ) );
 

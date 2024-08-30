@@ -4,12 +4,12 @@
 
 
 import { Color } from "three";
-import { clamp, exp, min, mix, mul, positionLocal, tslFn, vec4 } from 'three';
+import { clamp, exp, min, mix, mul, positionLocal, Fn, vec4 } from 'three';
 import { noise } from 'tsl-textures/tsl-utils.js';
 
 
 
-var _clouds = tslFn( ( params ) => {
+var _clouds = Fn( ( params ) => {
 
 	var pos = positionLocal.toVar(),
 		scale = exp( params.scale.div( 1.5 ).sub( 0.5 ) ).toVar(),
@@ -27,7 +27,7 @@ var _clouds = tslFn( ( params ) => {
 } );
 
 
-var clouds = tslFn( ( params ) => {
+var clouds = Fn( ( params ) => {
 
 	return _clouds( params ).rgb;
 
@@ -35,7 +35,7 @@ var clouds = tslFn( ( params ) => {
 
 
 
-clouds.opacity = tslFn( ( params ) => {
+clouds.opacity = Fn( ( params ) => {
 
 	return _clouds( params ).a;
 

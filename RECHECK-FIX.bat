@@ -9,6 +9,7 @@ call npx eslint --fix online\*.js
 call npx eslint --fix examples\*.js
 
 call npx eslint --fix examples\movies\protozoa\*.js
+call npx eslint --fix examples\movies\dancing-lee\*.js
 
 pause
 exit

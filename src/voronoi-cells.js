@@ -4,19 +4,19 @@
 
 
 import { Color } from 'three';
-import { exp, float, If, loop, mix, positionLocal, tslFn, vec3 } from 'three';
+import { exp, float, If, Loop, mix, positionLocal, Fn, vec3 } from 'three';
 import { noise } from 'tsl-textures/tsl-utils.js';
 
 
 
-var cellCenter = tslFn( ([ cell ])=>{
+var cellCenter = Fn( ([ cell ])=>{
 
 	return cell.add( noise( cell.mul( Math.PI ) ) );
 
 } );
 
 
-var voronoiCells = tslFn( ( params )=>{
+var voronoiCells = Fn( ( params )=>{
 
 	var pos = positionLocal.mul( exp( params.scale.div( 2 ).add( 0.5 ) ) ).add( params.seed ).toVar( );
 
@@ -30,7 +30,7 @@ var voronoiCells = tslFn( ( params )=>{
 
 	var i = float( 0 ).toVar();
 
-	loop( 27, () => {
+	Loop( 27, () => {
 
 		var ix = i.mod( 3 ).sub( 1 );
 		var iy = i.div( 3 ).floor().mod( 3 ).sub( 1 );

@@ -4,12 +4,12 @@
 
 
 import { Color } from "three";
-import { add, div, exp, If, mix, mul, oneMinus, positionLocal, pow, tslFn } from 'three';
+import { add, div, exp, If, mix, mul, oneMinus, positionLocal, pow, Fn } from 'three';
 import { noise } from 'tsl-textures/tsl-utils.js';
 
 
 
-var marble = tslFn( ( params ) => {
+var marble = Fn( ( params ) => {
 
 	var pos = positionLocal.mul( exp( params.scale ) ).add( params.seed ).toVar( );
 
@@ -29,12 +29,12 @@ var marble = tslFn( ( params ) => {
 		k.assign( 1 );
 
 	} )
-		.elseif( k.lessThan( minSmooth ), ()=>{
+		.ElseIf( k.lessThan( minSmooth ), ()=>{
 
 			k.assign( 0 );
 
 		} )
-		.else( ()=> {
+		.Else( ()=> {
 
 			var a = k.sub( minSmooth );
 			var b = maxSmooth.sub( minSmooth );

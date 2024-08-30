@@ -4,11 +4,11 @@
 
 
 import { Color } from 'three';
-import { exp, float, loop, mix, positionLocal, tslFn, vec3 } from 'three';
+import { exp, float, Loop, mix, positionLocal, Fn, vec3 } from 'three';
 
 
 
-var noisea = tslFn( ([ pos ])=>{
+var noisea = Fn( ([ pos ])=>{
 
 	var p = pos.mul( 5**0.5 ).fract().toVar();
 	p.addAssign( p.dot( p.add( vec3( 31.4159, 27.1828, 14.142 ) ) ) );
@@ -16,7 +16,7 @@ var noisea = tslFn( ([ pos ])=>{
 
 } );
 
-var noiseg = tslFn( ([ pos ])=>{
+var noiseg = Fn( ([ pos ])=>{
 
 	var minx = pos.x.floor().toVar();
 	var maxx = minx.add( 1 ).toVar();
@@ -50,14 +50,14 @@ var noiseg = tslFn( ([ pos ])=>{
 
 
 
-var dysonSphere = tslFn( ( params )=>{
+var dysonSphere = Fn( ( params )=>{
 
 	var pos = positionLocal.mul( exp( params.scale.div( 2 ).add( 0.5 ) ) ).add( params.seed ).toVar( );
 
 	var res = vec3().toVar();
 	var factor = float( 1 ).toVar();
 
-	loop( params.complexity.add( 4 ), ()=>{
+	Loop( params.complexity.add( 4 ), ()=>{
 
 		res.addAssign( noiseg( pos.mul( factor ) ) );
 		factor.addAssign( factor );

@@ -51,7 +51,7 @@ var geometry = new THREE.BufferGeometry();
 
 var model = new THREE.Mesh(
 	geometry,
-	new THREE.MeshPhysicalMaterial( {} )
+	new THREE.MeshPhysicalNodeMaterial( {} )
 );
 scene.add( model );
 

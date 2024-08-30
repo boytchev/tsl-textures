@@ -4,12 +4,12 @@
 
 
 import { Color } from "three";
-import { exp, float, loop, matcapUV, mix, positionLocal, tslFn, vec3 } from 'three';
+import { exp, float, Loop, matcapUV, mix, positionLocal, Fn, vec3 } from 'three';
 import { noise } from 'tsl-textures/tsl-utils.js';
 
 
 
-var pnoise = tslFn( ([ pos, fat ])=>{
+var pnoise = Fn( ([ pos, fat ])=>{
 
 	return noise( pos ).mul( fat ).clamp( -3.14, 3.14 ).cos().add( 1 ).div( 2 );
 
@@ -17,7 +17,7 @@ var pnoise = tslFn( ([ pos, fat ])=>{
 
 
 
-var protozoa = tslFn( ( params )=>{
+var protozoa = Fn( ( params )=>{
 
 	var pos = positionLocal.mul( exp( params.scale.sub( 1 ) ) ).add( params.seed ).toVar( );
 
@@ -34,7 +34,7 @@ var protozoa = tslFn( ( params )=>{
 
 	var dPos = params.amount.div( 2 ).add( 0.5 ).exp().toVar();
 
-	loop( 10, ()=>{
+	Loop( 10, ()=>{
 
 		rings1.assign( pnoise( pos.xyz.add( matcap ), fat ) );
 		rings2.assign( pnoise( pos.yzx.add( matcap ), fat ) );

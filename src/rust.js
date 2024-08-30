@@ -4,12 +4,12 @@
 
 
 import { Color } from 'three';
-import { exp, loop, mix, positionLocal, tslFn } from 'three';
+import { exp, Loop, mix, positionLocal, Fn } from 'three';
 import { noise } from 'tsl-textures/tsl-utils.js';
 
 
 
-var _rust = tslFn( ( params )=>{
+var _rust = Fn( ( params )=>{
 
 	var pos = positionLocal.mul( exp( params.scale.div( 4 ).add( -1 ) ) ).add( params.seed ).toVar( );
 
@@ -17,7 +17,7 @@ var _rust = tslFn( ( params )=>{
 
 	var k = noise( pos ).toVar();
 
-	loop( params.iterations, ()=>{
+	Loop( params.iterations, ()=>{
 
 		pos.mulAssign( 2 );
 		k.addAssign( noise( pos ) );
@@ -33,7 +33,7 @@ var _rust = tslFn( ( params )=>{
 } );
 
 
-var rust = tslFn( ( params )=>{
+var rust = Fn( ( params )=>{
 
 	var k = _rust( params ).mul( 1.25 ).pow( 0.5 );
 
@@ -47,7 +47,7 @@ var rust = tslFn( ( params )=>{
 
 
 
-rust.opacity = tslFn( ( params )=>{
+rust.opacity = Fn( ( params )=>{
 
 	var k = _rust( params ).mul( params.opacity.add( 0.2 ) );
 

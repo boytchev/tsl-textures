@@ -4,12 +4,12 @@
 
 
 import { Color } from "three";
-import { add, exp, mix, oneMinus, positionLocal, sin, smoothstep, sub, tslFn } from 'three';
+import { add, exp, mix, oneMinus, positionLocal, sin, smoothstep, sub, Fn } from 'three';
 import { noise } from 'tsl-textures/tsl-utils.js';
 
 
 
-var isolines = tslFn( ( params )=>{
+var isolines = Fn( ( params )=>{
 
 	var pos = positionLocal.mul( exp( params.scale ) ).add( params.seed ).toVar( );
 

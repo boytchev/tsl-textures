@@ -4,20 +4,20 @@
 
 
 import { Color } from 'three';
-import { exp, float, If, loop, mix, mul, positionLocal, remap, smoothstep, tslFn, vec3 } from 'three';
+import { exp, float, If, Loop, mix, mul, positionLocal, remap, smoothstep, Fn, vec3 } from 'three';
 import { noise } from 'tsl-textures/tsl-utils.js';
 
 
 
 
-var planet = tslFn( ( params )=>{
+var planet = Fn( ( params )=>{
 
 	var k = float( 0 ).toVar(),
 		sum = float( 0 ).toVar(),
 		scale = exp( params.scale.sub( 2 ) ).toVar(),
 		power = float( 2 ).toVar();
 
-	loop( params.iterations.add( 10 ), ()=>{
+	Loop( params.iterations.add( 10 ), ()=>{
 
 		k.addAssign( mul( power, noise( positionLocal.mul( scale ).add( params.seed ) ) ) );
 		sum.addAssign( power );
@@ -47,7 +47,7 @@ var planet = tslFn( ( params )=>{
 		) );
 
 	} )
-		.elseif( k.lessThan( levelCoast ), ()=>{
+		.ElseIf( k.lessThan( levelCoast ), ()=>{
 
 			// shallow-sand
 			color.assign( mix(
@@ -57,13 +57,13 @@ var planet = tslFn( ( params )=>{
 			) );
 
 		} )
-		.elseif( k.lessThan( levelGrass ), ()=>{
+		.ElseIf( k.lessThan( levelGrass ), ()=>{
 
 			// sand
 			color.assign( params.colorBeach );
 
 		} )
-		.elseif( k.lessThan( levelSand ), ()=>{
+		.ElseIf( k.lessThan( levelSand ), ()=>{
 
 			// shallow-sand-grass
 			color.assign( mix(
@@ -73,7 +73,7 @@ var planet = tslFn( ( params )=>{
 			) );
 
 		} )
-		.elseif( k.lessThan( levelMountain ), ()=>{
+		.ElseIf( k.lessThan( levelMountain ), ()=>{
 
 			// grass-forest
 			color.assign( mix(
@@ -83,7 +83,7 @@ var planet = tslFn( ( params )=>{
 			) );
 
 		} )
-		.else( ()=>{
+		.Else( ()=>{
 
 			// forest-snow
 			var levelSnow = mix( 1, levelMountain, params.balanceSnow );

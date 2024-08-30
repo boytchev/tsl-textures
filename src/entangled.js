@@ -4,19 +4,19 @@
 
 
 import { Color } from "three";
-import { abs, exp, float, floor, loop, max, mix, mul, oneMinus, positionLocal, pow, sin, tslFn } from 'three';
+import { abs, exp, float, floor, Loop, max, mix, mul, oneMinus, positionLocal, pow, sin, Fn } from 'three';
 import { noise } from 'tsl-textures/tsl-utils.js';
 
 
 
-var entangled = tslFn( ( params ) => {
+var entangled = Fn( ( params ) => {
 
 	var scale = exp( params.scale.div( 2 ) ).toVar( );
 	var pos = positionLocal.add( params.seed ).toVar( );
 	var k = float( -10000 ).toVar( );
 	var k1 = float( 0 ).toVar( );
 
-	loop( floor( float( params.density ) ), ()=> {
+	Loop( floor( float( params.density ) ), ()=> {
 
 		k1.assign( sin( noise( mul( pos, scale ) ).mul( 3*Math.PI ) ) );
 		k.assign( max( k, k1 ) );

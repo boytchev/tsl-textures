@@ -3,12 +3,12 @@
 
 
 
-import { abs, cos, cross, exp, modelNormalMatrix, normalLocal, positionLocal, pow, remap, sin, sub, tangentLocal, tslFn, vec3 } from 'three';
+import { abs, cos, cross, exp, modelNormalMatrix, normalLocal, positionLocal, pow, remap, sin, sub, tangentLocal, Fn, vec3 } from 'three';
 import { noise } from 'tsl-textures/tsl-utils.js';
 
 
 
-var surfacePos = tslFn( ([ pos, normal, bump, density, seed ]) => {
+var surfacePos = Fn( ([ pos, normal, bump, density, seed ]) => {
 
 	var k = noise( pos.add( seed ) ).mul( 0.5 ).add( 0.5 );
 	k = bump.mul( pow( abs( k ), density ) );
@@ -18,7 +18,7 @@ var surfacePos = tslFn( ([ pos, normal, bump, density, seed ]) => {
 } );
 
 
-var concrete = tslFn( ( params ) => {
+var concrete = Fn( ( params ) => {
 
 	var eps = 0.001;
 

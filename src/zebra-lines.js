@@ -4,12 +4,12 @@
 
 
 import { Color } from "three";
-import { acos, clamp, exp, mix, positionLocal, sin, tslFn } from 'three';
+import { acos, clamp, exp, mix, positionLocal, sin, Fn } from 'three';
 import { spherical } from 'tsl-textures/tsl-utils.js';
 
 
 
-var zebraLines = tslFn( ( params ) => {
+var zebraLines = Fn( ( params ) => {
 
 	var pos = positionLocal.normalize().toVar( );
 

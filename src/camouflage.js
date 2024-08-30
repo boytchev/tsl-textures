@@ -4,12 +4,12 @@
 
 
 import { Color } from 'three';
-import { exp, If, positionLocal, round, tslFn, vec3 } from 'three';
+import { exp, If, positionLocal, round, Fn, vec3 } from 'three';
 import { noise } from 'tsl-textures/tsl-utils.js';
 
 
 
-var camouflage = tslFn( ( params )=>{
+var camouflage = Fn( ( params )=>{
 
 	var pos = positionLocal.mul( exp( params.scale ) ).add( params.seed ).toVar( );
 
@@ -21,19 +21,19 @@ var camouflage = tslFn( ( params )=>{
 
 	}
 	)
-		.elseif( round( noise( pos.yzx, 1, 0.3 ) ).greaterThanEqual( 1 ), () => {
+		.ElseIf( round( noise( pos.yzx, 1, 0.3 ) ).greaterThanEqual( 1 ), () => {
 
 			color.assign( params.colorB );
 
 		}
 		)
-		.elseif( round( noise( pos.zxy, 1, 0.4 ) ).greaterThanEqual( 1 ), () => {
+		.ElseIf( round( noise( pos.zxy, 1, 0.4 ) ).greaterThanEqual( 1 ), () => {
 
 			color.assign( params.colorC );
 
 		}
 		)
-		.else( () => {
+		.Else( () => {
 
 			color.assign( params.colorD );
 

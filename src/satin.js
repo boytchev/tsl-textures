@@ -4,12 +4,12 @@
 
 
 import { Color } from "three";
-import { abs, exp, mix, positionLocal, pow, tslFn, vec3 } from 'three';
+import { abs, exp, mix, positionLocal, pow, Fn, vec3 } from 'three';
 import { noise } from 'tsl-textures/tsl-utils.js';
 
 
 
-var satin = tslFn( ( params ) => {
+var satin = Fn( ( params ) => {
 
 	var pos = positionLocal.toVar( );
 

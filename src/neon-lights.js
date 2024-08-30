@@ -4,12 +4,12 @@
 
 
 import { Color } from "three";
-import { abs, cond, exp, oneMinus, positionLocal, sqrt, tslFn, vec3 } from 'three';
+import { abs, select, exp, oneMinus, positionLocal, sqrt, Fn, vec3 } from 'three';
 import { hsl, noise, toHsl } from 'tsl-textures/tsl-utils.js';
 
 
 
-var neonLights = tslFn( ( params ) => {
+var neonLights = Fn( ( params ) => {
 
 	var pos = positionLocal;//.mul( exp( params.scale ) ).add( params.seed ).toVar( );
 
@@ -30,7 +30,7 @@ var neonLights = tslFn( ( params ) => {
 	var HSL = toHsl( neon );
 	neon.assign( hsl( HSL.x, HSL.y, HSL.z.mul( k ) ) );
 
-	color.addAssign( cond( params.mode.equal( 0 ), neon, neon.negate() ).mul( thinness ) );
+	color.addAssign( select( params.mode.equal( 0 ), neon, neon.negate() ).mul( thinness ) );
 
 	k.assign( noise( vec3( y, z, x ).mul( scale ).sub( params.seed ) ) );
 	k.assign( oneMinus( sqrt( abs( k ) ) ).pow( 3 ) );
@@ -39,7 +39,7 @@ var neonLights = tslFn( ( params ) => {
 	var HSL = toHsl( neon );
 	neon.assign( hsl( HSL.x, HSL.y, HSL.z.mul( k ) ) );
 
-	color.addAssign( cond( params.mode.equal( 0 ), neon, neon.negate() ).mul( thinness ) );
+	color.addAssign( select( params.mode.equal( 0 ), neon, neon.negate() ).mul( thinness ) );
 
 
 	k.assign( noise( vec3( z, x, y.negate() ).mul( scale ).add( params.seed ) ) );
@@ -49,7 +49,7 @@ var neonLights = tslFn( ( params ) => {
 	var HSL = toHsl( neon );
 	neon.assign( hsl( HSL.x, HSL.y, HSL.z.mul( k ) ) );
 
-	color.addAssign( cond( params.mode.equal( 0 ), neon, neon.negate() ).mul( thinness ) );
+	color.addAssign( select( params.mode.equal( 0 ), neon, neon.negate() ).mul( thinness ) );
 
 	return color;
 

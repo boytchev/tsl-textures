@@ -4,19 +4,19 @@
 
 
 import { Color } from "three";
-import { exp, loop, mix, positionLocal, tslFn, vec3 } from 'three';
+import { exp, Loop, mix, positionLocal, Fn, vec3 } from 'three';
 import { applyEuler, noise } from 'tsl-textures/tsl-utils.js';
 
 
 
-var photosphere = tslFn( ( params ) => {
+var photosphere = Fn( ( params ) => {
 
 	var scale = exp( params.scale.add( 1 ) ).toVar( );
 	var pos = positionLocal.toVar( );
 
 	var vec = vec3( pos ).toVar();
 
-	loop( 6, () => {
+	Loop( 6, () => {
 
 		vec.assign( applyEuler( vec, pos.mul( scale ) ) );
 		scale.mulAssign( params.seed.mul( scale ).sin().mul( 0.05 ).add( 1.1 ) );
