@@ -1,6 +1,9 @@
 # TSL Textures
 
 
+## 1.2.0
+* Converted to r168
+
 ## 1.1.0
 * Added "Rotator" in *rotator.js*
 
