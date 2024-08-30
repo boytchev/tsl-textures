@@ -31,7 +31,7 @@ light.position.set( 0, 0, 6 );
 scene.add( light );
 
 
-var uNoise = THREE.tslFn( ([ pos, normal ]) => {
+var uNoise = THREE.Fn( ([ pos, normal ]) => {
 
 	var k = THREE.add( noise( pos ).mul( 10 ), noise( pos ).mul( 20 ) ).mul( 0.25 );
 	var pn = noise( pos.div( 6 ) ).mul( 4 );
@@ -43,7 +43,7 @@ var uNoise = THREE.tslFn( ([ pos, normal ]) => {
 
 } );
 
-var kNoise = THREE.tslFn( ([ pos ]) => {
+var kNoise = THREE.Fn( ([ pos ]) => {
 
 	var k = THREE.add( noise( pos ).mul( 10 ), noise( pos ).mul( 20 ) ).mul( 0.25 );
 	var pn = noise( pos.div( 2 ) ).mul( 4 );
@@ -55,7 +55,7 @@ var kNoise = THREE.tslFn( ([ pos ]) => {
 
 } );
 
-var test = THREE.tslFn( ( /*params*/ ) => {
+var test = THREE.Fn( ( /*params*/ ) => {
 
 	var eps = 0.001;
 
@@ -76,12 +76,12 @@ var test = THREE.tslFn( ( /*params*/ ) => {
 } );
 
 
-var testcol = THREE.tslFn( ( /*params*/ ) => {
+var testcol = THREE.Fn( ( /*params*/ ) => {
 
 	var position = THREE.positionLocal.mul( 11 ).add( THREE.timerGlobal().div( 3 ) );
 	var k = kNoise( position );
 
-	return THREE.cond( k.lessThan( 0.5 ), THREE.vec3( 1, 1, 0.5 ), THREE.vec3( 0.6, 0.3, 0 ) );
+	return THREE.select( k.lessThan( 0.5 ), THREE.vec3( 1, 1, 0.5 ), THREE.vec3( 0.6, 0.3, 0 ) );
 
 } );
 

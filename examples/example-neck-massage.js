@@ -7,7 +7,7 @@ import { rotator } from "tsl-textures/rotator.js";
 
 
 
-// general setup, boring, skip to the next comment
+// general setup
 
 var scene = new THREE.Scene();
 scene.background = new THREE.Color( "black" );
@@ -44,10 +44,8 @@ scene.add( light );
 var simplex = new SimplexNoise();
 
 
-var model;
 
-
-// next comment
+// configuration of neck motion
 
 var neck = {
 	angles: THREE.uniform( new THREE.Vector3( 0, 1, 0 ) ),
@@ -57,6 +55,11 @@ var neck = {
 	selectorWidth: 2.5
 };
 
+
+
+// load Lee Perry Smith
+
+var model;
 
 new GLTFLoader().load( `../assets/models/LeePerrySmith/LeePerrySmith.glb`, gltf => {
 
@@ -75,17 +78,20 @@ new GLTFLoader().load( `../assets/models/LeePerrySmith/LeePerrySmith.glb`, gltf 
 } );
 
 
+
+// main animation Loop
+
 function animationLoop( t ) {
 
 	t /= 2000;
 
 	neck.angles.value.set(
 		0.5*simplex.noise( t, 0 ),
-		1.0*simplex.noise( t, 1 ),
+		0.8*simplex.noise( t, 1 ),
 		0.4*simplex.noise( t, 2 ),
 	);
 
-	if ( model ) model.rotation.y = 2*simplex.noise( t/3, 3 );
+	model.rotation.y = 2*simplex.noise( t/3, 3 );
 
 	controls.update( );
 	light.position.copy( camera.position );

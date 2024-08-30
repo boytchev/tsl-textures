@@ -116,7 +116,7 @@ var materialGround = new THREE.MeshPhysicalNodeMaterial( {
 
 
 var materials = [ materialNormal, materialLight, materialGray, materialGround ];
-var lineMaterial = new THREE.LineBasicMaterial( {
+var lineMaterial = new THREE.LineBasicNodeMaterial( {
 	color: 'black',
 	transparent: true,
 	opacity: 0.2
@@ -200,7 +200,7 @@ var texture = new THREE.CanvasTexture( canvas );
 
 var shadow1 = new THREE.Mesh(
 	new THREE.PlaneGeometry( 1, 1 ),
-	new THREE.MeshBasicMaterial( {
+	new THREE.MeshBasicNodeMaterial( {
 		map: texture,
 		side: THREE.DoubleSide,
 		transparent: true,

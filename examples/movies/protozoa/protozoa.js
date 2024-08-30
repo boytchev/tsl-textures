@@ -1,8 +1,6 @@
 ﻿var audio = new Audio( "sounds/all-sounds.mp3" );
 
 import * as THREE from "three";
-import * as NODES from "three/nodes";
-import WebGPURenderer from "three/addons/renderers/webgpu/WebGPURenderer.js";
 import { mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js';
 import { SimplexNoise } from "three/addons/math/SimplexNoise.js";
 
@@ -71,7 +69,7 @@ scene.background = new THREE.Color( "black" );
 var camera = new THREE.PerspectiveCamera( 30, innerWidth / innerHeight, 0.01 );
 camera.position.set( 0, 0, 8 );
 
-var renderer = new WebGPURenderer( { antialias: true } );
+var renderer = new THREE.WebGPURenderer( { antialias: true } );
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.setSize( innerWidth, innerHeight );
@@ -120,7 +118,7 @@ var starsParams = {
 
 var cosmos = new THREE.Mesh(
 	new THREE.IcosahedronGeometry( 100 ),
-	new NODES.MeshBasicNodeMaterial( {
+	new THREE.MeshBasicNodeMaterial( {
 		side: THREE.BackSide,
 		colorNode: stars( starsParams ),
 	} )
@@ -141,11 +139,11 @@ var stationParams = {
 
 var station = new THREE.Mesh(
 	new THREE.TorusGeometry( 2, 0.1, 20, 100 ).scale( 1, 1, 3 ),
-	new NODES.MeshPhysicalNodeMaterial( {
+	new THREE.MeshPhysicalNodeMaterial( {
 		roughness: 0.7,
 		metalness: 0.3,
 		side: THREE.DoubleSide,
-		colorNode: dysonSphere( stationParams ).add( NODES.vec3( 0.15, 0.075, 0 ) ),
+		colorNode: dysonSphere( stationParams ).add( THREE.vec3( 0.15, 0.075, 0 ) ),
 	} )
 );
 scene.add( station );
@@ -173,16 +171,16 @@ var	blobExplode = 0;
 
 var blobParams = {
 	...protozoa.defaults,
-	scale: NODES.uniform( 1 ),
-	fat: NODES.uniform( 0.3 ),
-	amount: NODES.uniform( 0.5 ),
+	scale: THREE.uniform( 1 ),
+	fat: THREE.uniform( 0.3 ),
+	amount: THREE.uniform( 0.5 ),
 	background: new THREE.Color( 'azure' ),
-	seed: NODES.uniform( 0 )
+	seed: THREE.uniform( 0 )
 };
 
 var blob = new THREE.Mesh(
 	new THREE.IcosahedronGeometry( 1, 20 ),
-	new NODES.MeshPhysicalNodeMaterial( {
+	new THREE.MeshPhysicalNodeMaterial( {
 		side: THREE.DoubleSide,
 		transparent: true,
 		colorNode: protozoa( blobParams ).mul( 2 ),
@@ -260,7 +258,7 @@ var deckColorNode = simplexNoise( {
 
 var deck = new THREE.Mesh(
 	new THREE.CylinderGeometry( 1, 1, 0.3, 30, 1, true ).rotateY( Math.PI/30 ),
-	new NODES.MeshPhysicalNodeMaterial( {
+	new THREE.MeshPhysicalNodeMaterial( {
 		transparent: true,
 		alphaMap: deckMap,
 		side: THREE.BackSide,
@@ -282,7 +280,7 @@ scene.add( deck );
 
 var deckCeiling = new THREE.Mesh(
 	new THREE.SphereGeometry( 1, 30, 5, 0, 2*Math.PI, 0, Math.PI/2 ).scale( 1, 0.025, 1 ).translate( 0, 0.15, 0 ),
-	new NODES.MeshPhysicalNodeMaterial( {
+	new THREE.MeshPhysicalNodeMaterial( {
 		side: THREE.DoubleSide,
 		colorNode: deckColorNode,
 	} )
@@ -290,7 +288,7 @@ var deckCeiling = new THREE.Mesh(
 
 var deckFloor = new THREE.Mesh(
 	new THREE.SphereGeometry( 1, 30, 5, 0, 2*Math.PI, Math.PI/2, Math.PI/2 ).scale( 1, 0.025, 1 ).translate( 0, -0.15, 0 ),
-	new NODES.MeshPhysicalNodeMaterial( {
+	new THREE.MeshPhysicalNodeMaterial( {
 		side: THREE.DoubleSide,
 		colorNode: deckColorNode,
 	} )
@@ -308,12 +306,12 @@ var jupiterParams = {
 	blur: 0.4,
 	scale: 2.5,
 	colorC: new THREE.Color( 0xFFE0D0 ),
-	seed: NODES.uniform( 3 ),
+	seed: THREE.uniform( 3 ),
 };
 
 var jupiter = new THREE.Mesh(
 	new THREE.IcosahedronGeometry( 1, 20 ),
-	new NODES.MeshPhysicalNodeMaterial( {
+	new THREE.MeshPhysicalNodeMaterial( {
 		colorNode: gasGiant( jupiterParams ),
 	} )
 );
@@ -356,7 +354,7 @@ var europaParams = {
 
 var europa = new THREE.Mesh(
 	new THREE.IcosahedronGeometry( 1, 20 ),
-	new NODES.MeshPhysicalNodeMaterial( {
+	new THREE.MeshPhysicalNodeMaterial( {
 		colorNode: planet( europaParams ).mul( 1 ),
 	} )
 );
@@ -480,7 +478,7 @@ function start() {
 
 
 
-// main animation loop
+// main animation Loop
 
 var blackBackground = 1;
 

@@ -106,7 +106,7 @@ blobGeometry.computeVertexNormals();
 
 
 
-// main animation loop
+// main animation Loop
 
 function animationLoop( t ) {
 
