@@ -1,6 +1,9 @@
 # TSL Textures
 
 
+## 1.3.0
+* Added "Scaler" in *scaler.js*
+
 ## 1.2.0
 * Converted to r168
 

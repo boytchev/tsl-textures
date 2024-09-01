@@ -286,6 +286,19 @@ const matRotYXZ = Fn( ([ angles ])=>{
 
 
 
+// generate scaling matrix
+const matScale = Fn( ([ scales ])=>{
+
+	return mat4(
+		scales.x, 0, 0, 0,
+		0, scales.y, 0, 0,
+		0, 0, scales.z, 0,
+		0, 0, 0, 1 );
+
+} );
+
+
+
 // generate translation matrix
 const matTrans = Fn( ([ vector ])=>{
 
@@ -387,6 +400,7 @@ export
 	matRotZ,
 	matRotYXZ,
 	matTrans,
+	matScale,
 	selectPlanar,
 	overlayPlanar
 };
