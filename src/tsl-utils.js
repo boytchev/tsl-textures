@@ -311,25 +311,6 @@ const matTrans = Fn( ([ vector ])=>{
 } );
 
 
-/*
-const selectLinear = Fn( ( [c,a,b] )=>{
-
-	// C is projected on segment AB
-	// result is [0,1] inside AB, 0 before A, 1 after B
-
-	var ca = a.sub(c),
-		ab = b.sub(a).toVar();
-
-	var caab = ca.dot(ab),
-		abab = ab.dot(ab);
-
-	var k = caab.div(abab).negate();
-
-	return smoothstep(0,1,k);
-
-} );
-*/
-
 const selectPlanar = Fn( ([ pos, selAngles, selCenter, selWidth ])=>{
 
 	// select zone in a plane through point selCenter,
