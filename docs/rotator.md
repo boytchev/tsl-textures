@@ -6,7 +6,7 @@
 
 ## Rotator
 
-This texture deforms a shape by rotating part of it vertices. The rotation is
+This texture deforms a shape by rotating part of its vertices. The rotation is
 defined as YXZ rotation of Euler angles around a 3D pivot point used as rotation
 center.
 

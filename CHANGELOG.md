@@ -1,6 +1,9 @@
 # TSL Textures
 
 
+## 1.4.0
+* Added "Translator" in *translator.js*
+
 ## 1.3.0
 * Added "Scaler" in *scaler.js*
 

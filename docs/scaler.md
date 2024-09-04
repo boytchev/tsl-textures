@@ -6,7 +6,7 @@
 
 ## Scaler
 
-This texture deforms a shape by scaling to coordinates of part of it vertices.
+This texture deforms a shape by scaling the coordinates of part of its vertices.
 The scaling is relative to a 3D pivot point used as scaling center.
 
 The selection of affected vertices is set by a imaginary thick planar
