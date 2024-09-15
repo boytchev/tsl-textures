@@ -109,6 +109,21 @@ li a {
 	color: black;
 }
 
+.big-block {
+	width: 18em !important;
+	height: 13em !important;
+}
+
+.big-block img {
+	width: 17em !important;
+	border-radius: 0.25em;
+}
+
+.big-block:hover img {
+	width: 17em !important;
+}
+
+
 p {
 	font-size: 1.25em;
 	text-align: justify;

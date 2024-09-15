@@ -44,7 +44,7 @@ a Dyson sphere texture from [dyson-texture.js](https://boytchev.github.io/tsl-te
 [<img src="https://boytchev.github.io/tsl-textures/examples/example-protozoa.jpg">](https://boytchev.github.io/tsl-textures/examples/example-protozoa.html)
 
 
-#### Example "Neck Massage"
+#### Example "Neck massage"
 
 Uses [rotator.js](https://boytchev.github.io/tsl-textures/docs/rotator.html)
 texture that applies soft matrices on model vertices. This allows to make
