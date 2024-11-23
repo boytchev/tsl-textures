@@ -27,13 +27,13 @@ var noiseg = Fn( ([ pos ])=>{
 	var minz = pos.z.floor().toVar();
 	var maxz = minz.add( 1 ).toVar();
 
-	var dx = pos.x.fract().smoothstep( 1, 0 ).toVar();
-	var dy = pos.y.fract().smoothstep( 1, 0 ).toVar();
-	var dz = pos.z.fract().smoothstep( 1, 0 ).toVar();
+	var dx = pos.x.fract().smoothstep( 0, 1 ).toVar();
+	var dy = pos.y.fract().smoothstep( 0, 1 ).toVar();
+	var dz = pos.z.fract().smoothstep( 0, 1 ).toVar();
 
-	var mx = dx.oneMinus().smoothstep( 1, 0 ).toVar();
-	var my = dy.oneMinus().smoothstep( 1, 0 ).toVar();
-	var mz = dz.oneMinus().smoothstep( 1, 0 ).toVar();
+	var mx = dx.oneMinus().smoothstep( 0, 1 ).toVar();
+	var my = dy.oneMinus().smoothstep( 0, 1 ).toVar();
+	var mz = dz.oneMinus().smoothstep( 0, 1 ).toVar();
 
 	var n000 = noisea( vec3( minx, miny, minz ) ).mul( mx ).mul( my ).mul( mz ).toVar();
 	var n001 = noisea( vec3( minx, miny, maxz ) ).mul( mx ).mul( my ).mul( dz ).toVar();
