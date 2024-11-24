@@ -16,6 +16,15 @@ var noisea = Fn( ([ pos ])=>{
 
 } );
 
+
+var smooth = Fn( ([ x ])=>{
+
+	var t = x.oneMinus().clamp( 0, 1 ).toVar();
+	return t.mul( t ).mul( float( 3 ).sub( t.mul( 2 ) ) );
+
+} );
+
+
 var noiseg = Fn( ([ pos ])=>{
 
 	var minx = pos.x.floor().toVar();
@@ -27,13 +36,13 @@ var noiseg = Fn( ([ pos ])=>{
 	var minz = pos.z.floor().toVar();
 	var maxz = minz.add( 1 ).toVar();
 
-	var dx = pos.x.fract().smoothstep( 0, 1 ).toVar();
-	var dy = pos.y.fract().smoothstep( 0, 1 ).toVar();
-	var dz = pos.z.fract().smoothstep( 0, 1 ).toVar();
+	var dx = smooth( pos.x.fract() ).toVar();
+	var dy = smooth( pos.y.fract() ).toVar();
+	var dz = smooth( pos.z.fract() ).toVar();
 
-	var mx = dx.oneMinus().smoothstep( 0, 1 ).toVar();
-	var my = dy.oneMinus().smoothstep( 0, 1 ).toVar();
-	var mz = dz.oneMinus().smoothstep( 0, 1 ).toVar();
+	var mx = smooth( dx.oneMinus() ).toVar();
+	var my = smooth( dy.oneMinus() ).toVar();
+	var mz = smooth( dz.oneMinus() ).toVar();
 
 	var n000 = noisea( vec3( minx, miny, minz ) ).mul( mx ).mul( my ).mul( mz ).toVar();
 	var n001 = noisea( vec3( minx, miny, maxz ) ).mul( mx ).mul( my ).mul( dz ).toVar();
