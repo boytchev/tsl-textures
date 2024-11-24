@@ -1,6 +1,9 @@
 # TSL Textures
 
 
+## 1.4.2
+* Recovered original texture pattern for Dyson sphere
+
 ## 1.4.1
 * Fix for issue #6 Protozoa demo broken due to incorrect smoothstep usage
 
