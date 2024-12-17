@@ -1,6 +1,9 @@
 # TSL Textures
 
 
+## 1.5.0
+* Updated to Three.js r171
+
 ## 1.4.2
 * Recovered original texture pattern for Dyson sphere
 
