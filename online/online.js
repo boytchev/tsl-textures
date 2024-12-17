@@ -1,5 +1,6 @@
 ﻿
 import * as THREE from "three";
+import { uniform } from "three/tsl";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import * as lil from "three/addons/libs/lil-gui.module.min.js";
@@ -41,6 +42,7 @@ var light = new THREE.DirectionalLight( 'white', 1.5 );
 light.decay = 0;
 scene.add( light );
 
+
 var ambientLight = new THREE.AmbientLight( 'white', 2 );
 scene.add( ambientLight );
 
@@ -73,8 +75,6 @@ function onResize( /*event*/ ) {
 }
 
 onResize( );
-
-
 
 
 
@@ -310,7 +310,7 @@ function install( tslTexture, useGeometry=USE_BALL, addTexture=ADD_NOTHING ) {
 			if ( tslTexture.defaults.$selectorPlanar ) {
 
 				model.material.emissiveNode = overlayPlanar( dynamics );
-				dynamics.selectorShow = THREE.uniform( 0 );
+				dynamics.selectorShow = uniform( 0 );
 
 			}
 

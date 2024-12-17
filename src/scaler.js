@@ -4,7 +4,7 @@
 
 
 import { Vector2, Vector3 } from "three";
-import { cross, Fn, mix, modelNormalMatrix, normalLocal, positionLocal, sub, tangentLocal, vec3, vec4 } from 'three';
+import { cross, Fn, mix, normalLocal, positionLocal, sub, tangentLocal, transformNormalToView, vec3, vec4 } from 'three/tsl';
 import { matScale, matTrans, selectPlanar } from 'tsl-textures/tsl-utils.js';
 
 
@@ -47,7 +47,7 @@ scaler.normal = Fn( ( params ) => {
 	var dU = sub( posU, pos ),
 		dV = sub( posV, pos );
 
-	return modelNormalMatrix.mul( cross( dU, dV ).normalize() );
+	return transformNormalToView( cross( dU, dV ).normalize() );
 
 } );
 

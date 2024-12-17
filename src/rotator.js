@@ -4,7 +4,7 @@
 
 
 import { Vector2, Vector3 } from "three";
-import { cross, Fn, modelNormalMatrix, normalLocal, positionLocal, sub, tangentLocal, vec4 } from 'three';
+import { cross, Fn, normalLocal, positionLocal, sub, tangentLocal, transformNormalToView, vec4 } from 'three/tsl';
 import { matRotYXZ, matTrans, selectPlanar } from 'tsl-textures/tsl-utils.js';
 
 
@@ -47,7 +47,7 @@ rotator.normal = Fn( ( params ) => {
 	var dU = sub( posU, pos ),
 		dV = sub( posV, pos );
 
-	return modelNormalMatrix.mul( cross( dU, dV ).normalize() );
+	return transformNormalToView( cross( dU, dV ).normalize() );
 
 } );
 

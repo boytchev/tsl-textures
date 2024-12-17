@@ -3,7 +3,7 @@
 
 
 
-import { cos, cross, exp, Fn, modelNormalMatrix, normalLocal, positionLocal, remap, sin, sub, tangentLocal, vec3 } from 'three';
+import { cos, cross, exp, Fn, normalLocal, positionLocal, remap, sin, sub, tangentLocal, transformNormalToView, vec3 } from 'three/tsl';
 import { noise } from 'tsl-textures/tsl-utils.js';
 
 
@@ -38,7 +38,7 @@ var waterDrops = Fn( ( params ) => {
 	var dU = sub( posU, pos ),
 		dV = sub( posV, pos );
 
-	return modelNormalMatrix.mul( cross( dU, dV ).normalize() );
+	return transformNormalToView( cross( dU, dV ).normalize() );
 
 } );
 
