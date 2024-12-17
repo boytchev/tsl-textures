@@ -1,4 +1,5 @@
 ﻿import * as THREE from "three";
+import { uniform } from "three/tsl";
 
 import { planet } from "tsl-textures/planet.js";
 import { stars } from "tsl-textures/stars.js";
@@ -55,7 +56,7 @@ var earthParams = {
 	...planet.defaults,
 	iterations: 3,
 	scale: 1,
-	seed: THREE.uniform( 0 )
+	seed: uniform( 0 )
 };
 
 var earth = new THREE.Mesh(
@@ -80,7 +81,7 @@ var moonParams = {
 	colorGrass: new THREE.Color( 10427420 ),
 	colorForest: new THREE.Color( 16621056 ),
 	colorSnow: new THREE.Color( 16770304 ),
-	seed: THREE.uniform( 0 )
+	seed: uniform( 0 )
 };
 
 var moon = new THREE.Mesh(

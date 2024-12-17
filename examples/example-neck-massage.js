@@ -1,4 +1,5 @@
 ﻿import * as THREE from "three";
+import { uniform } from "three/tsl";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { SimplexNoise } from "three/addons/math/SimplexNoise.js";
@@ -48,7 +49,7 @@ var simplex = new SimplexNoise();
 // configuration of neck motion
 
 var neck = {
-	angles: THREE.uniform( new THREE.Vector3( 0, 1, 0 ) ),
+	angles: uniform( new THREE.Vector3( 0, 1, 0 ) ),
 	center: new THREE.Vector3( 0, 0, 0 ),
 	selectorCenter: new THREE.Vector3( 0, -1.2, 0 ),
 	selectorAngles: new THREE.Vector2( 0.63, 0 ),

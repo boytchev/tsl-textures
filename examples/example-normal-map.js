@@ -1,6 +1,7 @@
 ﻿
 
 import * as THREE from "three";
+import { transformNormalToView, add, Fn, mul, vec3, time, cross, tangentLocal, positionLocal, normalLocal, select } from "three/tsl";
 import { noise } from 'tsl-textures/tsl-utils.js';
 
 
@@ -31,11 +32,11 @@ light.position.set( 0, 0, 6 );
 scene.add( light );
 
 
-var uNoise = THREE.Fn( ([ pos, normal ]) => {
+var uNoise = Fn( ([ pos, normal ]) => {
 
-	var k = THREE.add( noise( pos ).mul( 10 ), noise( pos ).mul( 20 ) ).mul( 0.25 );
+	var k = add( noise( pos ).mul( 10 ), noise( pos ).mul( 20 ) ).mul( 0.25 );
 	var pn = noise( pos.div( 6 ) ).mul( 4 );
-	var p = THREE.timerGlobal( 0.5 ).sin().mul( 5 ).add( 2.2 ).add( pn ).clamp( 0.2, 6.2 );
+	var p = time.mul( 0.5 ).sin().mul( 5 ).add( 2.2 ).add( pn ).clamp( 0.2, 6.2 );
 
 	k = k.abs().pow( p ).div( 5 );
 
@@ -43,11 +44,11 @@ var uNoise = THREE.Fn( ([ pos, normal ]) => {
 
 } );
 
-var kNoise = THREE.Fn( ([ pos ]) => {
+var kNoise = Fn( ([ pos ]) => {
 
-	var k = THREE.add( noise( pos ).mul( 10 ), noise( pos ).mul( 20 ) ).mul( 0.25 );
+	var k = add( noise( pos ).mul( 10 ), noise( pos ).mul( 20 ) ).mul( 0.25 );
 	var pn = noise( pos.div( 2 ) ).mul( 4 );
-	var p = THREE.timerGlobal( 0.5 ).sin().mul( 10 ).add( 3.2 ).add( pn ).clamp( 0.2, 6.2 );
+	var p = time.mul( 0.5 ).sin().mul( 10 ).add( 3.2 ).add( pn ).clamp( 0.2, 6.2 );
 
 
 	k = k.abs().pow( p ).div( 5 );
@@ -55,14 +56,14 @@ var kNoise = THREE.Fn( ([ pos ]) => {
 
 } );
 
-var test = THREE.Fn( ( /*params*/ ) => {
+var test = Fn( ( /*params*/ ) => {
 
 	var eps = 0.001;
 
-	var position = THREE.positionLocal.mul( 11 ).add( THREE.timerGlobal().div( 3 ) );
-	var normal = THREE.normalLocal.normalize().toVar();
-	var tangent = THREE.tangentLocal.normalize().mul( eps ).toVar();
-	var bitangent = THREE.cross( normal, tangent ).normalize().mul( eps ).toVar();
+	var position = positionLocal.mul( 11 ).add( time.div( 3 ) );
+	var normal = normalLocal.normalize().toVar();
+	var tangent = tangentLocal.normalize().mul( eps ).toVar();
+	var bitangent = cross( normal, tangent ).normalize().mul( eps ).toVar();
 
 	var pos = uNoise( position, normal );
 	var posU = uNoise( position.add( tangent ), normal );
@@ -76,12 +77,12 @@ var test = THREE.Fn( ( /*params*/ ) => {
 } );
 
 
-var testcol = THREE.Fn( ( /*params*/ ) => {
+var testcol = Fn( ( /*params*/ ) => {
 
-	var position = THREE.positionLocal.mul( 11 ).add( THREE.timerGlobal().div( 3 ) );
+	var position = positionLocal.mul( 11 ).add( time.div( 3 ) );
 	var k = kNoise( position );
 
-	return THREE.select( k.lessThan( 0.5 ), THREE.vec3( 1, 1, 0.5 ), THREE.vec3( 0.6, 0.3, 0 ) );
+	return select( k.lessThan( 0.5 ), vec3( 1, 1, 0.5 ), vec3( 0.6, 0.3, 0 ) );
 
 } );
 
@@ -90,7 +91,7 @@ var earth = new THREE.Mesh(
 	new THREE.SphereGeometry( 1, 60, 30 ),
 	new THREE.MeshPhysicalNodeMaterial( {
 		colorNode: testcol( ),
-		normalNode: THREE.modelNormalMatrix.mul( test( ) ),
+		normalNode: transformNormalToView( test( ) ),
 		metalness: 0.6,
 		roughness: 0.3,
 	} )

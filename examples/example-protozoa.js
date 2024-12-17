@@ -1,4 +1,5 @@
 ﻿import * as THREE from "three";
+import { uniform } from "three/tsl";
 import { mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js';
 import { SimplexNoise } from "three/addons/math/SimplexNoise.js";
 
@@ -80,7 +81,7 @@ var blobParams = {
 	fat: 0.3,
 	amount: 0.5,
 	background: new THREE.Color( 'azure' ),
-	seed: THREE.uniform( 0 )
+	seed: uniform( 0 )
 };
 
 var blob = new THREE.Mesh(
