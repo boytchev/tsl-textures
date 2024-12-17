@@ -7,8 +7,8 @@ import * as lil from "three/addons/libs/lil-gui.module.min.js";
 import { mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js';
 import { dynamic, overlayPlanar } from 'tsl-textures/tsl-utils.js';
 
-const THREEJS = '0.167.0';
-const TSLTEXTURES = '1.1.0';
+const THREEJS = '0.171.0';
+const TSLTEXTURES = '1.5.0';
 
 const HOME_URL = '../';
 const USE_BALL = 0;
@@ -419,7 +419,9 @@ function getCode( event, name, filename, tslTexture ) {
 <script type="importmap">
 	{
 		"imports": {
-		"three": "https://cdn.jsdelivr.net/npm/three@${THREEJS}/build/three.module.js",
+			"three": "https://cdn.jsdelivr.net/npm/three@${THREEJS}/build/three.webgpu.min.js",
+			"three/webgpu": "https://cdn.jsdelivr.net/npm/three@${THREEJS}/build/three.webgpu.min.js",
+			"three/tsl": "https://cdn.jsdelivr.net/npm/three@${THREEJS}/build/three.tsl.min.js",
 			"tsl-textures/": "https://cdn.jsdelivr.net/npm/tsl-textures@${TSLTEXTURES}/src/"
 		}
 	}
