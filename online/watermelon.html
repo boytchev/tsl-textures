@@ -1,0 +1,63 @@
+﻿<!DOCTYPE html>
+
+
+<html>
+
+
+<head>
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+	<link rel="shortcut icon" type="image/png" href="../assets/logo/logo.png"/>
+	<link rel="stylesheet" href="styles.css">
+
+	<script type="importmap">
+	  {
+		"imports": {
+			"three": "https://cdn.jsdelivr.net/npm/three@0.171.0/build/three.webgpu.min.js",
+			"three/webgpu": "https://cdn.jsdelivr.net/npm/three@0.171.0/build/three.webgpu.min.js",
+			"three/tsl": "https://cdn.jsdelivr.net/npm/three@0.171.0/build/three.tsl.min.js",
+			"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.171.0/examples/jsm/",
+			"tsl-textures/": "../src/"
+		}
+	  }
+	</script>
+</head>
+
+
+<body>
+
+	<script type="module">
+
+		import { install, params } from "./online.js";
+		import { watermelon } from "tsl-textures/watermelon.js";
+
+
+		var gui = install( watermelon );
+		
+		gui.add( params, 'scale' )
+			.min( 0 ).max( 4 )
+			.name( 'Scale' );
+
+		gui.add( params, 'stripes' )
+			.min( 4 ).max( 30 ).step( 1 )
+			.name( 'Stripes' );
+
+		gui.add( params, 'variation' )
+			.min( 0 ).max( 1 )
+			.name( 'Variaton' );
+
+		gui.add( params, 'noise' )
+			.min( 0 ).max( 1 )
+			.name( 'Noise' );
+
+		gui.addColor( params, 'color' )
+			.name( 'Color <right>main</right>' )
+			.$text.classList.add( 'top' );
+		
+		gui.addColor( params, 'background' )
+			.name( '<right>background</right>' )
+			.$text.classList.add( 'bottom' );
+		
+	</script>
+</body>
+</html>

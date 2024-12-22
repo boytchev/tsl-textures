@@ -1,7 +1,7 @@
 ﻿
 
 import * as THREE from "three";
-import { transformNormalToView, add, Fn, mul, vec3, time, cross, tangentLocal, positionLocal, normalLocal, select } from "three/tsl";
+import { add, cross, Fn, normalLocal, positionLocal, select, tangentLocal, time, transformNormalToView, vec3 } from "three/tsl";
 import { noise } from 'tsl-textures/tsl-utils.js';
 
 

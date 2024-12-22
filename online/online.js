@@ -60,6 +60,7 @@ scene.add( model );
 
 
 
+
 // manage window resizes
 
 window.addEventListener( "resize", onResize );
@@ -92,15 +93,13 @@ function animationLoop( /*t*/ ) {
 
 function install( tslTexture, useGeometry=USE_BALL, addTexture=ADD_NOTHING ) {
 
-	var USE_GEOMETRY = useGeometry;
-
 	// adjust camera
-	if ( USE_GEOMETRY == USE_BALL ) {
+	if ( useGeometry == USE_BALL ) {
 
 		camera.fov = 5;
 		camera.position.set( 0, 0, 30 );
 
-	} else if ( USE_GEOMETRY == USE_HEAD ) {
+	} else if ( useGeometry == USE_HEAD ) {
 
 		camera.fov = 60;
 		camera.position.set( 0, 0, 10 );
@@ -116,12 +115,12 @@ function install( tslTexture, useGeometry=USE_BALL, addTexture=ADD_NOTHING ) {
 
 
 	// adjust lights
-	if ( USE_GEOMETRY == USE_CUBE ) {
+	if ( useGeometry == USE_CUBE ) {
 
 		light.intensity = 3;
 		ambientLight.intensity = 1;
 
-	} else if ( USE_GEOMETRY == USE_HEAD ) {
+	} else if ( useGeometry == USE_HEAD ) {
 
 		light.intensity = 2.5;
 		ambientLight.intensity = 0.5;
@@ -141,7 +140,7 @@ function install( tslTexture, useGeometry=USE_BALL, addTexture=ADD_NOTHING ) {
 
 
 	// adjust geometry
-	switch ( USE_GEOMETRY ) {
+	switch ( useGeometry ) {
 
 		case USE_BALL:
 			geometry = new THREE.IcosahedronGeometry( 1, 20 );
@@ -186,6 +185,7 @@ function install( tslTexture, useGeometry=USE_BALL, addTexture=ADD_NOTHING ) {
 	}
 
 	model.geometry = geometry;
+
 
 	// process URL options
 	var urlAddress = window.location.search.split( '#' )[ 0 ], // skip all after #
