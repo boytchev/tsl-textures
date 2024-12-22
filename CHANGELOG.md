@@ -1,6 +1,9 @@
 # TSL Textures
 
 
+## 1.6.0
+* Added "Watermelon" in *watermelon.js*
+
 ## 1.5.0
 * Updated to Three.js r171
 
