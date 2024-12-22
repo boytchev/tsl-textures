@@ -3,22 +3,21 @@
 
 
 
-import { Vector2, Vector3 } from "three";
-import { cross, Fn, normalLocal, positionLocal, float,max,sub, tangentLocal, transformNormalToView, vec4 } from 'three/tsl';
+import { cross, float, Fn, normalLocal, positionLocal, sub, tangentLocal, transformNormalToView } from 'three/tsl';
 
 
 
 var surfacePos = Fn( ([ pos, params ])=>{
 
-	var exponent = float(2).pow( params.exponent );
+	var exponent = float( 2 ).pow( params.exponent );
 	var equPos = pos.div( pos.length() ).toVar();
-	
-	var p = equPos.x.abs().pow(exponent)
-			.add(equPos.y.abs().pow(exponent))
-			.add(equPos.z.abs().pow(exponent))
-			.pow(float(1).div(exponent));
-			
-	return equPos.div(p);
+
+	var p = equPos.x.abs().pow( exponent )
+		.add( equPos.y.abs().pow( exponent ) )
+		.add( equPos.z.abs().pow( exponent ) )
+		.pow( float( 1 ).div( exponent ) );
+
+	return equPos.div( p );
 
 } );
 
