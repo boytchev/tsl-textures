@@ -55,7 +55,7 @@ model.material.normalNode = supersphere.normal ( {
 
 ### Parameters
 
-* `exponent` &ndash; the power-of-two exponent of the supersphere, [-1,7]
+* `exponent` &ndash; the power-to-two exponent of the supersphere, [-1,7]
 
 
 ### Online generator
