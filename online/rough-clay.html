@@ -1,0 +1,51 @@
+﻿<!DOCTYPE html>
+
+
+<html>
+
+
+<head>
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+	<link rel="shortcut icon" type="image/png" href="../assets/logo/logo.png"/>
+	<link rel="stylesheet" href="styles.css">
+
+	<script type="importmap">
+	  {
+		"imports": {
+			"three": "https://cdn.jsdelivr.net/npm/three@0.171.0/build/three.webgpu.min.js",
+			"three/webgpu": "https://cdn.jsdelivr.net/npm/three@0.171.0/build/three.webgpu.min.js",
+			"three/tsl": "https://cdn.jsdelivr.net/npm/three@0.171.0/build/three.tsl.min.js",
+			"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.171.0/examples/jsm/",
+			"tsl-textures/": "../src/"
+		}
+	  }
+	</script>
+</head>
+
+
+<body>
+	
+	<script type="module">
+
+		import { Color } from 'three';
+		import { install, params, model, light, USE_CUBE, USE_HEAD } from "./online.js";
+		import { roughClay } from "tsl-textures/rough-clay.js";
+
+		
+		var gui = install( roughClay );
+		
+		model.material.color = new Color( 'bisque' );
+		
+		gui.add( params, 'scale' )
+			.name( 'Strokes <right>scale</right>' ).min( 0 ).max( 4 );
+		
+		gui.add( params, 'bump' )
+			.name( '<right>bump</right>' ).min( 0 ).max( 2 );
+		
+		gui.add( params, 'curvature' )
+			.name( 'Curvature' ).min( 0 ).max( 1 );
+
+	</script>
+</body>
+</html>

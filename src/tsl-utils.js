@@ -8,7 +8,7 @@
 
 
 
-import { add, cos, cross, float, Fn, If, log2, mat4, max, min, mul, positionLocal, pow, remap, select, sin, smoothstep, sub, uniform, vec3, vec4 } from 'three/tsl';
+import { add, cos, cross, dFdx, dFdy, float, Fn, If, log2, mat4, max, min, mul, positionLocal, pow, remap, select, sin, smoothstep, sub, transformNormalToView, uniform, vec3, vec4 } from 'three/tsl';
 import { Vector3 } from 'three';
 //import { mx_perlin_noise_float as noise } from 'https://cdn.jsdelivr.net/npm/three@0.167.0/src/nodes/materialx/lib/mx_noise.js';
 
@@ -363,6 +363,17 @@ const overlayPlanar = Fn( ( params )=>{
 
 
 
+const normalVector = Fn( ([ pos ])=>{
+
+	var dU = dFdx( pos ),
+		dV = dFdy( pos );
+
+	return transformNormalToView( cross( dU, dV ).normalize() );
+
+} );
+
+
+
 export
 {
 	mx_noise_float as noise
@@ -384,5 +395,6 @@ export
 	matTrans,
 	matScale,
 	selectPlanar,
-	overlayPlanar
+	overlayPlanar,
+	normalVector
 };
