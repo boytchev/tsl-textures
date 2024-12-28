@@ -510,4 +510,4 @@ function refreshSeed( event ) {
 }
 
 
-export { scene, model, install, params, light, ambientLight, USE_BALL, USE_CUBE, USE_HEAD, ADD_NOTHING, ADD_GRID, selectorParams };
+export { scene, model, install, params, light, ambientLight, USE_BALL, USE_CUBE, USE_HEAD, ADD_NOTHING, ADD_GRID, selectorParams, controls };
