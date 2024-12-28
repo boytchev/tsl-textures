@@ -31,12 +31,10 @@ it only imitates the surface with a normal map. Click on a snapshot to open it o
 ```js
 import { roughClay } from "tsl-textures/rough-clay.js";
 
-model.material.colorNode = roughClay ( {
+model.material.normalNode = roughClay ( {
 	scale: 2,
-	colorA: new THREE.Color(12762792),
-	colorB: new THREE.Color(10258782),
-	colorC: new THREE.Color(9610101),
-	colorD: new THREE.Color(7435617),
+	bump: 0.5,
+	curvature: 0.2,
 	seed: 0
 } );
 ```
