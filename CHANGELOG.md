@@ -1,6 +1,9 @@
 # TSL Textures
 
 
+## 1.7.0
+* Added "Rough clay" in *rough-clay.js*
+
 ## 1.6.0
 * Added "Watermelon" in *watermelon.js*
 * Added "Supersphere" in *supersphere.js*

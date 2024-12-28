@@ -6,7 +6,7 @@
 
 ## Concrete
 
-This texture immitates the grains of a rough concrete 
+This texture imitates the grains of a rough concrete 
 surface. It is designed to be used as normap map node on
 a mesh with material with tangents. Click on a snapshot to
 open it online.

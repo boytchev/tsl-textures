@@ -6,7 +6,7 @@
 
 ## Camouflage
 
-This texture immitates the design of camouflage patters in
+This texture imitates the design of camouflage patters in
 military clothes and vehicles. It overlaps four-color spots.
 Click on a snapshot to open it online.
 
