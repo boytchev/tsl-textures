@@ -48,6 +48,7 @@ scene.add( ambientLight );
 
 var controls = new OrbitControls( camera, renderer.domElement );
 controls.enableDamping = true;
+controls.zoomSpeed = 10;
 
 var geometry = new THREE.BufferGeometry();
 
@@ -318,6 +319,19 @@ function install( tslTexture, useGeometry=USE_BALL, addTexture=ADD_NOTHING ) {
 		} else {
 
 			model.material.colorNode = tslTexture( dynamics );
+
+			if ( tslTexture.normal ) {
+
+				model.material.normalNode = tslTexture.normal( dynamics );
+
+			}
+
+			if ( tslTexture.roughness ) {
+
+				model.material.roughnessNode = tslTexture.roughness( dynamics );
+
+			}
+
 			if ( tslTexture.opacity ) {
 
 				model.material.transparent = true;

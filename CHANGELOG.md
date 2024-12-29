@@ -1,6 +1,9 @@
 # TSL Textures
 
 
+## 1.8.0
+* Added "Eggs" in *eggs.js*
+
 ## 1.7.0
 * Added "Rough clay" in *rough-clay.js*
 

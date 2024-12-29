@@ -1,0 +1,62 @@
+﻿<!DOCTYPE html>
+
+
+<html>
+
+
+<head>
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+	<link rel="shortcut icon" type="image/png" href="../assets/logo/logo.png"/>
+	<link rel="stylesheet" href="styles.css">
+
+	<script type="importmap">
+	  {
+		"imports": {
+			"three": "https://cdn.jsdelivr.net/npm/three@0.171.0/build/three.webgpu.min.js",
+			"three/webgpu": "https://cdn.jsdelivr.net/npm/three@0.171.0/build/three.webgpu.min.js",
+			"three/tsl": "https://cdn.jsdelivr.net/npm/three@0.171.0/build/three.tsl.min.js",
+			"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.171.0/examples/jsm/",
+			"tsl-textures/": "../src/"
+		}
+	  }
+	</script>
+</head>
+
+
+<body>
+	
+	<script type="module">
+
+		import { Color } from 'three';
+		import { install, params, model, USE_HEAD } from "./online.js";
+		import { eggs } from "tsl-textures/eggs.js";
+
+		
+		var gui = install( eggs );
+		
+		model.material.roughness = 0.15;
+		
+		gui.add( params, 'scale' )
+			.name( 'Eggs <right>scale</right>' ).min( 0 ).max( 4 );
+				
+		gui.add( params, 'sizeYolk' )
+			.name( 'Size <right>yolk</right>' ).min( 0 ).max( 1 );
+
+		gui.add( params, 'sizeWhite' )
+			.name( '<right>whites</right>' ).min( 0 ).max( 1 );
+		
+		gui.addColor( params, 'colorYolk' )
+			.name( 'Colors <right>yolk</right>' )
+			.$text.classList.add( 'top' );
+		
+		gui.addColor( params, 'colorWhite' )
+			.name( '<right>whites</right>' );
+		
+		gui.addColor( params, 'colorBackground' )
+			.name( '<right>background</right>' )
+			.$text.classList.add( 'bottom' );
+			
+	</script>
+</body>
+</html>
