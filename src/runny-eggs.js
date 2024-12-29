@@ -1,5 +1,5 @@
 ﻿
-//	TSL-Textures: Eggs
+//	TSL-Textures: Runny eggs
 
 
 
@@ -8,7 +8,7 @@ import { cross, exp, Fn, mix, mx_worley_noise_float, normalLocal, positionGeomet
 
 
 
-var eggs = Fn( ( params ) => {
+var runnyEggs = Fn( ( params ) => {
 
 	var pos = positionGeometry.mul( exp( params.scale.div( 1 ) ) ).add( params.seed.sin().mul( 10 ) ).toVar( );
 
@@ -37,7 +37,7 @@ var surfacePos = Fn( ([ pos, normal, bump, sizeYolk, sizeWhite ]) => {
 } );
 
 
-eggs.normal = Fn( ( params ) => {
+runnyEggs.normal = Fn( ( params ) => {
 
 	var eps = 0.001;
 	var bump = 0.05;
@@ -62,7 +62,7 @@ eggs.normal = Fn( ( params ) => {
 } );
 
 
-eggs.roughness = Fn( ( params ) => {
+runnyEggs.roughness = Fn( ( params ) => {
 
 	var pos = positionGeometry.mul( exp( params.scale.div( 1 ) ) ).add( params.seed.sin().mul( 10 ) ).toVar( );
 
@@ -76,8 +76,8 @@ eggs.roughness = Fn( ( params ) => {
 } );
 
 
-eggs.defaults = {
-	$name: 'Eggs',
+runnyEggs.defaults = {
+	$name: 'Runny eggs',
 
 	scale: 1,
 
@@ -93,4 +93,4 @@ eggs.defaults = {
 
 
 
-export { eggs };
+export { runnyEggs };

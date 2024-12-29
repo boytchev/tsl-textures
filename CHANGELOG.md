@@ -2,7 +2,7 @@
 
 
 ## 1.8.0
-* Added "Eggs" in *eggs.js*
+* Added "Runny eggs" in *runny-eggs.js*
 
 ## 1.7.0
 * Added "Rough clay" in *rough-clay.js*
