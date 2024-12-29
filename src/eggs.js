@@ -17,7 +17,7 @@ var eggs = Fn( ( params ) => {
 
 	var n = mx_worley_noise_float( pos ).toVar();
 	var whites = n.add( sizeWhite ).pow( 8 ).oneMinus().clamp( -0.5, 1 );
-	var yolks = n.add( sizeYolk ).pow( 18 ).oneMinus().pow( 0.4 ).clamp( 0, 1 );
+	var yolks = n.add( sizeYolk ).pow( 18 ).oneMinus().clamp(0,1).pow( 0.4 ).clamp( 0, 1 );
 
 	return mix( params.colorBackground, mix( params.colorWhite, params.colorYolk, yolks ), whites );
 
