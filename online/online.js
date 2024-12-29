@@ -14,9 +14,13 @@ const HOME_URL = '../';
 const USE_BALL = 0;
 const USE_CUBE = 1;
 const USE_HEAD = 2;
+const USE_ANIM = 3;
 
+// bitmasks
 const ADD_NOTHING = 0;
 const ADD_GRID = 1;
+const ADD_AUTOROTATION = 2;
+
 
 var params = {},
 	dynamics = {},
@@ -48,7 +52,8 @@ scene.add( ambientLight );
 
 var controls = new OrbitControls( camera, renderer.domElement );
 controls.enableDamping = true;
-controls.zoomSpeed = 10;
+controls.zoomSpeed = 5;
+controls.autoRotateSpeed = 1;
 
 var geometry = new THREE.BufferGeometry();
 
@@ -58,6 +63,7 @@ var model = new THREE.Mesh(
 );
 scene.add( model );
 
+var mixer, action;
 
 
 
@@ -84,6 +90,12 @@ onResize( );
 
 function animationLoop( /*t*/ ) {
 
+	if ( mixer ) {
+
+		mixer.update( 1/144 );
+
+	}
+
 	controls.update( );
 	light.position.copy( camera.position );
 	renderer.render( scene, camera );
@@ -92,7 +104,7 @@ function animationLoop( /*t*/ ) {
 
 
 
-function install( tslTexture, useGeometry=USE_BALL, addTexture=ADD_NOTHING ) {
+function install( tslTexture, useGeometry=USE_BALL, addFeature=ADD_NOTHING ) {
 
 	// adjust camera
 	if ( useGeometry == USE_BALL ) {
@@ -130,7 +142,7 @@ function install( tslTexture, useGeometry=USE_BALL, addTexture=ADD_NOTHING ) {
 
 
 	var texture;
-	if ( addTexture == ADD_GRID ) {
+	if ( addFeature & ADD_GRID ) {
 
 		texture = new THREE.TextureLoader().load( '../assets/textures/grid.png' );
 		texture.wrapS = THREE.RepeatWrapping;
@@ -140,6 +152,12 @@ function install( tslTexture, useGeometry=USE_BALL, addTexture=ADD_NOTHING ) {
 	}
 
 
+	if ( addFeature & ADD_AUTOROTATION ) {
+
+		controls.autoRotate = true;
+
+	}
+
 	// adjust geometry
 	switch ( useGeometry ) {
 
@@ -147,7 +165,7 @@ function install( tslTexture, useGeometry=USE_BALL, addTexture=ADD_NOTHING ) {
 			geometry = new THREE.IcosahedronGeometry( 1, 20 );
 			geometry = mergeVertices( geometry );
 			geometry.computeTangents();
-			if ( addTexture !== ADD_NOTHING ) {
+			if ( addFeature & ADD_GRID ) {
 
 				texture.repeat.set( 6, 3 );
 				model.material.map = texture;
@@ -155,11 +173,12 @@ function install( tslTexture, useGeometry=USE_BALL, addTexture=ADD_NOTHING ) {
 			}
 
 			break;
+
 		case USE_CUBE:
 			geometry = new THREE.BoxGeometry( 2, 2, 2, 100, 100, 100 );
 			//geometry = mergeVertices( geometry );
 			geometry.computeTangents();
-			if ( addTexture !== ADD_NOTHING ) {
+			if ( addFeature & ADD_GRID ) {
 
 				texture.repeat.set( 2, 2 );
 				model.material.map = texture;
@@ -167,6 +186,7 @@ function install( tslTexture, useGeometry=USE_BALL, addTexture=ADD_NOTHING ) {
 			}
 
 			break;
+
 		case USE_HEAD:
 			geometry = new THREE.BoxGeometry( 2, 2, 2 );
 			new GLTFLoader().load(
@@ -178,6 +198,43 @@ function install( tslTexture, useGeometry=USE_BALL, addTexture=ADD_NOTHING ) {
 					scene.remove( model );
 					model = new THREE.Mesh( geometry, model.material );
 					geometry.needsUpdate = true;
+					scene.add( model );
+
+				} );
+			break;
+
+		case USE_ANIM:
+			geometry = new THREE.BoxGeometry( 2, 2, 2 );
+			new GLTFLoader().load(
+				'../assets/models/Soldier/Soldier.glb', ( result )=>{
+
+					//geometry = result.scene.children[ 0 ].geometry;
+					//geometry = mergeVertices( geometry );
+					//geometry.computeTangents();
+					var material = model.material;
+					scene.remove( model );
+					//model = new THREE.Mesh( geometry, model.material );
+					//geometry.needsUpdate = true;
+
+					model = result.scene.children[ 0 ];
+					model.scale.setScalar( 0.1 );
+
+					model.traverse( child => {
+
+						if ( child.isMesh ) {
+
+							child.material = material;
+							child.material.map = texture;
+
+						}
+
+					} );
+
+
+					mixer = new THREE.AnimationMixer( model );
+					action = mixer.clipAction( result.animations[ 3 ]);
+					action.play();
+
 					scene.add( model );
 
 				} );
@@ -524,4 +581,4 @@ function refreshSeed( event ) {
 }
 
 
-export { scene, model, install, params, light, ambientLight, USE_BALL, USE_CUBE, USE_HEAD, ADD_NOTHING, ADD_GRID, selectorParams, controls };
+export { scene, model, install, params, light, ambientLight, USE_BALL, USE_CUBE, USE_HEAD, USE_ANIM, ADD_NOTHING, ADD_GRID, ADD_AUTOROTATION, selectorParams, controls };

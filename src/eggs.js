@@ -4,20 +4,20 @@
 
 
 import { Color } from 'three';
-import { cross, exp, Fn, mix, mx_worley_noise_float, normalLocal, positionLocal, sub, tangentLocal, transformNormalToView } from 'three/tsl';
+import { cross, exp, Fn, mix, mx_worley_noise_float, normalLocal, positionGeometry, sub, tangentLocal, transformNormalToView } from 'three/tsl';
 
 
 
 var eggs = Fn( ( params ) => {
 
-	var pos = positionLocal.mul( exp( params.scale.div( 1 ) ) ).add( params.seed.sin().mul( 10 ) ).toVar( );
+	var pos = positionGeometry.mul( exp( params.scale.div( 1 ) ) ).add( params.seed.sin().mul( 10 ) ).toVar( );
 
 	var sizeYolk = params.sizeYolk.oneMinus();
 	var sizeWhite = params.sizeWhite.oneMinus();
 
 	var n = mx_worley_noise_float( pos ).toVar();
 	var whites = n.add( sizeWhite ).pow( 8 ).oneMinus().clamp( -0.5, 1 );
-	var yolks = n.add( sizeYolk ).pow( 18 ).oneMinus().clamp(0,1).pow( 0.4 ).clamp( 0, 1 );
+	var yolks = n.add( sizeYolk ).pow( 18 ).oneMinus().clamp( 0, 1 ).pow( 0.4 ).clamp( 0, 1 );
 
 	return mix( params.colorBackground, mix( params.colorWhite, params.colorYolk, yolks ), whites );
 
@@ -42,7 +42,7 @@ eggs.normal = Fn( ( params ) => {
 	var eps = 0.001;
 	var bump = 0.05;
 
-	var position = positionLocal.mul( exp( params.scale.div( 1 ) ) ).add( params.seed.sin().mul( 10 ) ).toVar( ),
+	var position = positionGeometry.mul( exp( params.scale.div( 1 ) ) ).add( params.seed.sin().mul( 10 ) ).toVar( ),
 		normal = normalLocal.normalize().toVar(),
 		tangent = tangentLocal.normalize().mul( eps ).toVar(),
 		bitangent = cross( normal, tangent ).normalize().mul( eps ).toVar();
@@ -64,7 +64,7 @@ eggs.normal = Fn( ( params ) => {
 
 eggs.roughness = Fn( ( params ) => {
 
-	var pos = positionLocal.mul( exp( params.scale.div( 1 ) ) ).add( params.seed.sin().mul( 10 ) ).toVar( );
+	var pos = positionGeometry.mul( exp( params.scale.div( 1 ) ) ).add( params.seed.sin().mul( 10 ) ).toVar( );
 
 	var sizeYolk = params.sizeYolk.oneMinus();
 
@@ -79,7 +79,7 @@ eggs.roughness = Fn( ( params ) => {
 eggs.defaults = {
 	$name: 'Eggs',
 
-	scale: 2,
+	scale: 1,
 
 	sizeYolk: 0.2,
 	sizeWhite: 0.7,
