@@ -29,11 +29,11 @@
 	<script type="module">
 
 		import { Color } from 'three';
-		import { install, params, model, USE_BALL, ADD_AUTOROTATION } from "./online.js";
+		import { install, params, model } from "./online.js";
 		import { eggs } from "tsl-textures/eggs.js";
 
 		
-		var gui = install( eggs, USE_BALL, ADD_AUTOROTATION );
+		var gui = install( eggs );
 		
 		model.material.roughness = 0.15;
 		
