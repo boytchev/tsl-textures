@@ -3,7 +3,7 @@
 
 
 
-import { cross, float, Fn, normalLocal, positionLocal, sub, tangentLocal, transformNormalToView } from 'three/tsl';
+import { cross, float, Fn, normalLocal, positionGeometry, sub, tangentLocal, transformNormalToView } from 'three/tsl';
 
 
 
@@ -25,7 +25,7 @@ var surfacePos = Fn( ([ pos, params ])=>{
 
 var supersphere = Fn( ( params )=>{
 
-	return surfacePos( positionLocal, params );
+	return surfacePos( positionGeometry, params );
 
 } );
 
@@ -35,7 +35,7 @@ supersphere.normal = Fn( ( params ) => {
 
 	var eps = 0.01;
 
-	var position = positionLocal,
+	var position = positionGeometry,
 		normal = normalLocal.normalize().toVar(),
 		tangent = tangentLocal.normalize().mul( eps ).toVar(),
 		bitangent = cross( normal, tangent ).normalize().mul( eps ).toVar();
