@@ -87,7 +87,7 @@ var model, mixer;
 
 var modelMaterial = new THREE.MeshPhysicalNodeMaterial( {color: 'white'} );
 
-new GLTFLoader().load( `../assets/models/Soldier/soldier.glb`, gltf => {
+new GLTFLoader().load( `../assets/models/Soldier/Soldier.glb`, gltf => {
 
 	model = gltf.scene;
 
