@@ -98,7 +98,7 @@ function animationLoop( /*t*/ ) {
 
 	controls.update( );
 	light.position.copy( camera.position );
-	renderer.render( scene, camera );
+	renderer.renderAsync( scene, camera );
 
 }
 

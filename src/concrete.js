@@ -3,7 +3,7 @@
 
 
 
-import { abs, cos, cross, exp, Fn, normalLocal, positionLocal, pow, remap, sin, sub, tangentLocal, transformNormalToView, vec3 } from 'three/tsl';
+import { abs, cos, cross, exp, Fn, normalLocal, positionGeometry, pow, remap, sin, sub, tangentLocal, transformNormalToView, vec3 } from 'three/tsl';
 import { noise } from 'tsl-textures/tsl-utils.js';
 
 
@@ -22,7 +22,7 @@ var concrete = Fn( ( params ) => {
 
 	var eps = 0.001;
 
-	var position = positionLocal.mul( exp( params.scale.div( 2 ).add( 2 ) ) ).toVar( ),
+	var position = positionGeometry.mul( exp( params.scale.div( 2 ).add( 2 ) ) ).toVar( ),
 		normal = normalLocal.normalize().toVar(),
 		tangent = tangentLocal.normalize().mul( eps ).toVar(),
 		bitangent = cross( normal, tangent ).normalize().mul( eps ).toVar();

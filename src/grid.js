@@ -4,13 +4,13 @@
 
 
 import { Color } from "three";
-import { abs, add, div, equirectUV, Fn, min, mix, mul, oneMinus, positionLocal, pow, remapClamp, round, sin, smoothstep, sub } from 'three/tsl';
+import { abs, add, div, equirectUV, Fn, min, mix, mul, oneMinus, positionGeometry, pow, remapClamp, round, sin, smoothstep, sub } from 'three/tsl';
 
 
 
 var grid = Fn( ( params ) => {
 
-	var uv = equirectUV( positionLocal.normalize() ).toVar(),
+	var uv = equirectUV( positionGeometry.normalize() ).toVar(),
 		a = mul( uv.x, 2*Math.PI ),
 		b = mul( uv.y, Math.PI ).toVar();
 

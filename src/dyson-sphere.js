@@ -4,7 +4,7 @@
 
 
 import { Color } from 'three';
-import { exp, float, Fn, Loop, mix, positionLocal, vec3 } from 'three/tsl';
+import { exp, float, Fn, Loop, mix, positionGeometry, vec3 } from 'three/tsl';
 
 
 
@@ -61,7 +61,7 @@ var noiseg = Fn( ([ pos ])=>{
 
 var dysonSphere = Fn( ( params )=>{
 
-	var pos = positionLocal.mul( exp( params.scale.div( 2 ).add( 0.5 ) ) ).add( params.seed ).toVar( );
+	var pos = positionGeometry.mul( exp( params.scale.div( 2 ).add( 0.5 ) ) ).add( params.seed ).toVar( );
 
 	var res = vec3().toVar();
 	var factor = float( 1 ).toVar();

@@ -4,7 +4,7 @@
 
 
 import { Color } from "three";
-import { exp, Fn, mix, positionLocal, vec3 } from 'three/tsl';
+import { exp, Fn, mix, positionGeometry, vec3 } from 'three/tsl';
 import { hsl, noise, toHsl } from 'tsl-textures/tsl-utils.js';
 
 
@@ -12,7 +12,7 @@ import { hsl, noise, toHsl } from 'tsl-textures/tsl-utils.js';
 var gasGiant = Fn( ( params )=>{
 
 	var scale = params.scale.div( 2 ).add( 1 ).toVar();
-	var pos = positionLocal.mul( exp( scale ) ).add( params.seed ).toVar( );
+	var pos = positionGeometry.mul( exp( scale ) ).add( params.seed ).toVar( );
 
 	// turbulence strength
 	var turbulence = params.turbulence.mul(

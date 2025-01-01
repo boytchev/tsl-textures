@@ -4,7 +4,7 @@
 
 
 import { Color } from 'three';
-import { add, cos, exp, float, Fn, Loop, mix, mul, positionLocal, radians, reciprocal, sin, sub, vec3 } from 'three/tsl';
+import { add, cos, exp, float, Fn, Loop, mix, mul, positionGeometry, radians, reciprocal, sin, sub, vec3 } from 'three/tsl';
 import { noise } from 'tsl-textures/tsl-utils.js';
 
 
@@ -13,9 +13,9 @@ var wood = Fn( ( params ) => {
 
 	var angle = radians( params.angle ).toVar();
 	var posLocal = vec3(
-		sub( positionLocal.x.mul( cos( angle ) ), positionLocal.y.mul( sin( angle ) ) ),
-		add( positionLocal.x.mul( sin( angle ) ), positionLocal.y.mul( cos( angle ) ) ),
-		positionLocal.z,
+		sub( positionGeometry.x.mul( cos( angle ) ), positionGeometry.y.mul( sin( angle ) ) ),
+		add( positionGeometry.x.mul( sin( angle ) ), positionGeometry.y.mul( cos( angle ) ) ),
+		positionGeometry.z,
 	).toVar();
 
 

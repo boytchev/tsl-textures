@@ -4,14 +4,14 @@
 
 
 import { Color } from "three";
-import { acos, clamp, exp, float, Fn, positionLocal, select, sin } from 'three/tsl';
+import { acos, clamp, exp, float, Fn, positionGeometry, select, sin } from 'three/tsl';
 import { hsl, toHsl } from 'tsl-textures/tsl-utils.js';
 
 
 
 var circles = Fn( ( params ) => {
 
-	var pos = positionLocal.normalize().toVar( );
+	var pos = positionGeometry.normalize().toVar( );
 
 	var angle = acos( clamp( pos.y, -1, 1 ) ).mul( 20 );
 

@@ -4,14 +4,14 @@
 
 
 import { Color } from "three";
-import { clamp, exp, Fn, min, mix, mul, positionLocal, vec4 } from 'three/tsl';
+import { clamp, exp, Fn, min, mix, mul, positionGeometry, vec4 } from 'three/tsl';
 import { noise } from 'tsl-textures/tsl-utils.js';
 
 
 
 var _clouds = Fn( ( params ) => {
 
-	var pos = positionLocal.toVar(),
+	var pos = positionGeometry.toVar(),
 		scale = exp( params.scale.div( 1.5 ).sub( 0.5 ) ).toVar(),
 		density = params.density.remap( 0, 1, -0.15, 0.15 ).toVar();
 

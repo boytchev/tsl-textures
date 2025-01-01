@@ -4,14 +4,14 @@
 
 
 import { Color } from "three";
-import { add, div, exp, Fn, If, mix, mul, oneMinus, positionLocal, pow } from 'three/tsl';
+import { add, div, exp, Fn, If, mix, mul, oneMinus, positionGeometry, pow } from 'three/tsl';
 import { noise } from 'tsl-textures/tsl-utils.js';
 
 
 
 var marble = Fn( ( params ) => {
 
-	var pos = positionLocal.mul( exp( params.scale ) ).add( params.seed ).toVar( );
+	var pos = positionGeometry.mul( exp( params.scale ) ).add( params.seed ).toVar( );
 
 	var k = add(
 		noise( pos ),

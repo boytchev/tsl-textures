@@ -4,7 +4,7 @@
 
 
 import { Color } from 'three';
-import { exp, float, Fn, If, Loop, mix, mul, positionLocal, remap, smoothstep, vec3 } from 'three/tsl';
+import { exp, float, Fn, If, Loop, mix, mul, positionGeometry, remap, smoothstep, vec3 } from 'three/tsl';
 import { noise } from 'tsl-textures/tsl-utils.js';
 
 
@@ -19,7 +19,7 @@ var planet = Fn( ( params )=>{
 
 	Loop( params.iterations.add( 10 ), ()=>{
 
-		k.addAssign( mul( power, noise( positionLocal.mul( scale ).add( params.seed ) ) ) );
+		k.addAssign( mul( power, noise( positionGeometry.mul( scale ).add( params.seed ) ) ) );
 		sum.addAssign( power );
 		scale.mulAssign( 1.5 );
 		power.mulAssign( 0.8 );

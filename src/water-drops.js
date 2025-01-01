@@ -3,7 +3,7 @@
 
 
 
-import { cos, cross, exp, Fn, normalLocal, positionLocal, remap, sin, sub, tangentLocal, transformNormalToView, vec3 } from 'three/tsl';
+import { cos, cross, exp, Fn, normalLocal, positionGeometry, remap, sin, sub, tangentLocal, transformNormalToView, vec3 } from 'three/tsl';
 import { noise } from 'tsl-textures/tsl-utils.js';
 
 
@@ -22,7 +22,7 @@ var waterDrops = Fn( ( params ) => {
 
 	var eps = 0.001;
 
-	var position = positionLocal.mul( exp( params.scale.div( 1 ).add( 1 ) ) ).toVar( ),
+	var position = positionGeometry.mul( exp( params.scale.div( 1 ).add( 1 ) ) ).toVar( ),
 		normal = normalLocal.normalize().toVar(),
 		tangent = tangentLocal.normalize().mul( eps ).toVar(),
 		bitangent = cross( normal, tangent ).normalize().mul( eps ).toVar();

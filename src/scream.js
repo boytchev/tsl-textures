@@ -4,18 +4,18 @@
 
 
 import { Color } from "three";
-import { add, cos, exp, Fn, mix, positionLocal, sin } from 'three/tsl';
+import { add, cos, exp, Fn, mix, positionGeometry, sin } from 'three/tsl';
 import { hsl, noise, toHsl } from 'tsl-textures/tsl-utils.js';
 
 
 
 var scream = Fn( ( params ) => {
 
-	var pos = positionLocal.mul( exp( params.scale ) ).add( params.seed ).toVar( );
+	var pos = positionGeometry.mul( exp( params.scale ) ).add( params.seed ).toVar( );
 
 	var k = noise( add( sin( pos.xyz ), cos( pos.yzx ) ) );
 
-	pos.assign( positionLocal.mul( exp( params.scale ).mul( k ) ).add( params.seed ) );
+	pos.assign( positionGeometry.mul( exp( params.scale ).mul( k ) ).add( params.seed ) );
 
 	var k = noise( add( sin( pos.xyz ), cos( pos.yzx ) ).mul( 2 ) );
 

@@ -3,7 +3,7 @@
 
 
 
-import { cross, exp, Fn, mx_worley_noise_float, normalLocal, positionLocal, sub, tangentLocal, transformNormalToView } from 'three/tsl';
+import { cross, exp, Fn, mx_worley_noise_float, normalLocal, positionGeometry, sub, tangentLocal, transformNormalToView } from 'three/tsl';
 import { noise } from 'tsl-textures/tsl-utils.js';
 
 
@@ -23,7 +23,7 @@ var roughClay = Fn( ( params ) => {
 
 	var bump = params.bump.div( 50 ).toVar();
 
-	var position = positionLocal.mul( exp( params.scale.div( 2 ) ) ).add( params.seed.sin().mul( 10 ) ).toVar( ),
+	var position = positionGeometry.mul( exp( params.scale.div( 2 ) ) ).add( params.seed.sin().mul( 10 ) ).toVar( ),
 		normal = normalLocal.normalize().toVar(),
 		tangent = tangentLocal.normalize().mul( eps ).toVar(),
 		bitangent = cross( normal, tangent ).normalize().mul( eps ).toVar();

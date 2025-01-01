@@ -4,14 +4,14 @@
 
 
 import { Color } from "three";
-import { add, exp, Fn, mix, oneMinus, positionLocal, sin, smoothstep, sub } from 'three/tsl';
+import { add, exp, Fn, mix, oneMinus, positionGeometry, sin, smoothstep, sub } from 'three/tsl';
 import { noise } from 'tsl-textures/tsl-utils.js';
 
 
 
 var isolines = Fn( ( params )=>{
 
-	var pos = positionLocal.mul( exp( params.scale ) ).add( params.seed ).toVar( );
+	var pos = positionGeometry.mul( exp( params.scale ) ).add( params.seed ).toVar( );
 
 	var k = noise( pos ).mul( params.density );
 

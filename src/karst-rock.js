@@ -4,14 +4,14 @@
 
 
 import { Color } from "three";
-import { exp, Fn, mix, positionLocal } from 'three/tsl';
+import { exp, Fn, mix, positionGeometry } from 'three/tsl';
 import { noise } from 'tsl-textures/tsl-utils.js';
 
 
 
 var karstRock = Fn( ( params )=>{
 
-	var pos = positionLocal.mul( exp( params.scale ) ).add( params.seed.sin().mul( 5 ) ).toVar( );
+	var pos = positionGeometry.mul( exp( params.scale ) ).add( params.seed.sin().mul( 5 ) ).toVar( );
 
 	var pos2 = pos.add( noise( pos.mul( 2 ) ) ).toVar();
 

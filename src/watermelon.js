@@ -4,16 +4,16 @@
 
 
 import { Color } from 'three';
-import { equirectUV, exp, Fn, mix, positionLocal, vec3 } from 'three/tsl';
+import { equirectUV, exp, Fn, mix, positionGeometry, vec3 } from 'three/tsl';
 import { noise } from 'tsl-textures/tsl-utils.js';
 
 
 
 var watermelon = Fn( ( params )=>{
 
-	var pos = positionLocal.mul( exp( params.scale.div( 4 ).add( 2 ) ) ).add( params.seed ).toVar( );
+	var pos = positionGeometry.mul( exp( params.scale.div( 4 ).add( 2 ) ) ).add( params.seed ).toVar( );
 
-	var uv = equirectUV( positionLocal.normalize() ).toVar(),
+	var uv = equirectUV( positionGeometry.normalize() ).toVar(),
 		a = uv.x.mul( params.stripes.round(), 2*Math.PI ).add( noise( pos.mul( vec3( 1, 0, 1 ) ) ).mul( 2 ) );
 
 	var k = a.sin().add( 0.5 ).div( 2 ).mul( uv.y.remap( 0, 1, -Math.PI, Math.PI ).cos().add( 1.2 ).clamp( 0, 1 ) )

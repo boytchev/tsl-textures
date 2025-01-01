@@ -4,14 +4,14 @@
 
 
 import { Color } from "three";
-import { abs, exp, Fn, mix, positionLocal, pow, vec3 } from 'three/tsl';
+import { abs, exp, Fn, mix, positionGeometry, pow, vec3 } from 'three/tsl';
 import { noise } from 'tsl-textures/tsl-utils.js';
 
 
 
 var satin = Fn( ( params ) => {
 
-	var pos = positionLocal.toVar( );
+	var pos = positionGeometry.toVar( );
 
 	var scale = exp( params.scale.div( 3 ) ).toVar();
 

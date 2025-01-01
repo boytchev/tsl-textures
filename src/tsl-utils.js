@@ -8,7 +8,7 @@
 
 
 
-import { add, cos, cross, dFdx, dFdy, float, Fn, If, log2, mat4, max, min, mul, positionLocal, pow, remap, select, sin, smoothstep, sub, transformNormalToView, uniform, vec3, vec4 } from 'three/tsl';
+import { add, cos, cross, dFdx, dFdy, float, Fn, If, log2, mat4, max, min, mul, positionGeometry, pow, remap, select, sin, smoothstep, sub, transformNormalToView, uniform, vec3, vec4 } from 'three/tsl';
 import { Vector3 } from 'three';
 //import { mx_perlin_noise_float as noise } from 'https://cdn.jsdelivr.net/npm/three@0.167.0/src/nodes/materialx/lib/mx_noise.js';
 
@@ -349,7 +349,7 @@ const selectPlanar = Fn( ([ pos, selAngles, selCenter, selWidth ])=>{
 const overlayPlanar = Fn( ( params )=>{
 
 	var zone = selectPlanar(
-		positionLocal,
+		positionGeometry,
 		params.selectorAngles,
 		params.selectorCenter,
 		params.selectorWidth

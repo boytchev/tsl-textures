@@ -4,7 +4,7 @@
 
 
 import { Color } from "three";
-import { abs, exp, float, floor, Fn, Loop, max, mix, mul, oneMinus, positionLocal, pow, sin } from 'three/tsl';
+import { abs, exp, float, floor, Fn, Loop, max, mix, mul, oneMinus, positionGeometry, pow, sin } from 'three/tsl';
 import { noise } from 'tsl-textures/tsl-utils.js';
 
 
@@ -12,7 +12,7 @@ import { noise } from 'tsl-textures/tsl-utils.js';
 var entangled = Fn( ( params ) => {
 
 	var scale = exp( params.scale.div( 2 ) ).toVar( );
-	var pos = positionLocal.add( params.seed ).toVar( );
+	var pos = positionGeometry.add( params.seed ).toVar( );
 	var k = float( -10000 ).toVar( );
 	var k1 = float( 0 ).toVar( );
 

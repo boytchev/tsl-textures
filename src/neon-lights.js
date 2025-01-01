@@ -4,14 +4,14 @@
 
 
 import { Color } from "three";
-import { abs, exp, Fn, oneMinus, positionLocal, select, sqrt, vec3 } from 'three/tsl';
+import { abs, exp, Fn, oneMinus, positionGeometry, select, sqrt, vec3 } from 'three/tsl';
 import { hsl, noise, toHsl } from 'tsl-textures/tsl-utils.js';
 
 
 
 var neonLights = Fn( ( params ) => {
 
-	var pos = positionLocal;//.mul( exp( params.scale ) ).add( params.seed ).toVar( );
+	var pos = positionGeometry;//.mul( exp( params.scale ) ).add( params.seed ).toVar( );
 
 	var scale = exp( params.scale.remap( 0, 4, 2, -2 ) ).toVar();
 	var thinness = exp( params.thinness.remap( 0, 1, 1.5, 0 ) ).toVar();

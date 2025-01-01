@@ -4,14 +4,14 @@
 
 
 import { Color } from 'three';
-import { exp, Fn, mul, positionLocal, sin, vec3 } from 'three/tsl';
+import { exp, Fn, mul, positionGeometry, sin, vec3 } from 'three/tsl';
 import { hsl, noise } from 'tsl-textures/tsl-utils.js';
 
 
 
 var fordite = Fn( ( params ) => {
 
-	var pos = positionLocal.mul( exp( params.scale ) ).add( params.seed ).toVar( );
+	var pos = positionGeometry.mul( exp( params.scale ) ).add( params.seed ).toVar( );
 
 	var k = noise(
 		vec3(
