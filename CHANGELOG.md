@@ -1,6 +1,9 @@
 # TSL Textures
 
 
+## 1.9.0
+* Updated to Three.js r172
+
 ## 1.8.0
 * Added "Runny eggs" in *runny-eggs.js*
 

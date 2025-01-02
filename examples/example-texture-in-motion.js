@@ -1,8 +1,7 @@
 ﻿import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-import { SimplexNoise } from "three/addons/math/SimplexNoise.js";
 
-import { If, float, uniform, positionWorld, positionLocal, positionGeometry, Fn, mix, vec3,time } from 'three/tsl';
+import { Fn, If, mix, positionLocal, positionWorld, uniform, vec3 } from 'three/tsl';
 
 import { noise } from 'tsl-textures/tsl-utils.js';
 
@@ -85,17 +84,23 @@ scene.add( ground );
 
 var model, mixer;
 
-var modelMaterial = new THREE.MeshPhysicalNodeMaterial( {color: 'white'} );
+var modelMaterial = new THREE.MeshPhysicalNodeMaterial( { color: 'white' } );
 
 new GLTFLoader().load( `../assets/models/Soldier/Soldier.glb`, gltf => {
 
 	model = gltf.scene;
 
-	model.traverse( child => {if( child.isMesh ) {
-		child.material = modelMaterial;
-		child.castShadow = true;
-		child.receiveShadow = true;
-	 } } );
+	model.traverse( child => {
+
+		if ( child.isMesh ) {
+
+			child.material = modelMaterial;
+			child.castShadow = true;
+			child.receiveShadow = true;
+
+		}
+
+	} );
 
 	mixer = new THREE.AnimationMixer( model );
 	mixer.clipAction( gltf.animations[ 3 ]).play();
@@ -110,55 +115,55 @@ new GLTFLoader().load( `../assets/models/Soldier/Soldier.glb`, gltf => {
 
 // TSL textures
 
-var modelTSL_1 = planet ( {
+var modelTSL_1 = planet( {
 	iterations: 7,
 	levelSea: 0.147,
 	levelMountain: 0.464,
 	balanceWater: 0.628,
 	balanceSand: 0.409,
 	balanceSnow: 0.803,
-	colorDeep: new THREE.Color(16774656),
-	colorShallow: new THREE.Color(14640426),
-	colorBeach: new THREE.Color(0),
-	colorGrass: new THREE.Color(10427420),
-	colorForest: new THREE.Color(16621056),
-	colorSnow: new THREE.Color(16770304),
+	colorDeep: new THREE.Color( 16774656 ),
+	colorShallow: new THREE.Color( 14640426 ),
+	colorBeach: new THREE.Color( 0 ),
+	colorGrass: new THREE.Color( 10427420 ),
+	colorForest: new THREE.Color( 16621056 ),
+	colorSnow: new THREE.Color( 16770304 ),
 	seed: 2450,
-	scale:-1} );
+	scale: -1 } );
 
-var modelTSL_2 = camouflage ( {...camouflage.defaults, scale:-2} );
+var modelTSL_2 = camouflage( { ...camouflage.defaults, scale: -2 } );
 
-var modelTSL_3 = dysonSphere ( {...dysonSphere.defaults, scale:-4-2} );
+var modelTSL_3 = dysonSphere( { ...dysonSphere.defaults, scale: -4-2 } );
 
-var modelTSL_4 = dalmatianSpots ( {
+var modelTSL_4 = dalmatianSpots( {
 	...dalmatianSpots.defaults,
-	background: new THREE.Color(1,1,1),
-	color: new THREE.Color(0),
+	background: new THREE.Color( 1, 1, 1 ),
+	color: new THREE.Color( 0 ),
 	density: 0.7,
-	scale:-2 } );
+	scale: -2 } );
 
 
-var groundTSL_1 = planet ( {
+var groundTSL_1 = planet( {
 	iterations: 7,
 	levelSea: 0.147,
 	levelMountain: 0.464,
 	balanceWater: 0.628,
 	balanceSand: 0.409,
 	balanceSnow: 0.803,
-	colorDeep: new THREE.Color(16774656),
-	colorShallow: new THREE.Color(14640426),
-	colorBeach: new THREE.Color(0),
-	colorGrass: new THREE.Color(10427420),
-	colorForest: new THREE.Color(16621056),
-	colorSnow: new THREE.Color(16770304),
+	colorDeep: new THREE.Color( 16774656 ),
+	colorShallow: new THREE.Color( 14640426 ),
+	colorBeach: new THREE.Color( 0 ),
+	colorGrass: new THREE.Color( 10427420 ),
+	colorForest: new THREE.Color( 16621056 ),
+	colorSnow: new THREE.Color( 16770304 ),
 	seed: 2450,
-	scale:2 } );
-	
-var groundTSL_2 = camouflage ( {...camouflage.defaults, scale:2} );
+	scale: 2 } );
 
-var groundTSL_3 = dysonSphere ( {...dysonSphere.defaults, scale:2} );
+var groundTSL_2 = camouflage( { ...camouflage.defaults, scale: 2 } );
 
-var groundTSL_4 = dalmatianSpots ( {...dalmatianSpots.defaults, scale:3} );
+var groundTSL_3 = dysonSphere( { ...dysonSphere.defaults, scale: 2 } );
+
+var groundTSL_4 = dalmatianSpots( { ...dalmatianSpots.defaults, scale: 3 } );
 
 
 
@@ -167,63 +172,64 @@ var groundTSL_4 = dalmatianSpots ( {...dalmatianSpots.defaults, scale:3} );
 var blendTSL = Fn( ( params )=>{
 
 	var k = params.transition
-				.add(positionWorld.length().pow(0.5).mul(params.sign))
-				.add(noise(positionLocal.mul(6)).mul(0.5))
-				.clamp(0,1).toVar();
-	
-	k.addAssign( k.mul(-2*Math.PI).sin() );
-	
-	var result = vec3().toVar();
-	
-	If( params.phase.equal(0), ()=>{
+		.add( positionWorld.length().pow( 0.5 ).mul( params.sign ) )
+		.add( noise( positionLocal.mul( 6 ) ).mul( 0.5 ) )
+		.clamp( 0, 1 ).toVar();
 
-		result.assign( mix(params.x,params.y,k) );
+	k.addAssign( k.mul( -2*Math.PI ).sin() );
+
+	var result = vec3().toVar();
+
+	If( params.phase.equal( 0 ), ()=>{
+
+		result.assign( mix( params.x, params.y, k ) );
 
 	} )
-		.ElseIf( params.phase.equal(1), ()=>{
+		.ElseIf( params.phase.equal( 1 ), ()=>{
 
-			result.assign( mix(params.y,params.z,k) );
+			result.assign( mix( params.y, params.z, k ) );
 
 		} )
-		.ElseIf( params.phase.equal(2), ()=>{
+		.ElseIf( params.phase.equal( 2 ), ()=>{
 
-			result.assign( mix(params.z,params.t,k) );
+			result.assign( mix( params.z, params.t, k ) );
 
 		} )
 		.Else( ()=>{
 
-			result.assign( mix(params.t,params.x,k) );
+			result.assign( mix( params.t, params.x, k ) );
 
 		} );
-	
+
 	return result;
+
 } );
 
 
 var phase = 2;
 
 var modelOptions = {
-		x: modelTSL_1,
-		y: modelTSL_2,
-		z: modelTSL_3,
-		t: modelTSL_4,
-		transition: uniform(0),
-		sign: 1,
-		phase:uniform(phase)
-	};
-	
+	x: modelTSL_1,
+	y: modelTSL_2,
+	z: modelTSL_3,
+	t: modelTSL_4,
+	transition: uniform( 0 ),
+	sign: 1,
+	phase: uniform( phase )
+};
+
 modelMaterial.colorNode = blendTSL( modelOptions );
 
 var groundOptions = {
-		x: groundTSL_1,
-		y: groundTSL_2,
-		z: groundTSL_3,
-		t: groundTSL_4,
-		transition: uniform(0),
-		sign: -1,
-		phase:uniform(phase)
-	};
-	
+	x: groundTSL_1,
+	y: groundTSL_2,
+	z: groundTSL_3,
+	t: groundTSL_4,
+	transition: uniform( 0 ),
+	sign: -1,
+	phase: uniform( phase )
+};
+
 groundMaterial.colorNode = blendTSL( groundOptions );
 
 
@@ -236,42 +242,42 @@ var ANIM_FULL = 11,
 var localTime = 0,
 	globalTime = 0,
 	clock = new THREE.Clock();
-	
 
-function animationLoop( t ) {
 
-	
+function animationLoop( /* t */ ) {
+
 	var dT = clock.getDelta();
 
 	globalTime += dT*2;
 	localTime += dT*2;
-	
-	if( localTime >= ANIM_FULL )
-	{
+
+	if ( localTime >= ANIM_FULL ) {
+
 		localTime -= ANIM_FULL;
-		
+
 		phase++;
 		groundOptions.phase.value = phase%4;
 		modelOptions.phase.value = phase%4;
+
 	}
-	
-	
-	if( mixer ) {
+
+
+	if ( mixer ) {
 
 		mixer.update( dT );
 
 	}
 
-	var transition = THREE.MathUtils.clamp( (globalTime%ANIM_FULL)-ANIM_FULL/2, -ANIM, 1+ANIM );
-	
+	var transition = THREE.MathUtils.clamp( ( globalTime%ANIM_FULL )-ANIM_FULL/2, -ANIM, 1+ANIM );
+
 	groundOptions.transition.value = transition+1;
 	modelOptions.transition.value = transition;
-	
+
 	var angle = globalTime/8*1.5;
 
 	model.rotation.y = angle;
-	ground.position.set( -7.2/1.5*Math.cos(angle), 0, 7.2/1.5*Math.sin(angle) );
-	
+	ground.position.set( -7.2/1.5*Math.cos( angle ), 0, 7.2/1.5*Math.sin( angle ) );
+
 	renderer.render( scene, camera );
 
 }
