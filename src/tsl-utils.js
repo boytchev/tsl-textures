@@ -373,6 +373,72 @@ const normalVector = Fn( ([ pos ])=>{
 } );
 
 
+var banner = null;
+var bannerCounter = 10;
+async function showFallbackWarning( ) {
+
+	console.log( 1 );
+
+	if ( navigator.gpu != undefined ) {
+
+		console.log( 2 );
+		var adapter = await navigator.gpu.requestAdapter();
+		if ( adapter ) return;
+
+	}
+
+	console.log( 3 );
+
+	var html = `
+	<div style="font-size:1.25em; font-weight:bold;">PLEASE, WAIT</div>
+	<div  style="font-size:0.85em; font-weight:100;" >NO WEBGPU &mdash; TRYING WEBGL2</div>
+	<div id="counter"></div>
+	`;
+
+	banner = document.createElement( 'div' );
+	banner.innerHTML = html;
+
+	banner.style.left = 'calc(50% - 8em)';
+	banner.style.width = '16em';
+
+	banner.style.fontFamily = 'Bahnschrifts, Arial';
+	banner.style.position = 'absolute';
+	banner.style.bottom = '20px';
+	banner.style.padding = '12px 6px';
+	banner.style.border = '1px solid white';
+	banner.style.borderRadius = '4px';
+	banner.style.background = 'rgba(0,0,0,0.5)';
+	banner.style.color = 'white';
+	banner.style.textAlign = 'center';
+	banner.style.opacity = '0.8';
+	banner.style.outline = 'none';
+	banner.style.zIndex = '999';
+
+	document.body.appendChild( banner );
+
+}
+
+
+
+function hideFallbackWarning( ) {
+
+	if ( banner ) {
+
+		if ( bannerCounter>0 )
+			bannerCounter--;
+		else {
+
+			banner.style.display = 'none';
+			//		document.removeChild( banner );
+			banner = null;
+
+		}
+
+	}
+
+}
+
+
 
 export
 {
@@ -396,5 +462,7 @@ export
 	matScale,
 	selectPlanar,
 	overlayPlanar,
+	showFallbackWarning,
+	hideFallbackWarning,
 	normalVector
 };

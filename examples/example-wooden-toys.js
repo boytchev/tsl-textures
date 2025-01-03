@@ -4,6 +4,7 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { MeshEdgesGeometry } from "https://cdn.jsdelivr.net/npm/meshedgesgeometry@latest/src/MeshEdgesGeometry.js";
 import { toCreasedNormals } from 'three/addons/utils/BufferGeometryUtils.js';
 
+import { hideFallbackWarning, showFallbackWarning } from "tsl-textures/tsl-utils.js";
 import { wood } from "tsl-textures/wood.js";
 
 
@@ -11,6 +12,9 @@ import { wood } from "tsl-textures/wood.js";
 // general setup, boring, skip to the next comment
 
 console.clear();
+
+showFallbackWarning( );
+
 
 const NODECO = !true;
 
@@ -229,6 +233,7 @@ scene.add( shadow1, shadow2, shadow3 );
 
 function animationLoop( ) {
 
+	hideFallbackWarning( );
 	controls.update( );
 	light.position.copy( camera.position );
 	renderer.render( scene, camera );

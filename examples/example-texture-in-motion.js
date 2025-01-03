@@ -4,6 +4,7 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { Fn, If, mix, positionLocal, positionWorld, uniform, vec3 } from 'three/tsl';
 
 import { noise } from 'tsl-textures/tsl-utils.js';
+import { hideFallbackWarning, showFallbackWarning } from "tsl-textures/tsl-utils.js";
 
 import { dysonSphere } from "tsl-textures/dyson-sphere.js";
 import { camouflage } from "tsl-textures/camouflage.js";
@@ -12,6 +13,11 @@ import { planet } from "tsl-textures/planet.js";
 
 
 // general setup
+
+console.clear( );
+
+showFallbackWarning( );
+
 
 var scene = new THREE.Scene();
 scene.background = new THREE.Color( 'black' );
@@ -245,6 +251,8 @@ var localTime = 0,
 
 
 function animationLoop( /* t */ ) {
+
+	hideFallbackWarning( );
 
 	var dT = clock.getDelta();
 
