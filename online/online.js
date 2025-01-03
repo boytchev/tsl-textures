@@ -5,7 +5,7 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import * as lil from "three/addons/libs/lil-gui.module.min.js";
 import { mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js';
-import { dynamic, hideFallbackWarningm, overlayPlanar, showFallbackWarning } from 'tsl-textures/tsl-utils.js';
+import { dynamic, hideFallbackWarning, overlayPlanar, showFallbackWarning } from 'tsl-textures/tsl-utils.js';
 
 const THREEJS = '0.171.0';
 const TSLTEXTURES = '1.5.0';
