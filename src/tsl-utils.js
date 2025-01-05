@@ -377,8 +377,6 @@ var banner = null;
 var bannerCounter = 10;
 async function showFallbackWarning( ) {
 
-	console.log( 1 );
-
 	if ( navigator.gpu != undefined ) {
 
 		console.log( 2 );
@@ -386,8 +384,6 @@ async function showFallbackWarning( ) {
 		if ( adapter ) return;
 
 	}
-
-	console.log( 3 );
 
 	var html = `
 	<div style="font-size:1.25em; font-weight:bold;">PLEASE, WAIT</div>

@@ -95,7 +95,7 @@ onResize( );
 function animationLoop( /*t*/ ) {
 
 	hideFallbackWarning( );
-	
+
 	if ( mixer ) {
 
 		mixer.update( 1/144 );
