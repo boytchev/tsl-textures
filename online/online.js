@@ -7,7 +7,7 @@ import * as lil from "three/addons/libs/lil-gui.module.min.js";
 import { mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js';
 import { dynamic, hideFallbackWarning, overlayPlanar, showFallbackWarning } from 'tsl-textures/tsl-utils.js';
 
-const THREEJS = '0.171.0';
+const THREEJS = '0.173.0';
 const TSLTEXTURES = '1.5.0';
 
 const HOME_URL = '../';
@@ -411,6 +411,12 @@ function install( tslTexture, useGeometry=USE_BALL, addFeature=ADD_NOTHING ) {
 	return gui.addFolder( '<big>Options</big>' );
 
 }
+
+
+	camera.fov = 5;
+	camera.position.set( 0, 0, 30 );
+	camera.updateProjectionMatrix();
+
 
 
 

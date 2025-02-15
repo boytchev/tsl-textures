@@ -13,10 +13,10 @@
 	<script type="importmap">
 	  {
 		"imports": {
-			"three": "https://cdn.jsdelivr.net/npm/three@0.172.0/build/three.webgpu.min.js",
-			"three/webgpu": "https://cdn.jsdelivr.net/npm/three@0.172.0/build/three.webgpu.min.js",
-			"three/tsl": "https://cdn.jsdelivr.net/npm/three@0.172.0/build/three.tsl.min.js",
-			"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.172.0/examples/jsm/",
+			"three": "https://cdn.jsdelivr.net/npm/three@0.173.0/build/three.webgpu.min.js",
+			"three/webgpu": "https://cdn.jsdelivr.net/npm/three@0.173.0/build/three.webgpu.min.js",
+			"three/tsl": "https://cdn.jsdelivr.net/npm/three@0.173.0/build/three.tsl.min.js",
+			"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.173.0/examples/jsm/",
 			"tsl-textures/": "../src/"
 		}
 	  }
@@ -34,7 +34,7 @@
 		import { concrete } from "tsl-textures/concrete.js";
 
 		var gui = install( rust );
-		
+
 		var core = new THREE.Mesh(
 			model.geometry,
 			new THREE.MeshPhysicalNodeMaterial( {
@@ -46,8 +46,7 @@
 		);
 		
 		scene.add( core );
-		
-		
+
 		
 		gui.add( params, 'scale' )
 			.min( 0 ).max( 14 )

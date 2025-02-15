@@ -28,23 +28,42 @@
 
 	<script type="module">
 
-		import { install, params } from "./online.js";
-		import { voronoiCells } from "tsl-textures/voronoi-cells.js";
+		import { install, params, USE_HEAD } from "./online.js";
+		import { darthMaul } from "tsl-textures/darth-maul.js";
 
-
-		var gui = install( voronoiCells );
+		var gui = install( darthMaul, USE_HEAD );
 		
 		gui.add( params, 'scale' )
 			.min( 0 ).max( 4 )
-			.name( 'Scale' );
-
-		gui.add( params, 'flat' )
+			.name( 'Mask <right>scale</right>' )
+			.$input.classList.add( 'top' );
+			
+		gui.add( params.shift, 'x' )
+			.min( -0.5 ).max( 0.5 )
+			.name( ' <right>horizontal</right>' );
+		
+		gui.add( params.shift, 'y' )
+			.min( -4 ).max( 4 )
+			.name( '<right>vertical</right>' )
+		
+		gui.add( params.shift, 'z' )
+			.min( -4 ).max( 4 )
+			.name( '<right>variation</right>' )
+		
+		gui.add( params, 'complexity' )
 			.min( 0 ).max( 1 )
-			.name( 'Flat' );
-
-		gui.add( params, 'variation' )
-			.min( 0 ).max( 1 )
-			.name( 'Variation' );
+			.name( '<right>complexity</right>' )
+			.$input.classList.add( 'bottom' );
+		
+		gui.add( params, 'angle' )
+			.min( 0 ).max( 90 )
+			.name( 'Back <right>angle</right>' )
+			.$input.classList.add( 'top' );
+		
+		gui.add( params, 'distance' )
+			.min( -3 ).max( 3 )
+			.name( '<right>distance</right>' )
+			.$input.classList.add( 'bottom' );
 
 		gui.addColor( params, 'color' )
 			.name( 'Color <right>main</right>' )
@@ -52,7 +71,11 @@
 		
 		gui.addColor( params, 'background' )
 			.name( '<right>background</right>' )
-			.$text.classList.add( 'bottom' );
+
+		gui.add( params, 'balance' )
+			.min( -2 ).max( 2 )
+			.name( '<right>balance</right>' )
+			.$input.classList.add( 'bottom' );
 		
 	</script>
 </body>

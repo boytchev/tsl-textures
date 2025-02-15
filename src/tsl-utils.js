@@ -379,7 +379,6 @@ async function showFallbackWarning( ) {
 
 	if ( navigator.gpu != undefined ) {
 
-		console.log( 2 );
 		var adapter = await navigator.gpu.requestAdapter();
 		if ( adapter ) return;
 
