@@ -5,11 +5,13 @@
 
 import { Color } from "three";
 import { abs, exp, Fn, mix, positionGeometry, pow, vec3 } from 'three/tsl';
-import { noise } from 'tsl-textures/tsl-utils.js';
+import { noise, prepare } from 'tsl-textures/tsl-utils.js';
 
 
 
 var satin = Fn( ( params ) => {
+
+	params = prepare( { ...satin.defaults, ...params } );
 
 	var pos = positionGeometry.toVar( );
 

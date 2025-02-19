@@ -5,7 +5,7 @@
 
 import { Color } from "three";
 import { acos, add, distance, exp, float, Fn, Loop, max, min, mix, mod, mul, oneMinus, positionGeometry, pow, smoothstep, } from 'three/tsl';
-import { spherical } from 'tsl-textures/tsl-utils.js';
+import { prepare, spherical } from 'tsl-textures/tsl-utils.js';
 
 
 
@@ -14,6 +14,8 @@ var goldenRatio = ( 1+5**0.5 )/2;
 
 
 var polkaDots = Fn( ( params ) => {
+
+	params = prepare( { ...polkaDots.defaults, ...params } );
 
 	var cnt = pow( 10, params.count ).toVar();
 	var vec = positionGeometry.normalize().toVar();

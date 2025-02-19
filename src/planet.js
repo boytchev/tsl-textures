@@ -5,12 +5,14 @@
 
 import { Color } from 'three';
 import { exp, float, Fn, If, Loop, mix, mul, positionGeometry, remap, smoothstep, vec3 } from 'three/tsl';
-import { noise } from 'tsl-textures/tsl-utils.js';
+import { noise, prepare } from 'tsl-textures/tsl-utils.js';
 
 
 
 
 var planet = Fn( ( params )=>{
+
+	params = prepare( { ...planet.defaults, ...params } );
 
 	var k = float( 0 ).toVar(),
 		sum = float( 0 ).toVar(),

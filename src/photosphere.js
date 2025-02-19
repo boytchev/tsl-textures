@@ -5,11 +5,13 @@
 
 import { Color } from "three";
 import { exp, Fn, Loop, mix, positionGeometry, vec3 } from 'three/tsl';
-import { applyEuler, noise } from 'tsl-textures/tsl-utils.js';
+import { applyEuler, noise, prepare } from 'tsl-textures/tsl-utils.js';
 
 
 
 var photosphere = Fn( ( params ) => {
+
+	params = prepare( { ...photosphere.defaults, ...params } );
 
 	var scale = exp( params.scale.add( 1 ) ).toVar( );
 	var pos = positionGeometry.toVar( );

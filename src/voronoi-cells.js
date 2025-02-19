@@ -5,7 +5,7 @@
 
 import { Color } from 'three';
 import { exp, float, Fn, If, Loop, mix, positionGeometry, vec3 } from 'three/tsl';
-import { noise } from 'tsl-textures/tsl-utils.js';
+import { noise, prepare } from 'tsl-textures/tsl-utils.js';
 
 
 
@@ -17,6 +17,8 @@ var cellCenter = Fn( ([ cell ])=>{
 
 
 var voronoiCells = Fn( ( params )=>{
+
+	params = prepare( { ...voronoiCells.defaults, ...params } );
 
 	var pos = positionGeometry.mul( exp( params.scale.div( 2 ).add( 0.5 ) ) ).add( params.seed ).toVar( );
 

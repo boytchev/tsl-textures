@@ -5,11 +5,13 @@
 
 import { Color } from "three";
 import { clamp, exp, Fn, mix, positionGeometry } from 'three/tsl';
-import { noise } from 'tsl-textures/tsl-utils.js';
+import { noise, prepare } from 'tsl-textures/tsl-utils.js';
 
 
 
 var simplexNoise = Fn( ( params ) => {
+
+	params = prepare( { ...simplexNoise.defaults, ...params } );
 
 	var pos = positionGeometry.mul( exp( params.scale ) ).add( params.seed );
 

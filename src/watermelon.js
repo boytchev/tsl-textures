@@ -5,11 +5,13 @@
 
 import { Color } from 'three';
 import { equirectUV, exp, Fn, mix, positionGeometry, vec3 } from 'three/tsl';
-import { noise } from 'tsl-textures/tsl-utils.js';
+import { noise, prepare } from 'tsl-textures/tsl-utils.js';
 
 
 
 var watermelon = Fn( ( params )=>{
+
+	params = prepare( { ...watermelon.defaults, ...params } );
 
 	var pos = positionGeometry.mul( exp( params.scale.div( 4 ).add( 2 ) ) ).add( params.seed ).toVar( );
 

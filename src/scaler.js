@@ -5,7 +5,7 @@
 
 import { Vector2, Vector3 } from "three";
 import { cross, Fn, mix, normalLocal, positionGeometry, sub, tangentLocal, transformNormalToView, vec3, vec4 } from 'three/tsl';
-import { matScale, matTrans, selectPlanar } from 'tsl-textures/tsl-utils.js';
+import { matScale, matTrans, prepare, selectPlanar } from 'tsl-textures/tsl-utils.js';
 
 
 
@@ -25,6 +25,8 @@ var surfacePos = Fn( ([ pos, params ])=>{
 
 var scaler = Fn( ( params )=>{
 
+	params = prepare( { ...scaler.defaults, ...params } );
+
 	return surfacePos( positionGeometry, params );
 
 } );
@@ -32,6 +34,8 @@ var scaler = Fn( ( params )=>{
 
 
 scaler.normal = Fn( ( params ) => {
+
+	params = prepare( { ...scaler.defaults, ...params } );
 
 	var eps = 0.01;
 

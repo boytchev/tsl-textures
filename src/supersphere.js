@@ -4,6 +4,7 @@
 
 
 import { cross, float, Fn, normalLocal, positionGeometry, sub, tangentLocal, transformNormalToView } from 'three/tsl';
+import { prepare } from 'tsl-textures/tsl-utils.js';
 
 
 
@@ -25,6 +26,8 @@ var surfacePos = Fn( ([ pos, params ])=>{
 
 var supersphere = Fn( ( params )=>{
 
+	params = prepare( { ...supersphere.defaults, ...params } );
+
 	return surfacePos( positionGeometry, params );
 
 } );
@@ -32,6 +35,8 @@ var supersphere = Fn( ( params )=>{
 
 
 supersphere.normal = Fn( ( params ) => {
+
+	params = prepare( { ...supersphere.defaults, ...params } );
 
 	var eps = 0.01;
 

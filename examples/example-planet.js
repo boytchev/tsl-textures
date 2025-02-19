@@ -38,7 +38,6 @@ scene.add( moonLight );
 // next comment
 
 var skyParams = {
-	...stars.defaults,
 	density: 0.5,
 	background: new THREE.Color( "black" )
 };
@@ -53,7 +52,6 @@ var sky = new THREE.Mesh(
 scene.add( sky );
 
 var earthParams = {
-	...planet.defaults,
 	iterations: 3,
 	scale: 1,
 	seed: uniform( 0 )

@@ -5,11 +5,13 @@
 
 import { Color } from "three";
 import { acos, clamp, exp, float, Fn, positionGeometry, select, sin } from 'three/tsl';
-import { hsl, toHsl } from 'tsl-textures/tsl-utils.js';
+import { hsl, prepare, toHsl } from 'tsl-textures/tsl-utils.js';
 
 
 
 var circles = Fn( ( params ) => {
+
+	params = prepare( { ...circles.defaults, ...params } );
 
 	var pos = positionGeometry.normalize().toVar( );
 

@@ -1,5 +1,8 @@
 # TSL Textures
 
+## 1.10.0
+* Updated to Three.js r173
+* Default texture propertie are not required in user's code
 
 ## 1.9.0
 * Updated to Three.js r172

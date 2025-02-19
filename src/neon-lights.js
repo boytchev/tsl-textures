@@ -5,11 +5,13 @@
 
 import { Color } from "three";
 import { abs, exp, Fn, oneMinus, positionGeometry, select, sqrt, vec3 } from 'three/tsl';
-import { hsl, noise, toHsl } from 'tsl-textures/tsl-utils.js';
+import { hsl, noise, prepare, toHsl } from 'tsl-textures/tsl-utils.js';
 
 
 
 var neonLights = Fn( ( params ) => {
+
+	params = prepare( { ...neonLights.defaults, ...params } );
 
 	var pos = positionGeometry;//.mul( exp( params.scale ) ).add( params.seed ).toVar( );
 

@@ -5,10 +5,12 @@
 
 import { Color } from "three";
 import { exp, float, Fn, Loop, mix, positionGeometry } from 'three/tsl';
-import { noise } from 'tsl-textures/tsl-utils.js';
+import { noise, prepare } from 'tsl-textures/tsl-utils.js';
 
 
 var dalmatianSpots = Fn( ( params )=>{
+
+	params = prepare( { ...dalmatianSpots.defaults, ...params } );
 
 	var pos = positionGeometry.mul( exp( params.scale ) ).add( params.seed ).sub( 1000 ).toVar( );
 

@@ -413,9 +413,9 @@ function install( tslTexture, useGeometry=USE_BALL, addFeature=ADD_NOTHING ) {
 }
 
 
-	camera.fov = 5;
-	camera.position.set( 0, 0, 30 );
-	camera.updateProjectionMatrix();
+camera.fov = 5;
+camera.position.set( 0, 0, 30 );
+camera.updateProjectionMatrix();
 
 
 

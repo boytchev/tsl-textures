@@ -5,11 +5,13 @@
 
 import { Color } from 'three';
 import { exp, Fn, If, positionGeometry, round, vec3 } from 'three/tsl';
-import { noise } from 'tsl-textures/tsl-utils.js';
+import { noise, prepare } from 'tsl-textures/tsl-utils.js';
 
 
 
 var camouflage = Fn( ( params )=>{
+
+	params = prepare( { ...camouflage.defaults, ...params } );
 
 	var pos = positionGeometry.mul( exp( params.scale ) ).add( params.seed ).toVar( );
 

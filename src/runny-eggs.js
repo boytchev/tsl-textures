@@ -5,10 +5,13 @@
 
 import { Color } from 'three';
 import { cross, exp, Fn, mix, mx_worley_noise_float, normalLocal, positionGeometry, sub, tangentLocal, transformNormalToView } from 'three/tsl';
+import { prepare } from 'tsl-textures/tsl-utils.js';
 
 
 
 var runnyEggs = Fn( ( params ) => {
+
+	params = prepare( { ...runnyEggs.defaults, ...params } );
 
 	var pos = positionGeometry.mul( exp( params.scale.div( 1 ) ) ).add( params.seed.sin().mul( 10 ) ).toVar( );
 
@@ -39,6 +42,8 @@ var surfacePos = Fn( ([ pos, normal, bump, sizeYolk, sizeWhite ]) => {
 
 runnyEggs.normal = Fn( ( params ) => {
 
+	params = prepare( { ...runnyEggs.defaults, ...params } );
+
 	var eps = 0.001;
 	var bump = 0.05;
 
@@ -63,6 +68,8 @@ runnyEggs.normal = Fn( ( params ) => {
 
 
 runnyEggs.roughness = Fn( ( params ) => {
+
+	params = prepare( { ...runnyEggs.defaults, ...params } );
 
 	var pos = positionGeometry.mul( exp( params.scale.div( 1 ) ) ).add( params.seed.sin().mul( 10 ) ).toVar( );
 

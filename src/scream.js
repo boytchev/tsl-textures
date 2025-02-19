@@ -5,11 +5,13 @@
 
 import { Color } from "three";
 import { add, cos, exp, Fn, mix, positionGeometry, sin } from 'three/tsl';
-import { hsl, noise, toHsl } from 'tsl-textures/tsl-utils.js';
+import { hsl, noise, prepare, toHsl } from 'tsl-textures/tsl-utils.js';
 
 
 
 var scream = Fn( ( params ) => {
+
+	params = prepare( { ...scream.defaults, ...params } );
 
 	var pos = positionGeometry.mul( exp( params.scale ) ).add( params.seed ).toVar( );
 

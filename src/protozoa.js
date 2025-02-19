@@ -5,7 +5,7 @@
 
 import { Color } from "three";
 import { exp, float, Fn, Loop, matcapUV, mix, positionGeometry, vec3 } from 'three/tsl';
-import { noise } from 'tsl-textures/tsl-utils.js';
+import { noise, prepare } from 'tsl-textures/tsl-utils.js';
 
 
 
@@ -18,6 +18,8 @@ var pnoise = Fn( ([ pos, fat ])=>{
 
 
 var protozoa = Fn( ( params )=>{
+
+	params = prepare( { ...protozoa.defaults, ...params } );
 
 	var pos = positionGeometry.mul( exp( params.scale.sub( 1 ) ) ).add( params.seed ).toVar( );
 

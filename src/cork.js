@@ -5,7 +5,7 @@
 
 import { Color } from 'three';
 import { exp, float, Fn, If, Loop, mix, positionGeometry, vec3 } from 'three/tsl';
-import { noise, vnoise } from 'tsl-textures/tsl-utils.js';
+import { noise, prepare, vnoise } from 'tsl-textures/tsl-utils.js';
 
 
 
@@ -17,6 +17,8 @@ var cellCenter = Fn( ([ cell ])=>{
 
 
 var cork = Fn( ( params )=>{
+
+	params = prepare( { ...cork.defaults, ...params } );
 
 	var pos = positionGeometry.mul( exp( params.scale.div( 1.5 ).add( 1 ) ) ).add( params.seed ).toVar( );
 

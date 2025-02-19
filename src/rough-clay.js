@@ -4,7 +4,7 @@
 
 
 import { cross, exp, Fn, mx_worley_noise_float, normalLocal, positionGeometry, sub, tangentLocal, transformNormalToView } from 'three/tsl';
-import { noise } from 'tsl-textures/tsl-utils.js';
+import { noise, prepare } from 'tsl-textures/tsl-utils.js';
 
 
 
@@ -18,6 +18,8 @@ var surfacePos = Fn( ([ pos, normal, bump, curvature ]) => {
 } );
 
 var roughClay = Fn( ( params ) => {
+
+	params = prepare( { ...roughClay.defaults, ...params } );
 
 	var eps = 0.001;
 

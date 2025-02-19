@@ -5,7 +5,7 @@
 
 import { Vector2, Vector3 } from "three";
 import { cross, Fn, normalLocal, positionGeometry, sub, tangentLocal, transformNormalToView, vec4 } from 'three/tsl';
-import { matTrans, selectPlanar } from 'tsl-textures/tsl-utils.js';
+import { matTrans, prepare, selectPlanar } from 'tsl-textures/tsl-utils.js';
 
 
 
@@ -23,6 +23,8 @@ var surfacePos = Fn( ([ pos, params ])=>{
 
 var translator = Fn( ( params )=>{
 
+	params = prepare( { ...translator.defaults, ...params } );
+
 	return surfacePos( positionGeometry, params );
 
 } );
@@ -30,6 +32,8 @@ var translator = Fn( ( params )=>{
 
 
 translator.normal = Fn( ( params ) => {
+
+	params = prepare( { ...translator.defaults, ...params } );
 
 	var eps = 0.01;
 

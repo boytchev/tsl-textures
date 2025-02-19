@@ -49,7 +49,7 @@ scene.add( outLight );
 // space station
 
 var stationParams = {
-	...dysonSphere.defaults,
+//	...dysonSphere.defaults,
 	scale: 1,
 	color: new THREE.Color( 'white' ),
 	background: new THREE.Color( 'black' ),
@@ -76,7 +76,7 @@ station2.add( station3 );
 // the blob
 
 var blobParams = {
-	...protozoa.defaults,
+//	...protozoa.defaults,
 	scale: 1,
 	fat: 0.3,
 	amount: 0.5,

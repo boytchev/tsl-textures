@@ -5,11 +5,13 @@
 
 import { Color } from "three";
 import { acos, clamp, exp, Fn, mix, positionGeometry, sin } from 'three/tsl';
-import { spherical } from 'tsl-textures/tsl-utils.js';
+import { prepare, spherical } from 'tsl-textures/tsl-utils.js';
 
 
 
 var zebraLines = Fn( ( params ) => {
+
+	params = prepare( { ...zebraLines.defaults, ...params } );
 
 	var pos = positionGeometry.normalize().toVar( );
 

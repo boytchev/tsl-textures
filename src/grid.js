@@ -5,10 +5,13 @@
 
 import { Color } from "three";
 import { abs, add, div, equirectUV, Fn, min, mix, mul, oneMinus, positionGeometry, pow, remapClamp, round, sin, smoothstep, sub } from 'three/tsl';
+import { prepare } from 'tsl-textures/tsl-utils.js';
 
 
 
 var grid = Fn( ( params ) => {
+
+	params = prepare( { ...grid.defaults, ...params } );
 
 	var uv = equirectUV( positionGeometry.normalize() ).toVar(),
 		a = mul( uv.x, 2*Math.PI ),

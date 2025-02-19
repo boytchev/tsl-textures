@@ -4,7 +4,7 @@
 
 
 import { cos, cross, exp, Fn, normalLocal, positionGeometry, remap, sin, sub, tangentLocal, transformNormalToView, vec3 } from 'three/tsl';
-import { noise } from 'tsl-textures/tsl-utils.js';
+import { noise, prepare } from 'tsl-textures/tsl-utils.js';
 
 
 
@@ -19,6 +19,8 @@ var surfacePos = Fn( ([ pos, normal, bump, density, seed ]) => {
 
 
 var waterDrops = Fn( ( params ) => {
+
+	params = prepare( { ...waterDrops.defaults, ...params } );
 
 	var eps = 0.001;
 

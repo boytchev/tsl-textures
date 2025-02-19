@@ -71,7 +71,7 @@ scene.add( light );
 // define 4 wood materials
 
 var materialNormal = new THREE.MeshPhysicalNodeMaterial( {
-	colorNode: wood( { ...wood.defaults,
+	colorNode: wood( {
 		color: new THREE.Color( 0 ), //0xffaa55 ),
 		background: new THREE.Color( 0x89593f ),
 		angle: 45,
@@ -86,7 +86,7 @@ var materialNormal = new THREE.MeshPhysicalNodeMaterial( {
 } );
 
 var materialLight = new THREE.MeshPhysicalNodeMaterial( {
-	colorNode: wood( { ...wood.defaults,
+	colorNode: wood( {
 		color: new THREE.Color( 0xffdab5 ),
 		background: new THREE.Color( 0xa38363 ),
 		rings: 7,
@@ -97,7 +97,7 @@ var materialLight = new THREE.MeshPhysicalNodeMaterial( {
 } );
 
 var materialGray = new THREE.MeshPhysicalNodeMaterial( {
-	colorNode: wood( { ...wood.defaults,
+	colorNode: wood( {
 		color: new THREE.Color( 'sienna' ),
 		background: new THREE.Color( 'peru' ),
 		angle: -45
@@ -108,7 +108,7 @@ var materialGray = new THREE.MeshPhysicalNodeMaterial( {
 } );
 
 var materialGround = new THREE.MeshPhysicalNodeMaterial( {
-	colorNode: wood( { ...wood.defaults,
+	colorNode: wood( {
 		color: new THREE.Color( 'black' ),
 		background: new THREE.Color( 'SaddleBrown' ),
 		angle: 90,

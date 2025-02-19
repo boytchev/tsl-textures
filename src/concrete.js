@@ -4,7 +4,7 @@
 
 
 import { abs, cos, cross, exp, Fn, normalLocal, positionGeometry, pow, remap, sin, sub, tangentLocal, transformNormalToView, vec3 } from 'three/tsl';
-import { noise } from 'tsl-textures/tsl-utils.js';
+import { noise, prepare } from 'tsl-textures/tsl-utils.js';
 
 
 
@@ -19,6 +19,8 @@ var surfacePos = Fn( ([ pos, normal, bump, density, seed ]) => {
 
 
 var concrete = Fn( ( params ) => {
+
+	params = prepare( { ...concrete.defaults, ...params } );
 
 	var eps = 0.001;
 

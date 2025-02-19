@@ -137,12 +137,11 @@ var modelTSL_1 = planet( {
 	seed: 2450,
 	scale: -1 } );
 
-var modelTSL_2 = camouflage( { ...camouflage.defaults, scale: -2 } );
+var modelTSL_2 = camouflage( { scale: -2 } );
 
-var modelTSL_3 = dysonSphere( { ...dysonSphere.defaults, scale: -4-2 } );
+var modelTSL_3 = dysonSphere( { scale: -4-2 } );
 
 var modelTSL_4 = dalmatianSpots( {
-	...dalmatianSpots.defaults,
 	background: new THREE.Color( 1, 1, 1 ),
 	color: new THREE.Color( 0 ),
 	density: 0.7,
@@ -165,11 +164,11 @@ var groundTSL_1 = planet( {
 	seed: 2450,
 	scale: 2 } );
 
-var groundTSL_2 = camouflage( { ...camouflage.defaults, scale: 2 } );
+var groundTSL_2 = camouflage( { scale: 2 } );
 
-var groundTSL_3 = dysonSphere( { ...dysonSphere.defaults, scale: 2 } );
+var groundTSL_3 = dysonSphere( { scale: 2 } );
 
-var groundTSL_4 = dalmatianSpots( { ...dalmatianSpots.defaults, scale: 3 } );
+var groundTSL_4 = dalmatianSpots( { scale: 3 } );
 
 
 

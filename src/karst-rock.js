@@ -5,11 +5,13 @@
 
 import { Color } from "three";
 import { exp, Fn, mix, positionGeometry } from 'three/tsl';
-import { noise } from 'tsl-textures/tsl-utils.js';
+import { noise, prepare } from 'tsl-textures/tsl-utils.js';
 
 
 
 var karstRock = Fn( ( params )=>{
+
+	params = prepare( { ...karstRock.defaults, ...params } );
 
 	var pos = positionGeometry.mul( exp( params.scale ) ).add( params.seed.sin().mul( 5 ) ).toVar( );
 

@@ -5,11 +5,13 @@
 
 import { Color } from "three";
 import { add, exp, Fn, mix, oneMinus, positionGeometry, sin, smoothstep, sub } from 'three/tsl';
-import { noise } from 'tsl-textures/tsl-utils.js';
+import { noise, prepare } from 'tsl-textures/tsl-utils.js';
 
 
 
 var isolines = Fn( ( params )=>{
+
+	params = prepare( { ...isolines.defaults, ...params } );
 
 	var pos = positionGeometry.mul( exp( params.scale ) ).add( params.seed ).toVar( );
 

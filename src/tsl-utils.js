@@ -9,7 +9,7 @@
 
 
 import { add, cos, cross, dFdx, dFdy, float, Fn, If, log2, mat4, max, min, mul, positionGeometry, pow, remap, select, sin, smoothstep, sub, transformNormalToView, uniform, vec3, vec4 } from 'three/tsl';
-import { Vector3 } from 'three';
+import { Color, Vector3 } from 'three';
 //import { mx_perlin_noise_float as noise } from 'https://cdn.jsdelivr.net/npm/three@0.167.0/src/nodes/materialx/lib/mx_noise.js';
 
 
@@ -435,6 +435,29 @@ function hideFallbackWarning( ) {
 
 
 
+// converts all numeric, color and vector properties to nodes
+function prepare( params ) {
+
+	for ( var name of Object.keys( params ) ) {
+
+		if ( typeof params[ name ] === 'number' )
+			params[ name ] = float( params[ name ]);
+		else
+			if ( params[ name ] instanceof Color )
+				params[ name ] = vec3( params[ name ].r, params[ name ].g, params[ name ].b );
+			else
+				if ( params[ name ] instanceof Vector3 )
+					params[ name ] = vec3( params[ name ].x, params[ name ].y, params[ name ].z );
+
+	}
+
+	return params;
+
+}
+
+
+
+
 export
 {
 	mx_noise_float as noise
@@ -459,5 +482,6 @@ export
 	overlayPlanar,
 	showFallbackWarning,
 	hideFallbackWarning,
-	normalVector
+	normalVector,
+	prepare
 };

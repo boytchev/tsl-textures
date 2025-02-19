@@ -5,11 +5,14 @@
 
 import { Color } from "three";
 import { abs, add, exp, Fn, mix, positionGeometry, select } from 'three/tsl';
-import { hsl, noise, toHsl } from 'tsl-textures/tsl-utils.js';
+import { hsl, noise, prepare, toHsl } from 'tsl-textures/tsl-utils.js';
+
 
 
 
 var stars = Fn( ( params ) => {
+
+	params = prepare( { ...stars.defaults, ...params } );
 
 	var pos = positionGeometry.mul( exp( params.scale.div( 2 ).add( 3 ) ) ).add( params.seed ).toVar( );
 

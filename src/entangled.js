@@ -5,11 +5,13 @@
 
 import { Color } from "three";
 import { abs, exp, float, floor, Fn, Loop, max, mix, mul, oneMinus, positionGeometry, pow, sin } from 'three/tsl';
-import { noise } from 'tsl-textures/tsl-utils.js';
+import { noise, prepare } from 'tsl-textures/tsl-utils.js';
 
 
 
 var entangled = Fn( ( params ) => {
+
+	params = prepare( { ...entangled.defaults, ...params } );
 
 	var scale = exp( params.scale.div( 2 ) ).toVar( );
 	var pos = positionGeometry.add( params.seed ).toVar( );

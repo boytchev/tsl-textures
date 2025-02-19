@@ -5,7 +5,7 @@
 
 import { Color } from 'three';
 import { exp, Fn, Loop, mix, positionGeometry } from 'three/tsl';
-import { noise } from 'tsl-textures/tsl-utils.js';
+import { noise, prepare } from 'tsl-textures/tsl-utils.js';
 
 
 
@@ -35,6 +35,8 @@ var _rust = Fn( ( params )=>{
 
 var rust = Fn( ( params )=>{
 
+	params = prepare( { ...rust.defaults, ...params } );
+
 	var k = _rust( params ).mul( 1.25 ).pow( 0.5 );
 
 	var pos = positionGeometry.mul( exp( params.scale.add( params.noiseScale.mul( 3 ), 2 ) ) );
@@ -48,6 +50,8 @@ var rust = Fn( ( params )=>{
 
 
 rust.opacity = Fn( ( params )=>{
+
+	params = prepare( { ...rust.defaults, ...params } );
 
 	var k = _rust( params ).mul( params.opacity.add( 0.2 ) );
 
