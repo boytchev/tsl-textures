@@ -4,7 +4,7 @@
 
 
 import { abs, cos, cross, exp, Fn, normalLocal, positionGeometry, pow, remap, sin, sub, tangentLocal, transformNormalToView, vec3 } from 'three/tsl';
-import { noise, prepare } from 'tsl-textures/tsl-utils.js';
+import { noise, prepare } from './tsl-utils.js';
 
 
 

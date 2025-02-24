@@ -5,7 +5,7 @@
 
 import { Color } from "three";
 import { abs, add, div, equirectUV, Fn, min, mix, mul, oneMinus, positionGeometry, pow, remapClamp, round, sin, smoothstep, sub } from 'three/tsl';
-import { prepare } from 'tsl-textures/tsl-utils.js';
+import { prepare } from './tsl-utils.js';
 
 
 

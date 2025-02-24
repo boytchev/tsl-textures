@@ -2,7 +2,18 @@
   "name": "tsl-textures",
   "version": "1.10.0",
   "description": "A collection of Three.js Shading Language (TSL) textures ",
-  "main": "index.js",
+  "main": "./src/tsl-utils.js",
+  "module": "./src/tsl-utils.js",
+  "exports": {
+    ".": {
+      "require": "./src/tsl-utils.js",
+      "import": "./src/tsl-utils.js"
+    },
+    "./polka-dots": {
+      "require": "./src/polka-dots.js",
+      "import": "./src/polka-dots.js"
+    }
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/boytchev/tsl-textures.git"

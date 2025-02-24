@@ -5,7 +5,7 @@
 
 import { Color } from 'three';
 import { equirectUV, exp, Fn, mix, positionGeometry, vec3 } from 'three/tsl';
-import { noise, prepare } from 'tsl-textures/tsl-utils.js';
+import { noise, prepare } from './tsl-utils.js';
 
 
 

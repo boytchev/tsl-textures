@@ -5,7 +5,7 @@
 
 import { Color } from 'three';
 import { cross, exp, Fn, mix, mx_worley_noise_float, normalLocal, positionGeometry, sub, tangentLocal, transformNormalToView } from 'three/tsl';
-import { prepare } from 'tsl-textures/tsl-utils.js';
+import { prepare } from './tsl-utils.js';
 
 
 
