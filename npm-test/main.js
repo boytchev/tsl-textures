@@ -1,4 +1,5 @@
-import * as THREE from 'three';
+import * as THREE from 'three/webgpu';
+
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 import { polkaDots } from 'tsl-textures/polka-dots';
@@ -7,7 +8,7 @@ let container, renderer, scene, camera;
 let rock, rockMaterial;
 
 // Create the renderer
-renderer = new THREE.WebGLRenderer({
+renderer = new THREE.WebGPURenderer({
     antialias: true
 });
 renderer.useLegacyLights = false;
@@ -50,21 +51,21 @@ scene.add( hemiLight );
 // scene.add( topDirectionalLight );
 
 // Add Axis references
-const axesHelper = new THREE.AxesHelper( 5 );
-scene.add( axesHelper );
+// const axesHelper = new THREE.AxesHelper( 5 );
+// scene.add( axesHelper );
 
 // 1. Create base geometry with initial scale
 const rockGeometry = new THREE.IcosahedronGeometry(2, 12)
 
-rockMaterial = new THREE.MeshStandardMaterial({
+rockMaterial = new THREE.MeshStandardNodeMaterial({
     color: 0xCCCCCC,
     roughness: 0.5,
     metalness: 0.0,
 });
 
 rockMaterial.colorNode = polkaDots ( {
-    count: 1,
-    size: 0.1,
+    count: 2,
+    size: 0.6,
     blur: 0.22,
     color: new THREE.Color(0),
     background: new THREE.Color(16777215)
