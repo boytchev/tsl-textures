@@ -9,9 +9,169 @@
       "require": "./src/tsl-utils.js",
       "import": "./src/tsl-utils.js"
     },
+    "./camouflage": {
+      "require": "./src/camouflage.js",
+      "import": "./src/camouflage.js"
+    },
+    "./cave-art": {
+      "require": "./src/cave-art.js",
+      "import": "./src/cave-art.js"
+    },
+    "./circles": {
+      "require": "./src/circles.js",
+      "import": "./src/circles.js"
+    },
+    "./clouds": {
+      "require": "./src/clouds.js",
+      "import": "./src/clouds.js"
+    },
+    "./concrete": {
+      "require": "./src/concrete.js",
+      "import": "./src/concrete.js"
+    },
+    "./cork": {
+      "require": "./src/cork.js",
+      "import": "./src/cork.js"
+    },
+    "./dalmatian-spots": {
+      "require": "./src/dalmatian-spots.js",
+      "import": "./src/dalmatian-spots.js"
+    },
+    "./darth-maul": {
+      "require": "./src/darth-maul.js",
+      "import": "./src/darth-maul.js"
+    },
+    "./dyson-sphere": {
+      "require": "./src/dyson-sphere.js",
+      "import": "./src/dyson-sphere.js"
+    },
+    "./entangled": {
+      "require": "./src/entangled.js",
+      "import": "./src/entangled.js"
+    },
+    "./fordite": {
+      "require": "./src/fordite.js",
+      "import": "./src/fordite.js"
+    },
+    "./gas-giant": {
+      "require": "./src/gas-giant.js",
+      "import": "./src/gas-giant.js"
+    },
+    "./grid": {
+      "require": "./src/grid.js",
+      "import": "./src/grid.js"
+    },
+    "./isolines": {
+      "require": "./src/isolines.js",
+      "import": "./src/isolines.js"
+    },
+    "./karst-rock": {
+      "require": "./src/karst-rock.js",
+      "import": "./src/karst-rock.js"
+    },
+    "./marble": {
+      "require": "./src/marble.js",
+      "import": "./src/marble.js"
+    },
+    "./neon-lights": {
+      "require": "./src/neon-lights.js",
+      "import": "./src/neon-lights.js"
+    },
+    "./photosphere": {
+      "require": "./src/photosphere.js",
+      "import": "./src/photosphere.js"
+    },
+    "./planet": {
+      "require": "./src/planet.js",
+      "import": "./src/planet.js"
+    },
     "./polka-dots": {
       "require": "./src/polka-dots.js",
       "import": "./src/polka-dots.js"
+    },
+    "./processed-wood": {
+      "require": "./src/processed-wood.js",
+      "import": "./src/processed-wood.js"
+    },
+    "./protozoa": {
+      "require": "./src/protozoa.js",
+      "import": "./src/protozoa.js"
+    },
+    "./rotator": {
+      "require": "./src/rotator.js",
+      "import": "./src/rotator.js"
+    },
+    "./rough-clay": {
+      "require": "./src/rough-clay.js",
+      "import": "./src/rough-clay.js"
+    },
+    "./runny-eggs": {
+      "require": "./src/runny-eggs.js",
+      "import": "./src/runny-eggs.js"
+    },
+    "./rust": {
+      "require": "./src/rust.js",
+      "import": "./src/rust.js"
+    },
+    "./satin": {
+      "require": "./src/satin.js",
+      "import": "./src/satin.js"
+    },
+    "./scaler": {
+      "require": "./src/scaler.js",
+      "import": "./src/scaler.js"
+    },
+    "./scepter-head": {
+      "require": "./src/scepter-head.js",
+      "import": "./src/scepter-head.js"
+    },
+    "./scream": {
+      "require": "./src/scream.js",
+      "import": "./src/scream.js"
+    },
+    "./simplex-noise": {
+      "require": "./src/simplex-noise.js",
+      "import": "./src/simplex-noise.js"
+    },
+    "./stars": {
+      "require": "./src/stars.js",
+      "import": "./src/stars.js"
+    },
+    "./supersphere": {
+      "require": "./src/supersphere.js",
+      "import": "./src/supersphere.js"
+    },
+    "./tiger-fur": {
+      "require": "./src/tiger-fur.js",
+      "import": "./src/tiger-fur.js"
+    },
+    "./translator": {
+      "require": "./src/translator.js",
+      "import": "./src/translator.js"
+    },
+    "./tsl-utils": {
+      "require": "./src/tsl-utils.js",
+      "import": "./src/tsl-utils.js"
+    },
+    "./voronoi-cells": {
+      "require": "./src/voronoi-cells.js",
+      "import": "./src/voronoi-cells.js"
+    },
+    "./water-drops": {
+      "require": "./src/water-drops.js",
+      "import": "./src/water-drops.js"
+    },
+    "./watermelon": {
+      "require": "./src/watermelon.js",
+      "import": "./src/watermelon.js"
+    },
+    "./wood": {
+      "require": "./src/wood.js",
+      "import": "./src/wood.js"
+    },
+    "./zebra-lines": {
+      "require": "./src/zebra-lines.js",
+      "import": "./src/zebra-lines.js"
     }
   },
   "repository": {
