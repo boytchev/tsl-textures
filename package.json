@@ -200,8 +200,5 @@
     "eslint": "^9.4.0",
     "eslint-plugin-html": "^8.1.1",
     "globals": "^15.4.0"
-  },
-  "dependencies": {
-    "three": "^0.173.0"
   }
 }
