@@ -5,7 +5,7 @@
 
 import { Color } from "three";
 import { exp, float, Fn, Loop, mix, positionGeometry } from 'three/tsl';
-import { noise, prepare } from 'tsl-textures/tsl-utils.js';
+import { noise, prepare } from './tsl-utils.js';
 
 
 var dalmatianSpots = Fn( ( params )=>{

@@ -5,7 +5,7 @@
 
 import { Color } from "three";
 import { add, cos, exp, Fn, mix, positionGeometry, radians, sin, sub, vec3 } from 'three/tsl';
-import { noise, prepare } from 'tsl-textures/tsl-utils.js';
+import { noise, prepare } from './tsl-utils.js';
 
 
 

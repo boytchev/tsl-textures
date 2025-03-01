@@ -5,7 +5,7 @@
 
 import { Vector2, Vector3 } from "three";
 import { cross, Fn, mix, normalLocal, positionGeometry, sub, tangentLocal, transformNormalToView, vec3, vec4 } from 'three/tsl';
-import { matScale, matTrans, prepare, selectPlanar } from 'tsl-textures/tsl-utils.js';
+import { matScale, matTrans, prepare, selectPlanar } from './tsl-utils.js';
 
 
 
