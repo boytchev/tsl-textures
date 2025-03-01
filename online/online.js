@@ -7,8 +7,8 @@ import * as lil from "three/addons/libs/lil-gui.module.min.js";
 import { mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js';
 import { dynamic, hideFallbackWarning, overlayPlanar, showFallbackWarning } from 'tsl-textures/tsl-utils.js';
 
-const THREEJS = '0.173.0';
-const TSLTEXTURES = '1.5.0';
+const THREEJS = '0.174.0';
+const TSLTEXTURES = '1.11.0';
 
 const HOME_URL = '../';
 const USE_BALL = 0;

@@ -1,7 +1,11 @@
 # TSL Textures
 
+## 1.11.0
+* Upgraded to Three.js r174
+* Merged PR from Mark Roland that fixes NPM usage
+
 ## 1.10.0
-* Updated to Three.js r173
+* Upgraded to Three.js r173
 * Default texture properties are not required in user's code
 
 ## 1.9.0
