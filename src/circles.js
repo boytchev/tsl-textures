@@ -5,7 +5,7 @@
 
 import { Color } from "three";
 import { acos, clamp, exp, float, Fn, positionGeometry, select, sin } from 'three/tsl';
-import { hsl, prepare, toHsl } from 'tsl-textures/tsl-utils.js';
+import { hsl, prepare, toHsl } from './tsl-utils.js';
 
 
 

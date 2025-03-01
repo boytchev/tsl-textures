@@ -5,7 +5,7 @@
 
 import { Color } from "three";
 import { abs, add, exp, float, Fn, If, mix, or, positionGeometry, pow2, sub } from 'three/tsl';
-import { noise, prepare } from 'tsl-textures/tsl-utils.js';
+import { noise, prepare } from './tsl-utils.js';
 
 
 var caveArt = Fn( ( params ) => {
