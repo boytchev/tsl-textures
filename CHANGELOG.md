@@ -1,5 +1,8 @@
 # TSL Textures
 
+## 1.12.0
+* Refactored Clouds
+
 ## 1.11.0
 * Upgraded to Three.js r174
 * Merged PR from Mark Roland that fixes NPM usage

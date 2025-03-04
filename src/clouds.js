@@ -4,32 +4,39 @@
 
 
 import { Color } from "three";
-import { clamp, exp, Fn, min, mix, mul, positionGeometry, vec4 } from 'three/tsl';
-import { noise, prepare } from './tsl-utils.js';
+import { add, clamp, exp, Fn, mix, mul, positionGeometry, vec4 } from 'three/tsl';
+import { noised, prepare } from './tsl-utils.js';
 
 
 
 var _clouds = Fn( ( params ) => {
 
-	var pos = positionGeometry.toVar(),
-		scale = exp( params.scale.div( 1.5 ).sub( 0.5 ) ).toVar(),
-		density = params.density.remap( 0, 1, -0.15, 0.15 ).toVar();
+	// prepare parameters
+	params = prepare( { ...clouds.defaults, ...params } );
 
-	var k = noise( pos.mul( scale ).add( params.seed ) ).add( params.density ).toVar( );
-	k.addAssign( mul( 0.80, noise( pos.mul( scale, 2 ).add( params.seed ) ) ).add( density ) );
-	k.addAssign( mul( 0.10, noise( pos.mul( scale, 6 ).add( params.seed ) ) ).add( density ) );
-	k.addAssign( mul( 0.07, noise( pos.mul( scale, 8 ).add( params.seed ) ), params.opacity ).add( density ) );
+	const pos = positionGeometry;
+	const scale = exp( params.scale.div( 1.5 ).sub( 0.5 ) );
 
-	var a = clamp( 0, 1, mul( k, 2 ).pow( 1.5 ).sub( 1 ).mul( params.opacity ) ).toVar();
+	// color blending
+	const k = add(
+		noised( pos, scale, 1, params.seed ),
+		noised( pos, scale, 2, params.seed ).mul( 0.80 ),
+		noised( pos, scale, 6, params.seed ).mul( 0.10 ),
+		noised( pos, scale, 8, params.seed ).mul( 0.07, params.opacity ),
+		params.density.remap( 0, 1, -0.5, 1.5 )
+	);
 
-	return vec4( mix( params.subcolor, params.color, min( 1, k ) ), a );
+	// opacity
+	const a = clamp( 0, 1, mul( k, 2 ).pow( 1.5 ).sub( 1 ).mul( params.opacity ) );
+
+	// final color+opacity
+	return vec4( mix( params.subcolor, params.color, k.clamp( 0, 1 ) ), a );
 
 } );
 
 
-var clouds = Fn( ( params ) => {
 
-	params = prepare( { ...clouds.defaults, ...params } );
+var clouds = Fn( ( params ) => {
 
 	return _clouds( params ).rgb;
 
@@ -38,8 +45,6 @@ var clouds = Fn( ( params ) => {
 
 
 clouds.opacity = Fn( ( params ) => {
-
-	params = prepare( { ...clouds.defaults, ...params } );
 
 	return _clouds( params ).a;
 
