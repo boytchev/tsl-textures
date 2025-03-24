@@ -17,7 +17,7 @@
 			"three/webgpu": "https://cdn.jsdelivr.net/npm/three@0.174.0/build/three.webgpu.min.js",
 			"three/tsl": "https://cdn.jsdelivr.net/npm/three@0.174.0/build/three.tsl.min.js",
 			"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.174.0/examples/jsm/",
-			"tsl-textures/": "../src/"
+			"tsl-textures": "../src/tsl-textures.js"
 		}
 	  }
 	</script>
@@ -30,7 +30,7 @@
 
 		import * as THREE from "three";
 		import { install, model, params } from "./online.js";
-		import { clouds } from "tsl-textures/clouds.js";
+		import { clouds } from "tsl-textures";
 
 		var cnv = document.createElement( 'CANVAS' );
 		cnv.width = 64;

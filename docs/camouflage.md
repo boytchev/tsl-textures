@@ -30,7 +30,7 @@ Click on a snapshot to open it online.
 ### Code template
 
 ```js
-import { camouflage } from "tsl-textures/camouflage.js";
+import { camouflage } from "tsl-textures";
 
 model.material.colorNode = camouflage ( {
 	scale: 2,

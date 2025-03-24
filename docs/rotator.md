@@ -39,7 +39,7 @@ Hint: use the `show` checkbox of the online generator to visualize the layer.
 
 ```js
 import * as THREE from "three";
-import { rotator } from "tsl-textures/rotator.js";
+import { rotator } from "tsl-textures";
 
 model.material.positionNode = rotator ( {
 	angles: new THREE.Vector3(0,0,0),

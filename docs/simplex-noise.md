@@ -28,7 +28,7 @@ pattern. Click on a snapshot to open it online.
 ### Code example
 
 ```js
-import { simplexNoise } from "tsl-textures/simplex-noise.js";
+import { simplexNoise } from "tsl-textures";
 
 model.material.colorNode = simplexNoise ( {
 	scale: 2,

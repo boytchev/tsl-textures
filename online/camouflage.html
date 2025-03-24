@@ -17,7 +17,7 @@
 			"three/webgpu": "https://cdn.jsdelivr.net/npm/three@0.174.0/build/three.webgpu.min.js",
 			"three/tsl": "https://cdn.jsdelivr.net/npm/three@0.174.0/build/three.tsl.min.js",
 			"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.174.0/examples/jsm/",
-			"tsl-textures/": "../src/"
+			"tsl-textures": "../src/tsl-textures.js"
 		}
 	  }
 	</script>
@@ -29,7 +29,7 @@
 	<script type="module">
 
 		import { install, params } from "./online.js";
-		import { camouflage } from "tsl-textures/camouflage.js";
+		import { camouflage } from "tsl-textures";
 
 
 		var gui = install( camouflage );

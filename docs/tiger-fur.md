@@ -29,7 +29,7 @@ Click on a snapshot to open it online.
 ### Code example
 
 ```js
-import { tiger-fur } from "tsl-textures/tiger-fur.js";
+import { tiger-fur } from "tsl-textures";
 
 
 model.material.colorNode = tigerFur ( {

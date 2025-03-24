@@ -124,6 +124,46 @@ li a {
 }
 
 
+.video-block {
+	width: 31em !important;
+	height: auto;
+	text-align: center;
+	background: white;
+	text-decoration: none;
+	margin: 0 auto;
+	padding-bottom: 0.35em;
+}
+
+.video-block img {
+	width: 30em !important;
+	border-radius: 0.25em;
+}
+
+.video-block .info {
+	text-align: left;
+	font-style: italic;
+	font-weight: 300;
+	width: 28em !important;
+	margin: 0.5em auto;
+	font-size: 1.05em;
+	color: black;
+}
+
+.live-right {
+	text-align: left;
+	margin: 0.5em auto 2em auto;
+	display: block;
+	width: 30em !important;
+	font-style: normal;
+	font-weight: normal;
+}
+
+.live-right:hover {
+	font-weight: bold;
+}
+
+
+
 p {
 	font-size: 1.25em;
 	text-align: justify;

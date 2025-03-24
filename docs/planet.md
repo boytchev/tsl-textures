@@ -32,7 +32,7 @@ open it online.
 ### Code template
 
 ```js
-import { planet } from "tsl-textures/planet.js";
+import { planet } from "tsl-textures";
 
 model.material.colorNode = planet ( {
 	scale: 2,

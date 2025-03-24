@@ -28,7 +28,7 @@ to open it online.
 ### Code example
 
 ```js
-import { stars } from "tsl-textures/stars.js";
+import { stars } from "tsl-textures";
 
 model.material.colorNode = stars ( {
 	scale: 2,

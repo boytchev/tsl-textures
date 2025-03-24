@@ -31,7 +31,7 @@ a snapshot to open it online.
 ### Code template
 
 ```js
-import { fordite } from "tsl-textures/fordite.js";
+import { fordite } from "tsl-textures";
 
 model.material.colorNode = fordite ( {
 	scale: 2,

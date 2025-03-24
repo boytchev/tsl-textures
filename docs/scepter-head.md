@@ -30,7 +30,7 @@ Click on a snapshot to open it online.
 ### Code template
 
 ```js
-import { scepterHead } from "tsl-textures/scepter-head.js";
+import { scepterHead } from "tsl-textures";
 
 model.material.colorNode = scepterHead ( {
 	xFactor: 10,

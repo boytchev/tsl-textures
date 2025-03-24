@@ -30,7 +30,7 @@ Click on a snapshot to open it online.
 ### Code template
 
 ```js
-import { cork } from "tsl-textures/cork.js";
+import { cork } from "tsl-textures";
 
 model.material.colorNode = cork ( {
 	scale: 1,

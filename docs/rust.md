@@ -30,7 +30,7 @@ Click on a snapshot to open it online.
 ### Code example
 
 ```js
-import { rust } from "tsl-textures/rust.js";
+import { rust } from "tsl-textures";
 
 model.material.colorNode = rust ( {
 	scale: 2,

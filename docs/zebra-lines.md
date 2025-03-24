@@ -33,7 +33,7 @@ on a snapshot to open it online.
 ### Code example
 
 ```js
-import { zebraLines } from "tsl-textures/zebra-lines.js";
+import { zebraLines } from "tsl-textures";
 
 model.material.colorNode = zebraLines ( {
 	scale: 4,

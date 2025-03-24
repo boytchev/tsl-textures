@@ -29,7 +29,7 @@ by Edvard Munch. Click on a snapshot to open it online.
 ### Code example
 
 ```js
-import { scream } from "tsl-textures/scream.js";
+import { scream } from "tsl-textures";
 
 model.material.colorNode = scream ( {
 	scale: 2,

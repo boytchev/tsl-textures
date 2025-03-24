@@ -30,7 +30,7 @@ Click on a snapshot to open it online.
 ### Code example
 
 ```js
-import { photosphere } from "tsl-textures/photosphere.js";
+import { photosphere } from "tsl-textures";
 
 model.material.colorNode = photosphere ( {
 	scale: 2,

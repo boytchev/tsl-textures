@@ -30,7 +30,7 @@ Click on a snapshot to open it online.
 ### Code template
 
 ```js
-import { voronoiCells } from "tsl-textures/voronoi-cells.js";
+import { voronoiCells } from "tsl-textures";
 
 model.material.colorNode = voronoiCells ( {
 	scale: 2,

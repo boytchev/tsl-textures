@@ -13,3 +13,6 @@ examples/movies/protozoa/sounds/desktop.ini
 examples/movies/dancing-lee/geovane-bruno-nice-energy-7528.mp3
 examples/movies/dancing-lee/dancing-lee.mp4
 examples/movies/dancing-lee/credits.txt
+*.mp4
+/media/music licenses
+media/protozoa/window-frame.pptx

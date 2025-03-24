@@ -29,7 +29,7 @@ it only imitates the surface with a normal map. Click on a snapshot to open it o
 ### Code template
 
 ```js
-import { roughClay } from "tsl-textures/rough-clay.js";
+import { roughClay } from "tsl-textures";
 
 model.material.normalNode = roughClay ( {
 	scale: 2,

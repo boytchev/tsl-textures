@@ -31,7 +31,7 @@ a snapshot to open it online.
 ### Code example
 
 ```js
-import { isolines } from "tsl-textures/isolines.js";
+import { isolines } from "tsl-textures";
 
 model.material.colorNode = isolines ( {
 	scale: 2,

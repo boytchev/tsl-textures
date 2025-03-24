@@ -29,7 +29,7 @@ open it online.
 ### Code example
 
 ```js
-import { clouds } from "tsl-textures/clouds.js";
+import { clouds } from "tsl-textures";
 
 model.material.colorNode = clouds ( {
 	scale: 2,

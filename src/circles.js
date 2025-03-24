@@ -13,11 +13,11 @@ var circles = Fn( ( params ) => {
 
 	params = prepare( { ...circles.defaults, ...params } );
 
-	var pos = positionGeometry.normalize().toVar( );
+	var pos = positionGeometry.normalize();
 
 	var angle = acos( clamp( pos.y, -1, 1 ) ).mul( 20 );
 
-	var scale = exp( params.scale.sub( 1 ) ).toVar();
+	var scale = exp( params.scale.sub( 1 ) );
 
 	var x = angle.div( 3000 ).mul( scale );
 
@@ -33,14 +33,13 @@ var circles = Fn( ( params ) => {
 
 	var HSL = toHsl( params.color );
 
-	var hue = HSL.x.add( k.mul( params.variety ) ).mod( 1 ).mul( 10 ).toVar();
+	var hue = HSL.x.add( k.mul( params.variety ) ).mod( 1 ).mul( 10 );
 
 	var huei = hue.floor();
 	var huef = hue.sub( huei );
 	huef = select( huef.lessThan( 0.5 ), huef.pow( 1.5 ), huef.pow( 1/1.5 ) );
-	hue.assign( huei.add( huef ) );
 
-	return hsl( hue.div( 10 ), HSL.y, HSL.z );
+	return hsl( huei.add( huef ).div( 10 ), HSL.y, HSL.z );
 
 } );
 

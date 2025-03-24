@@ -32,7 +32,7 @@ snapshot to open it online.
 ### Code example
 
 ```js
-import { waterDrops } from "tsl-textures/water-drops.js";
+import { waterDrops } from "tsl-textures";
 
 model.material.normalNode = waterDrops ( {
 	scale: 1.4,

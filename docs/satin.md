@@ -28,7 +28,7 @@ Click on a snapshot to open it online.
 ### Code example
 
 ```js
-import { satin } from "tsl-textures/satin.js";
+import { satin } from "tsl-textures";
 
 model.material.colorNode = satin ( {
 	scale: 2,

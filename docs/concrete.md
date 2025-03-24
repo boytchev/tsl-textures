@@ -30,7 +30,7 @@ open it online.
 
 ### Code example
 ```js
-import { concrete } from "tsl-textures/concrete.js";
+import { concrete } from "tsl-textures";
 
 model.material.normalNode = concrete ( {
 	scale: 2,

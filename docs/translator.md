@@ -37,7 +37,7 @@ Hint: use the `show` checkbox of the online generator to visualize the layer.
 
 ```js
 import * as THREE from "three";
-import { translator } from "tsl-textures/translator.js";
+import { translator } from "tsl-textures";
 
 model.material.positionNode = translator ( {
 	distance: new THREE.Vector3(-0.5,0,0.2),

@@ -30,7 +30,7 @@ Click on a snapshot to open it online.
 ### Code example
 
 ```js
-import { dalmatianSpots } from "tsl-textures/dalmatian-spots.js";
+import { dalmatianSpots } from "tsl-textures";
 
 model.material.colorNode = dalmatianSpots ( {
 	scale: 2,

@@ -28,7 +28,7 @@ stripes and one for the area between the stripes. Click on a snapshot to open it
 ### Code example
 
 ```js
-import { watermelon } from "tsl-textures/watermelon.js";
+import { watermelon } from "tsl-textures";
 
 model.material.colorNode = watermelon ( {
 	scale: 2,

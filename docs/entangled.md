@@ -30,7 +30,7 @@ open it online.
 ### Code example
 
 ```js
-import { entangled } from "tsl-textures/entangled.js";
+import { entangled } from "tsl-textures";
 
 model.material.colorNode = entangled ( {
 	scale: 2,

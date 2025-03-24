@@ -31,7 +31,7 @@ and [Neptune](https://en.wikipedia.org/wiki/Neptune). Click on a snapshot to ope
 ### Code template
 
 ```js
-import { gasGiant } from "tsl-textures/gas-giant.js";
+import { gasGiant } from "tsl-textures";
 
 model.material.colorNode = gasGiant( {
 	scale: 2,

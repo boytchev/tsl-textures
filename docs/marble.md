@@ -29,7 +29,7 @@ Click on a snapshot to open it online.
 ### Code example
 
 ```js
-import { marble } from "tsl-textures/marble.js";
+import { marble } from "tsl-textures";
 
 model.material.colorNode = marble ( {
 	scale: 1.2,

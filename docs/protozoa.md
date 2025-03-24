@@ -31,7 +31,7 @@ a snapshot to open it online.
 ### Code example
 
 ```js
-import { protozoa } from "tsl-textures/protozoa.js";
+import { protozoa } from "tsl-textures";
 
 model.material.colorNode = protozoa ( {
 	scale: 1.5,

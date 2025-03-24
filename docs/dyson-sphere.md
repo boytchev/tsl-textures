@@ -32,7 +32,7 @@ Click on a snapshot to open it online.
 ### Code template
 
 ```js
-import { dysonSphere } from "tsl-textures/dyson-sphere.js";
+import { dysonSphere } from "tsl-textures";
 
 model.material.colorNode = dysonSphere ( {
 	scale: 2,

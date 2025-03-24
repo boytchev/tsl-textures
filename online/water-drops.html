@@ -17,7 +17,7 @@
 			"three/webgpu": "https://cdn.jsdelivr.net/npm/three@0.174.0/build/three.webgpu.min.js",
 			"three/tsl": "https://cdn.jsdelivr.net/npm/three@0.174.0/build/three.tsl.min.js",
 			"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.174.0/examples/jsm/",
-			"tsl-textures/": "../src/"
+			"tsl-textures": "../src/tsl-textures.js"
 		}
 	  }
 	</script>
@@ -30,7 +30,7 @@
 
 		import * as THREE from "three";
 		import { install, scene, model, params, light, ambientLight } from "./online.js";
-		import { waterDrops } from "tsl-textures/water-drops.js";
+		import { waterDrops } from "tsl-textures";
 
 
 		light.intensity = 10;

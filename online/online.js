@@ -5,7 +5,7 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import * as lil from "three/addons/libs/lil-gui.module.min.js";
 import { mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js';
-import { dynamic, hideFallbackWarning, overlayPlanar, showFallbackWarning } from 'tsl-textures/tsl-utils.js';
+import { dynamic, hideFallbackWarning, overlayPlanar, showFallbackWarning } from '../src/tsl-utils.js';
 
 const THREEJS = '0.174.0';
 const TSLTEXTURES = '1.11.0';
@@ -448,7 +448,7 @@ function processParameters( ) {
 }
 
 
-function shareURL( event, name ) {
+async function shareURL( event, name ) {
 
 	event.stopPropagation();
 
@@ -470,7 +470,7 @@ function shareURL( event, name ) {
 
 	url = window.location.href.split( '?' )[ 0 ].split( '#' )[ 0 ] + '?' + url;
 
-	navigator.clipboard.writeText( url );
+	await navigator.clipboard.writeText( url );
 
 	alert( `URL for this ${name} copied to the clipboard.` );
 
@@ -478,7 +478,7 @@ function shareURL( event, name ) {
 
 
 
-function getCode( event, name, filename, tslTexture ) {
+async function getCode( event, name, filename, tslTexture ) {
 
 	event.stopPropagation();
 
@@ -498,20 +498,22 @@ function getCode( event, name, filename, tslTexture ) {
 
 	paramsStr = paramsStr.join( `,\n	` );
 
+//"tsl-textures/": "https://cdn.jsdelivr.net/npm/tsl-textures@${TSLTEXTURES}/src/"
+
 	var js = `
 <script type="importmap">
-	{
-		"imports": {
-			"three": "https://cdn.jsdelivr.net/npm/three@${THREEJS}/build/three.webgpu.min.js",
-			"three/webgpu": "https://cdn.jsdelivr.net/npm/three@${THREEJS}/build/three.webgpu.min.js",
-			"three/tsl": "https://cdn.jsdelivr.net/npm/three@${THREEJS}/build/three.tsl.min.js",
-			"tsl-textures/": "https://cdn.jsdelivr.net/npm/tsl-textures@${TSLTEXTURES}/src/"
-		}
-	}
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@${THREEJS}/build/three.webgpu.min.js",
+      "three/webgpu": "https://cdn.jsdelivr.net/npm/three@${THREEJS}/build/three.webgpu.min.js",
+      "three/tsl": "https://cdn.jsdelivr.net/npm/three@${THREEJS}/build/three.tsl.min.js",
+      "tsl-textures": "https://cdn.jsdelivr.net/gh/boytchev/tsl-textures/src/tsl-textures.js"
+    }
+  }
 </script>
 
 import * as THREE from "three";
-import { ${name} } from "tsl-textures/${filename}.js";
+import { ${name} } from "tsl-textures";
 `;
 	if ( tslTexture.defaults.$normalNode )
 		js += `
@@ -557,7 +559,7 @@ model.material.opacityNode = ${name}.opacity ( {
 	}
 
 
-	navigator.clipboard.writeText( js );
+	await navigator.clipboard.writeText( js );
 
 	alert( `Javascript code fragment for this ${name} copied to the clipboard.` );
 

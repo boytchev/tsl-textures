@@ -27,7 +27,7 @@ This texture geenrates concentric horizonta circles. Click on a snapshot to open
 ### Code example
 
 ```js
-import { circles } from "tsl-textures/circles.js";
+import { circles } from "tsl-textures";
 
 model.material.colorNode = circles ( {
 	scale: 2,

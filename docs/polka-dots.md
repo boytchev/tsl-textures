@@ -30,7 +30,7 @@ arragement (also known as Fibonacci lattice). Click on a snapshot to open it onl
 ### Code example
 
 ```js
-import { polkaDots } from "tsl-textures/polka-dots.js";
+import { polkaDots } from "tsl-textures";
 
 model.material.colorNode = polkaDots ( {
 	count: 4.26,

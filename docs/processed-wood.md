@@ -30,7 +30,7 @@ Click on a snapshot to open it online.
 ### Code example
 
 ```js
-import { processedWood } from "tsl-textures/processed-wood.js";
+import { processedWood } from "tsl-textures";
 
 model.material.colorNode = processedWood ( {
 	scale: 2,

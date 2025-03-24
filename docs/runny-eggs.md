@@ -32,7 +32,7 @@ Click on a snapshot to open it online.
 ### Code template
 
 ```js
-import { runnyEggs } from "tsl-textures/runny-eggs.js";
+import { runnyEggs } from "tsl-textures";
 
 var options = {
 	scale: 2,

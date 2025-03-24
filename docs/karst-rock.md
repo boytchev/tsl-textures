@@ -29,7 +29,7 @@ caused by erosion. Click on a snapshot to open it online.
 ### Code example
 
 ```js
-import { karstRock } from "tsl-textures/karst-rock.js";
+import { karstRock } from "tsl-textures";
 
 model.material.colorNode = karstRock ( {
 	scale: 2,

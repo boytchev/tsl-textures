@@ -41,7 +41,7 @@ Different values for the `exponent` parameter define different shapes of the sup
 
 ```js
 import * as THREE from "three";
-import { supersphere } from "tsl-textures/supersphere.js";
+import { supersphere } from "tsl-textures";
 
 model.material.positionNode = supersphere ( {
 	exponent: -0.4

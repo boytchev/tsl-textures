@@ -5,13 +5,13 @@ these are online real-time procedural generators of 3D textures.
 Pick a texture from the [Project home page](https://boytchev.github.io/tsl-textures/).
 
 
-[<img src="https://boytchev.github.io/tsl-textures/examples/example-planet.jpg" width="200">](https://boytchev.github.io/tsl-textures/examples/example-planet.html)
-[<img src="https://boytchev.github.io/tsl-textures/examples/example-normal-map.jpg" width="200">](https://boytchev.github.io/tsl-textures/examples/example-normal-map.html)
-[<img src="https://boytchev.github.io/tsl-textures/examples/example-wooden-toys.jpg" width="200">](https://boytchev.github.io/tsl-textures/examples/example-wooden-toys.html)
-[<img src="https://boytchev.github.io/tsl-textures/examples/example-protozoa.jpg" width="200">](https://boytchev.github.io/tsl-textures/examples/example-protozoa.html)
-[<img src="https://boytchev.github.io/tsl-textures/examples/example-neck-massage.jpg" width="200">](https://boytchev.github.io/tsl-textures/examples/example-neck-massage.html)
-[<img src="https://boytchev.github.io/tsl-textures/examples/example-watermelon-supersphere.jpg" width="200">](https://boytchev.github.io/tsl-textures/examples/example-watermelon-supersphere.html)
-[<img src="https://boytchev.github.io/tsl-textures/examples/example-texture-in-motion.jpg" width="200">](https://boytchev.github.io/tsl-textures/examples/example-texture-in-motion.html)
+[<img src="https://boytchev.github.io/tsl-textures/examples/planet/snapshot.jpg" width="200">](https://boytchev.github.io/tsl-textures/examples/planet/index.html)
+[<img src="https://boytchev.github.io/tsl-textures/examples/normal-map/snapshot.jpg" width="200">](https://boytchev.github.io/tsl-textures/examples/normal-map/index.html)
+[<img src="https://boytchev.github.io/tsl-textures/examples/wooden-toys/snapshot.jpg" width="200">](https://boytchev.github.io/tsl-textures/examples/wooden-toys/index.html)
+[<img src="https://boytchev.github.io/tsl-textures/examples/protozoa/snapshot.jpg" width="200">](https://boytchev.github.io/tsl-textures/examples/protozoa/index.html)
+[<img src="https://boytchev.github.io/tsl-textures/examples/neck-massage/snapshot.jpg" width="200">](https://boytchev.github.io/tsl-textures/examples/neck-massage/index.html)
+[<img src="https://boytchev.github.io/tsl-textures/examples/watermelon-supersphere/snapshot.jpg" width="200">](https://boytchev.github.io/tsl-textures/example-watermelon-supersphere/index.html)
+[<img src="https://boytchev.github.io/tsl-textures/examples/texture-in-motion/snapshot.jpg" width="200">](https://boytchev.github.io/tsl-textures/examples/texture-in-motion/index.html)
 
 <!--
 #### Example "Planet"

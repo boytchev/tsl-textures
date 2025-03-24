@@ -28,7 +28,7 @@ up to three neon colors. Click on a snapshot to open it online.
 ### Code template
 
 ```js
-import { neonLights } from "tsl-textures/neon-lights.js";
+import { neonLights } from "tsl-textures";
 
 model.material.colorNode = neonLights ( {
 	scale: 1.5,

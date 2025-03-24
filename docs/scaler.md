@@ -38,7 +38,7 @@ Hint: use the `show` checkbox of the online generator to visualize the layer.
 
 ```js
 import * as THREE from "three";
-import { scaler } from "tsl-textures/scaler.js";
+import { scaler } from "tsl-textures";
 
 model.material.positionNode = scaler ( {
 	scales: new THREE.Vector3(0.01,0.9,1.7),
