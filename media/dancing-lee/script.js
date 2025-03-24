@@ -163,12 +163,12 @@ var neckB = {
 
 var modelA, modelB;
 
-new GLTFLoader().load( `../../../assets/models/LeePerrySmith/LeePerrySmith.glb`, gltf => {
+new GLTFLoader().load( `../../assets/models/LeePerrySmith/LeePerrySmith.glb`, gltf => {
 
 	modelA = gltf.scene.children[ 0 ];
 
 	modelA.material = new THREE.MeshPhysicalNodeMaterial( {
-		map: new THREE.TextureLoader().load( "../../../assets/models/LeePerrySmith/Map-COL.jpg" ),
+		map: new THREE.TextureLoader().load( "../../assets/models/LeePerrySmith/Map-COL.jpg" ),
 		positionNode: rotator( neckA ),
 		normalNode: rotator.normal( neckA ),
 	} );
