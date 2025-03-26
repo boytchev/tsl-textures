@@ -137,3 +137,11 @@ object = new THREE.Mesh(objectGeometry, objectMaterial);
 // Render
 renderer.render( scene, camera );
 ```
+
+## Build for distribution
+
+This project uses [Rollup](https://rollupjs.org) to transpile for CommonJS and ES module support.
+
+```
+npm run build
+```
