@@ -29,7 +29,8 @@
     "LICENSE",
     "package.json",
     "README.md",
-    "dist"
+    "dist",
+	"src"
   ],
   "license": "MIT",
   "devDependencies": {
