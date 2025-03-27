@@ -1,7 +1,7 @@
 # TSL Textures
 
 ## 2.0.0
-* All textures served via one tsl-textures.js file
+* All textures served via one tsl-textures.js file from dist
 
 ## 1.12.0
 * Refactored Clouds

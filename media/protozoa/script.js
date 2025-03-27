@@ -1,11 +1,11 @@
 ﻿var audio = new Audio( "all-sounds.mp3" );
 
 import * as THREE from "three";
-import {vec3, uniform} from "three/tsl";
+import { uniform, vec3 } from "three/tsl";
 import { mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js';
 import { SimplexNoise } from "three/addons/math/SimplexNoise.js";
 
-import { gasGiant, protozoa, dysonSphere, simplexNoise, planet, stars } from "tsl-textures";
+import { dysonSphere, gasGiant, planet, protozoa, simplexNoise, stars } from "tsl-textures";
 
 
 

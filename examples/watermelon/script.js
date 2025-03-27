@@ -2,7 +2,7 @@
 import { uniform } from "three/tsl";
 import * as TWEEN from "three/addons/libs/tween.module.js";
 
-import { watermelon, supersphere } from "tsl-textures";
+import { supersphere, watermelon } from "tsl-textures";
 
 // general setup, boring, skip to the next comment
 

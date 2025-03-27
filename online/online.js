@@ -5,10 +5,9 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import * as lil from "three/addons/libs/lil-gui.module.min.js";
 import { mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js';
-import { dynamic, hideFallbackWarning, overlayPlanar, showFallbackWarning } from '../src/tsl-utils.js';
+import { dynamic, hideFallbackWarning, overlayPlanar, showFallbackWarning } from "tsl-textures";
 
 const THREEJS = '0.174.0';
-const TSLTEXTURES = '1.11.0';
 
 const HOME_URL = '../';
 const USE_BALL = 0;
@@ -498,7 +497,7 @@ async function getCode( event, name, filename, tslTexture ) {
 
 	paramsStr = paramsStr.join( `,\n	` );
 
-//"tsl-textures/": "https://cdn.jsdelivr.net/npm/tsl-textures@${TSLTEXTURES}/src/"
+	//"tsl-textures/": "https://cdn.jsdelivr.net/npm/tsl-textures@${TSLTEXTURES}/src/"
 
 	var js = `
 <script type="importmap">
@@ -507,7 +506,7 @@ async function getCode( event, name, filename, tslTexture ) {
       "three": "https://cdn.jsdelivr.net/npm/three@${THREEJS}/build/three.webgpu.min.js",
       "three/webgpu": "https://cdn.jsdelivr.net/npm/three@${THREEJS}/build/three.webgpu.min.js",
       "three/tsl": "https://cdn.jsdelivr.net/npm/three@${THREEJS}/build/three.tsl.min.js",
-      "tsl-textures": "https://cdn.jsdelivr.net/gh/boytchev/tsl-textures/src/tsl-textures.js"
+      "tsl-textures": "https://cdn.jsdelivr.net/gh/boytchev/tsl-textures/dist/tsl-textures.js"
     }
   }
 </script>

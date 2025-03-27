@@ -17,7 +17,7 @@
 			"three/webgpu": "https://cdn.jsdelivr.net/npm/three@0.174.0/build/three.webgpu.min.js",
 			"three/tsl": "https://cdn.jsdelivr.net/npm/three@0.174.0/build/three.tsl.min.js",
 			"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.174.0/examples/jsm/",
-			"tsl-textures": "../src/tsl-textures.js"
+			"tsl-textures": "../dist/tsl-textures.min.js"
 		}
 	  }
 	</script>
@@ -28,33 +28,33 @@
 	
 	<script type="module">
 
-		import { install, params } from "./online.js";
-		import { scepterHead } from "tsl-textures";
+import { install, params } from "./online.js";
+import { scepterHead } from "tsl-textures";
 
-		var gui = install( scepterHead );
+var gui = install( scepterHead );
 
-		gui.add( params, 'xFactor' )
-			.name( 'Framing <right>x</right>' ).min( 0 ).max( 100 ).step( 1 )
-			.$input.classList.add( 'top' );
-		
-		gui.add( params, 'yFactor' )
-			.name( '<right>y</right>' ).min( 0 ).max( 100 ).step( 1 );
-		
-		gui.add( params, 'zFactor' )
-			.name( '<right>z</right>' ).min( 0 ).max( 100 ).step( 1 )
-			.$input.classList.add( 'bottom' );
-		
-		gui.addColor( params, 'colorRim' )
-			.name( 'Color <right>rim</right>' )
-			.$text.classList.add( 'top' );
-		
-		gui.addColor( params, 'colorA' )
-			.name( '<right>stone</right>' );
-		
-		gui.addColor( params, 'colorB' )
-			.name( '<right>ascendant</right>' )
-			.$text.classList.add( 'bottom' );
-		
+gui.add( params, 'xFactor' )
+	.name( 'Framing <right>x</right>' ).min( 0 ).max( 100 ).step( 1 )
+	.$input.classList.add( 'top' );
+
+gui.add( params, 'yFactor' )
+	.name( '<right>y</right>' ).min( 0 ).max( 100 ).step( 1 );
+
+gui.add( params, 'zFactor' )
+	.name( '<right>z</right>' ).min( 0 ).max( 100 ).step( 1 )
+	.$input.classList.add( 'bottom' );
+
+gui.addColor( params, 'colorRim' )
+	.name( 'Color <right>rim</right>' )
+	.$text.classList.add( 'top' );
+
+gui.addColor( params, 'colorA' )
+	.name( '<right>stone</right>' );
+
+gui.addColor( params, 'colorB' )
+	.name( '<right>ascendant</right>' )
+	.$text.classList.add( 'bottom' );
+
 	</script>
 </body>
 </html>

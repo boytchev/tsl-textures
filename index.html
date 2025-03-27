@@ -12,37 +12,37 @@
 
 	<script>
 
-		const TEXTURES = [
-				'Camouflage', 'Cave art', 'Circles', 'Clouds', 'Concrete', 'Cork',
-				'Dalmatian spots', 'Dyson sphere', 'Entangled', 'Fordite', 'Gas giant',
-				'Grid', 'Isolines', 'Karst rock', 'Marble', 'Neon lights', 'Planet',
-				'Photosphere', 'Polka dots', 'Processed wood', 'Protozoa', 'Runny eggs',
-				'Satin', 'Rough clay', 'Rust', 'Scepter head', 'Scream', 'Simplex noise',
-				'Stars', 'Tiger fur', 'Voronoi cells', 'Water drops', 'Watermelon',
-				'Wood', 'Zebra lines', /*'Darth Maul',*/
-			].sort();
+const TEXTURES = [
+	'Camouflage', 'Cave art', 'Circles', 'Clouds', 'Concrete', 'Cork',
+	'Dalmatian spots', 'Dyson sphere', 'Entangled', 'Fordite', 'Gas giant',
+	'Grid', 'Isolines', 'Karst rock', 'Marble', 'Neon lights', 'Planet',
+	'Photosphere', 'Polka dots', 'Processed wood', 'Protozoa', 'Runny eggs',
+	'Satin', 'Rough clay', 'Rust', 'Scepter head', 'Scream', 'Simplex noise',
+	'Stars', 'Tiger fur', 'Voronoi cells', 'Water drops', 'Watermelon',
+	'Wood', 'Zebra lines', /*'Darth Maul',*/
+].sort();
 
 
-		const SHAPES = [
-				'Rotator', 'Scaler', 'Translator', 'Supersphere',
-			].sort();
+const SHAPES = [
+	'Rotator', 'Scaler', 'Translator', 'Supersphere',
+].sort();
 
 
-		const EXAMPLES = [
-				'Planet', 'Normal map', 'Wooden toys', 'Protozoa', 'Neck massage',
-				'Watermelon', 'Texture in motion', 'Matrixed data'
-			].sort();
+const EXAMPLES = [
+	'Planet', 'Normal map', 'Wooden toys', 'Protozoa', 'Neck massage',
+	'Watermelon', 'Texture in motion', 'Matrixed data'
+].sort();
 
 
-		const VIDEOS = [
-				{title: 'Dancing Lee', xId: '1829064887701577986', info: 'Flexible skin without<br>skeleton, morphing or skinning'},
-				{title: 'Wooden Toys', xId: '1813922290813509737', info: 'Using TSL textures<br>on models with no UV coordinates'},
-				{title: 'Protozoa', xId: '1821507097164427685', info: 'The first in the world<br>ultrashort Sci-Fi horror movie'},
-				{title: 'Texture in motion', xId: '1874560640200921418', info: 'Dynamic blending<br>of TSL textures on an animated model'},
-			].sort();
+const VIDEOS = [
+	{ title: 'Dancing Lee', xId: '1829064887701577986', info: 'Flexible skin without<br>skeleton, morphing or skinning' },
+	{ title: 'Wooden Toys', xId: '1813922290813509737', info: 'Using TSL textures<br>on models with no UV coordinates' },
+	{ title: 'Protozoa', xId: '1821507097164427685', info: 'The first in the world<br>ultrashort Sci-Fi horror movie' },
+	{ title: 'Texture in motion', xId: '1874560640200921418', info: 'Dynamic blending<br>of TSL textures on an animated model' },
+].sort();
 
-		const X_PREFIX = 'https://x.com/PavelBoytchev/status/';
-		
+const X_PREFIX = 'https://x.com/PavelBoytchev/status/';
+
 	</script>
 </head>
 
@@ -126,68 +126,72 @@
 
 	<script>
 
-		function textureBlock( name )
-		{
-			var file = name.toLowerCase().replaceAll( ' ', '-' );
-			
-			var html = '';
-			
-			html += '<a class="style-block" href="./online/'+file+'.html">';
-			html += '    <div class="title">'+name+'</div>';
-			html += '    <img src="./docs/images/'+file+'.png">';
-			html += '</a>';
-			
-			return html;
-		}
-		
-		
-		function exampleBlock( name )
-		{
-			var file = name.toLowerCase().replaceAll( ' ', '-' );
-			
-			var html = '';
-			
-			html += '<a class="style-block big-block" href="./examples/'+file+'/index.html">';
-			html += '    <div class="title">'+name+'</div>';
-			html += '    <img src="./examples/'+file+'/screenshot.jpg">';
-			html += '</a>';
-			
-			return html;
-		}
-		
-		
-		function videoBlock( video )
-		{
-			var file = video.title.toLowerCase().replaceAll( ' ', '-' );
-			
-			var html = '';
-			html += '<a class="style-block video-block" href="'+X_PREFIX+video.xId+'">';
-			html += '<div class="info">'+video.info+':</div>';
-			html += '<img src="./media/'+file+'/screenshot.jpg">';
-			html += '</a>';
-			html += '<a class="live-right" href="./media/'+file+'/index.html">Live demo</span>';
+function textureBlock( name ) {
 
-			return html;
-		}
-		
-		
-		// creates a section of blocks
-		function section( id, names, block )
-		{
-			var html = '';
+	var file = name.toLowerCase().replaceAll( ' ', '-' );
 
-			for( var name of names ) html += block( name )
-			
-			document.getElementById( id ).innerHTML += html;
-		}
-		
-		
-		section( 'textures', TEXTURES, textureBlock );
-		section( 'shapes', SHAPES, textureBlock );
-		section( 'examples', EXAMPLES, exampleBlock );
-		section( 'videos', VIDEOS, videoBlock );
-		
-		
+	var html = '';
+
+	html += '<a class="style-block" href="./online/'+file+'.html">';
+	html += '    <div class="title">'+name+'</div>';
+	html += '    <img src="./docs/images/'+file+'.png">';
+	html += '</a>';
+
+	return html;
+
+}
+
+
+function exampleBlock( name ) {
+
+	var file = name.toLowerCase().replaceAll( ' ', '-' );
+
+	var html = '';
+
+	html += '<a class="style-block big-block" href="./examples/'+file+'/index.html">';
+	html += '    <div class="title">'+name+'</div>';
+	html += '    <img src="./examples/'+file+'/screenshot.jpg">';
+	html += '</a>';
+
+	return html;
+
+}
+
+
+function videoBlock( video ) {
+
+	var file = video.title.toLowerCase().replaceAll( ' ', '-' );
+
+	var html = '';
+	html += '<a class="style-block video-block" href="'+X_PREFIX+video.xId+'">';
+	html += '<div class="info">'+video.info+':</div>';
+	html += '<img src="./media/'+file+'/screenshot.jpg">';
+	html += '</a>';
+	html += '<a class="live-right" href="./media/'+file+'/index.html">Live demo</span>';
+
+	return html;
+
+}
+
+
+// creates a section of blocks
+function section( id, names, block ) {
+
+	var html = '';
+
+	for ( var name of names ) html += block( name );
+
+	document.getElementById( id ).innerHTML += html;
+
+}
+
+
+section( 'textures', TEXTURES, textureBlock );
+section( 'shapes', SHAPES, textureBlock );
+section( 'examples', EXAMPLES, exampleBlock );
+section( 'videos', VIDEOS, videoBlock );
+
+
 	</script>
 	
 </body>

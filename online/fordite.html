@@ -17,7 +17,7 @@
 			"three/webgpu": "https://cdn.jsdelivr.net/npm/three@0.174.0/build/three.webgpu.min.js",
 			"three/tsl": "https://cdn.jsdelivr.net/npm/three@0.174.0/build/three.tsl.min.js",
 			"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.174.0/examples/jsm/",
-			"tsl-textures": "../src/tsl-textures.js"
+			"tsl-textures": "../dist/tsl-textures.min.js"
 		}
 	  }
 	</script>
@@ -28,21 +28,21 @@
 
 	<script type="module">
 
-		import { install, params } from "./online.js";
-		import { fordite } from "tsl-textures";
+import { install, params } from "./online.js";
+import { fordite } from "tsl-textures";
 
 
-		var gui = install( fordite );
-		
-		gui.add( params, 'scale' )
-			.min( 0 ).max( 4 )
-			.name( 'Scale' )
-			.$input.classList.add( 'top' );
+var gui = install( fordite );
 
-		gui.addColor( params, 'color' )
-			.name( 'Color' )
-			.$text.classList.add( 'bottom' );
-		
+gui.add( params, 'scale' )
+	.min( 0 ).max( 4 )
+	.name( 'Scale' )
+	.$input.classList.add( 'top' );
+
+gui.addColor( params, 'color' )
+	.name( 'Color' )
+	.$text.classList.add( 'bottom' );
+
 	</script>
 </body>
 </html>

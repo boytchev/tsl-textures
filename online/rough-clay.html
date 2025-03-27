@@ -17,7 +17,7 @@
 			"three/webgpu": "https://cdn.jsdelivr.net/npm/three@0.174.0/build/three.webgpu.min.js",
 			"three/tsl": "https://cdn.jsdelivr.net/npm/three@0.174.0/build/three.tsl.min.js",
 			"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.174.0/examples/jsm/",
-			"tsl-textures": "../src/tsl-textures.js"
+			"tsl-textures": "../dist/tsl-textures.min.js"
 		}
 	  }
 	</script>
@@ -28,23 +28,23 @@
 	
 	<script type="module">
 
-		import { Color } from 'three';
-		import { install, params, model } from "./online.js";
-		import { roughClay } from "tsl-textures";
+import { Color } from 'three';
+import { install, model, params } from "./online.js";
+import { roughClay } from "tsl-textures";
 
-		
-		var gui = install( roughClay );
-		
-		model.material.color = new Color( 'bisque' );
-		
-		gui.add( params, 'scale' )
-			.name( 'Strokes <right>scale</right>' ).min( 0 ).max( 4 );
-		
-		gui.add( params, 'bump' )
-			.name( '<right>bump</right>' ).min( 0 ).max( 2 );
-		
-		gui.add( params, 'curvature' )
-			.name( 'Curvature' ).min( 0 ).max( 1 );
+
+var gui = install( roughClay );
+
+model.material.color = new Color( 'bisque' );
+
+gui.add( params, 'scale' )
+	.name( 'Strokes <right>scale</right>' ).min( 0 ).max( 4 );
+
+gui.add( params, 'bump' )
+	.name( '<right>bump</right>' ).min( 0 ).max( 2 );
+
+gui.add( params, 'curvature' )
+	.name( 'Curvature' ).min( 0 ).max( 1 );
 
 	</script>
 </body>

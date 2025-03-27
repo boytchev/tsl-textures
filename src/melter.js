@@ -4,20 +4,20 @@
 
 
 import { Vector2, Vector3 } from "three";
-import { cross, Fn, float, normalLocal, positionGeometry, sub, tangentLocal, transformNormalToView, vec4 } from 'three/tsl';
-import { matTrans, prepare, selectPlanar, noise } from './tsl-utils.js';
+import { cross, float, Fn, normalLocal, positionGeometry, sub, tangentLocal, transformNormalToView, vec4 } from 'three/tsl';
+import { matTrans, noise, prepare } from './tsl-utils.js';
 
 
 
 var surfacePos = Fn( ([ pos, params ])=>{
 
 	//var zone = selectPlanar( pos, params.selectorAngles, params.selectorCenter, params.selectorWidth );
-	var zone = float(1).toVar();
-	var n = noise(pos.mul(2)).add(1).div(2); // noise factor
-	var k = params.distance.normalize().dot( normalLocal.normalize() ).max(0).pow(10);
-	
-	
-	var T = matTrans( params.distance.mul( zone ).mul(n).mul(k).pow(0.1) );
+	var zone = float( 1 ).toVar();
+	var n = noise( pos.mul( 2 ) ).add( 1 ).div( 2 ); // noise factor
+	var k = params.distance.normalize().dot( normalLocal.normalize() ).max( 0 ).pow( 10 );
+
+
+	var T = matTrans( params.distance.mul( zone ).mul( n ).mul( k ).pow( 0.1 ) );
 
 	return T.mul( vec4( pos, 1 ) ).xyz;
 

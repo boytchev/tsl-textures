@@ -4,7 +4,7 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { MeshEdgesGeometry } from "https://cdn.jsdelivr.net/npm/meshedgesgeometry@latest/src/MeshEdgesGeometry.js";
 import { toCreasedNormals } from 'three/addons/utils/BufferGeometryUtils.js';
 
-import { wood, hideFallbackWarning, showFallbackWarning } from "tsl-textures";
+import { hideFallbackWarning, showFallbackWarning, wood } from "tsl-textures";
 
 
 

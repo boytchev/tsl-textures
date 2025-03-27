@@ -17,7 +17,7 @@
 			"three/webgpu": "https://cdn.jsdelivr.net/npm/three@0.174.0/build/three.webgpu.min.js",
 			"three/tsl": "https://cdn.jsdelivr.net/npm/three@0.174.0/build/three.tsl.min.js",
 			"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.174.0/examples/jsm/",
-			"tsl-textures": "../src/tsl-textures.js"
+			"tsl-textures": "../dist/tsl-textures.min.js"
 		}
 	  }
 	</script>
@@ -28,28 +28,28 @@
 
 	<script type="module">
 
-		import { install, params } from "./online.js";
-		import { dysonSphere } from "tsl-textures";
+import { install, params } from "./online.js";
+import { dysonSphere } from "tsl-textures";
 
 
-		var gui = install( dysonSphere );
-		
-		gui.add( params, 'scale' )
-			.min( 0 ).max( 4 )
-			.name( 'Scale' );
+var gui = install( dysonSphere );
 
-		gui.add( params, 'complexity' )
-			.min( 1 ).max( 6 ).step(1)
-			.name( 'Complexity' );
+gui.add( params, 'scale' )
+	.min( 0 ).max( 4 )
+	.name( 'Scale' );
 
-		gui.addColor( params, 'color' )
-			.name( 'Color <right>main</right>' )
-			.$text.classList.add( 'top' );
-		
-		gui.addColor( params, 'background' )
-			.name( '<right>background</right>' )
-			.$text.classList.add( 'bottom' );
-		
+gui.add( params, 'complexity' )
+	.min( 1 ).max( 6 ).step( 1 )
+	.name( 'Complexity' );
+
+gui.addColor( params, 'color' )
+	.name( 'Color <right>main</right>' )
+	.$text.classList.add( 'top' );
+
+gui.addColor( params, 'background' )
+	.name( '<right>background</right>' )
+	.$text.classList.add( 'bottom' );
+
 	</script>
 </body>
 </html>

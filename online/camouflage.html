@@ -17,7 +17,7 @@
 			"three/webgpu": "https://cdn.jsdelivr.net/npm/three@0.174.0/build/three.webgpu.min.js",
 			"three/tsl": "https://cdn.jsdelivr.net/npm/three@0.174.0/build/three.tsl.min.js",
 			"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.174.0/examples/jsm/",
-			"tsl-textures": "../src/tsl-textures.js"
+			"tsl-textures": "../dist/tsl-textures.min.js"
 		}
 	  }
 	</script>
@@ -28,30 +28,30 @@
 
 	<script type="module">
 
-		import { install, params } from "./online.js";
-		import { camouflage } from "tsl-textures";
+import { install, params } from "./online.js";
+import { camouflage } from "tsl-textures";
 
 
-		var gui = install( camouflage );
-		
-		gui.add( params, 'scale' )
-			.min( 0 ).max( 4 )
-			.name( 'Scale' );
+var gui = install( camouflage );
 
-		gui.addColor( params, 'colorA' )
-			.name( 'Colors <right>A</right>' )
-			.$text.classList.add( 'top' );
-		
-		gui.addColor( params, 'colorB' )
-			.name( '<right>B</right>' );
-		
-		gui.addColor( params, 'colorC' )
-			.name( '<right>C</right>' );
-		
-		gui.addColor( params, 'colorD' )
-			.name( '<right>D</right>' )
-			.$text.classList.add( 'bottom' );
-		
+gui.add( params, 'scale' )
+	.min( 0 ).max( 4 )
+	.name( 'Scale' );
+
+gui.addColor( params, 'colorA' )
+	.name( 'Colors <right>A</right>' )
+	.$text.classList.add( 'top' );
+
+gui.addColor( params, 'colorB' )
+	.name( '<right>B</right>' );
+
+gui.addColor( params, 'colorC' )
+	.name( '<right>C</right>' );
+
+gui.addColor( params, 'colorD' )
+	.name( '<right>D</right>' )
+	.$text.classList.add( 'bottom' );
+
 	</script>
 </body>
 </html>

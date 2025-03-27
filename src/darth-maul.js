@@ -4,7 +4,7 @@
 
 
 import { Color, Vector3 } from "three";
-import { abs, exp, atan, Fn, mix, positionGeometry, pow, select, vec3 } from 'three/tsl';
+import { atan, exp, Fn, mix, positionGeometry, select, vec3 } from 'three/tsl';
 import { noise, prepare } from './tsl-utils.js';
 
 
@@ -13,7 +13,7 @@ var darthMaul = Fn( ( params ) => {
 
 	params = prepare( { ...darthMaul.defaults, ...params } );
 
-	var dX = vec3( params.shift.x, 0, 0 );
+	//var dX = vec3( params.shift.x, 0, 0 );
 
 	var position = positionGeometry.add( params.shift ).mul( exp( params.scale.div( 1.5 ).sub( 1 ) ) ).sub( params.shift ).mul( vec3( 1, 1/2, 1/2 ) ).toVar( );
 
@@ -31,13 +31,13 @@ var darthMaul = Fn( ( params ) => {
 	var c = select( position.x.greaterThan( noise( position.mul( 2.3 ) ).abs().mul( 0.5 ).add( 0.02 )	), 1, 0 );
 
 	var pos_actual = positionGeometry.normalize();
-	var angle = atan(pos_actual.z,pos_actual.x).add(Math.PI).mul(4/Math.PI).round().div(4/Math.PI);
+	var angle = atan( pos_actual.z, pos_actual.x ).add( Math.PI ).mul( 4/Math.PI ).round().div( 4/Math.PI );
 	var pos_center = vec3( angle.cos(), 0.3, angle.sin() );
 
-	var kk1 = pos_center.dot(pos_actual.add(vec3(0,0.3,0))).acos();
-	var kk = select( kk1.greaterThan(2.8),1,0);
+	var kk1 = pos_center.dot( pos_actual.add( vec3( 0, 0.3, 0 ) ) ).acos();
+	var kk = select( kk1.greaterThan( 2.8 ), 1, 0 );
 
-	return mix( mix( params.background, params.color, k.mul( s ).mul( c ).clamp( 0, 1 )), vec3(1,1,0), kk );
+	return mix( mix( params.background, params.color, k.mul( s ).mul( c ).clamp( 0, 1 ) ), vec3( 1, 1, 0 ), kk );
 
 } );
 

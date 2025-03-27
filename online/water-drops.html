@@ -17,7 +17,7 @@
 			"three/webgpu": "https://cdn.jsdelivr.net/npm/three@0.174.0/build/three.webgpu.min.js",
 			"three/tsl": "https://cdn.jsdelivr.net/npm/three@0.174.0/build/three.tsl.min.js",
 			"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.174.0/examples/jsm/",
-			"tsl-textures": "../src/tsl-textures.js"
+			"tsl-textures": "../dist/tsl-textures.min.js"
 		}
 	  }
 	</script>
@@ -28,44 +28,44 @@
 	
 	<script type="module">
 
-		import * as THREE from "three";
-		import { install, scene, model, params, light, ambientLight } from "./online.js";
-		import { waterDrops } from "tsl-textures";
+import * as THREE from "three";
+import { ambientLight, install, light, model, params, scene } from "./online.js";
+import { waterDrops } from "tsl-textures";
 
 
-		light.intensity = 10;
-		ambientLight.intensity = -1;
-		
-		var gui = install( waterDrops );
-		
-		model.material.metalness = 0;
-		model.material.roughness = 0.5;
-		model.material.transmission = 1;
-		model.material.ior = 2;
-		model.material.thickness = 0;
-		model.material.side = THREE.DoubleSide;
+light.intensity = 10;
+ambientLight.intensity = -1;
+
+var gui = install( waterDrops );
+
+model.material.metalness = 0;
+model.material.roughness = 0.5;
+model.material.transmission = 1;
+model.material.ior = 2;
+model.material.thickness = 0;
+model.material.side = THREE.DoubleSide;
 
 
 
-		var core = new THREE.Mesh(
-			new THREE.SphereGeometry( 0.95 ),
-			new THREE.MeshPhysicalMaterial( {color:'midnightblue'} )
-		);
-		scene.add( core );
-		
+var core = new THREE.Mesh(
+	new THREE.SphereGeometry( 0.95 ),
+	new THREE.MeshPhysicalMaterial( { color: 'midnightblue' } )
+);
+scene.add( core );
 
 
-		gui.add( params, 'scale' )
-			.name( 'Drops<right>scale</right>' ).min( 0 ).max( 4 )
-			.$input.classList.add( 'top' );
 
-		gui.add( params, 'density' )
-			.name( '<right>density</right>' ).min( 0 ).max( 1 )
-			.$input.classList.add( 'bottom' );
-		
-		gui.add( params, 'bump' )
-			.name( '<right>bumpiness</right>' ).min( 0 ).max( 1 )
-			.$input.classList.add( 'bottom' );
+gui.add( params, 'scale' )
+	.name( 'Drops<right>scale</right>' ).min( 0 ).max( 4 )
+	.$input.classList.add( 'top' );
+
+gui.add( params, 'density' )
+	.name( '<right>density</right>' ).min( 0 ).max( 1 )
+	.$input.classList.add( 'bottom' );
+
+gui.add( params, 'bump' )
+	.name( '<right>bumpiness</right>' ).min( 0 ).max( 1 )
+	.$input.classList.add( 'bottom' );
 
 	</script>
 </body>

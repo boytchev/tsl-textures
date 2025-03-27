@@ -1,5 +1,5 @@
 ﻿import * as THREE from "three";
-import { add, cross, Fn, normalLocal, positionLocal, select, tangentLocal, time, transformNormalToView, vec3, mx_noise_float as noise } from "three/tsl";
+import { add, cross, Fn, mx_noise_float as noise, normalLocal, positionLocal, select, tangentLocal, time, transformNormalToView, vec3 } from "three/tsl";
 
 
 // general setup, boring, skip to the next comment

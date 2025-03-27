@@ -17,7 +17,7 @@
 			"three/webgpu": "https://cdn.jsdelivr.net/npm/three@0.174.0/build/three.webgpu.min.js",
 			"three/tsl": "https://cdn.jsdelivr.net/npm/three@0.174.0/build/three.tsl.min.js",
 			"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.174.0/examples/jsm/",
-			"tsl-textures": "../src/tsl-textures.js"
+			"tsl-textures": "../dist/tsl-textures.min.js"
 		}
 	  }
 	</script>
@@ -28,57 +28,57 @@
 
 	<script type="module">
 
-		import * as THREE from "three";
-		import { install, model, params } from "./online.js";
-		import { clouds } from "tsl-textures";
+import * as THREE from "three";
+import { install, model, params } from "./online.js";
+import { clouds } from "tsl-textures";
 
-		var cnv = document.createElement( 'CANVAS' );
-		cnv.width = 64;
-		cnv.height = 64;
+var cnv = document.createElement( 'CANVAS' );
+cnv.width = 64;
+cnv.height = 64;
 
-		var context = cnv.getContext( '2d' );
-		context.fillStyle = 'black';
-		context.fillRect( 0, 0, 64, 64 );
-		context.fillStyle = 'BurlyWood';
-		context.lineWidth = 1;
-		context.fillRect( 1, 1, 62, 62 );
-		
-		var grid = new THREE.CanvasTexture( cnv );
-		grid.wrapS = grid.wrapT = THREE.RepeatWrapping;
-		grid.repeat.set( 20, 10 );
-		
-		var core = new THREE.Mesh(
-			new THREE.SphereGeometry( 0.9, 64, 32 ),
-			new THREE.MeshLambertNodeMaterial( { map: grid } )
-		);
-		model.add( core );
-		
-		
-		var gui = install( clouds );
-		
-		
-		gui.add( params, 'scale' )
-			.min( 0 ).max( 4 )
-			.name( 'Clouds <right>scale</right>' )
-			.$input.classList.add( 'top' );
-		
-		gui.add( params, 'density' )
-			.min( 0 ).max( 1 )
-			.name( '<right>density</right>' );
-		
-		gui.add( params, 'opacity' )
-			.min( 0 ).max( 1 )
-			.name( '<right>opacity</right>' )
-			.$input.classList.add( 'bottom' );
-		
-		gui.addColor( params, 'color' )
-			.name( 'Color <right>main</right>' )
-			.$text.classList.add( 'top' );
-		
-		gui.addColor( params, 'subcolor' )
-			.name( '<right>secondary</right>' )
-			.$text.classList.add( 'bottom' );
-		
+var context = cnv.getContext( '2d' );
+context.fillStyle = 'black';
+context.fillRect( 0, 0, 64, 64 );
+context.fillStyle = 'BurlyWood';
+context.lineWidth = 1;
+context.fillRect( 1, 1, 62, 62 );
+
+var grid = new THREE.CanvasTexture( cnv );
+grid.wrapS = grid.wrapT = THREE.RepeatWrapping;
+grid.repeat.set( 20, 10 );
+
+var core = new THREE.Mesh(
+	new THREE.SphereGeometry( 0.9, 64, 32 ),
+	new THREE.MeshLambertNodeMaterial( { map: grid } )
+);
+model.add( core );
+
+
+var gui = install( clouds );
+
+
+gui.add( params, 'scale' )
+	.min( 0 ).max( 4 )
+	.name( 'Clouds <right>scale</right>' )
+	.$input.classList.add( 'top' );
+
+gui.add( params, 'density' )
+	.min( 0 ).max( 1 )
+	.name( '<right>density</right>' );
+
+gui.add( params, 'opacity' )
+	.min( 0 ).max( 1 )
+	.name( '<right>opacity</right>' )
+	.$input.classList.add( 'bottom' );
+
+gui.addColor( params, 'color' )
+	.name( 'Color <right>main</right>' )
+	.$text.classList.add( 'top' );
+
+gui.addColor( params, 'subcolor' )
+	.name( '<right>secondary</right>' )
+	.$text.classList.add( 'bottom' );
+
 	</script>
 </body>
 </html>

@@ -1,13 +1,9 @@
 ﻿import * as THREE from "three";
-import {uniform} from "three/tsl";
+import { uniform } from "three/tsl";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { SimplexNoise } from "three/addons/math/SimplexNoise.js";
 
-import {
-	rotator,	// neck movement
-	rust,		// wall decoration
-	protozoa,	// dirt on mirror
-} from "tsl-textures";	
+import { protozoa, rotator, rust } from "tsl-textures";
 
 
 

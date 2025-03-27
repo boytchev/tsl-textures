@@ -3,7 +3,7 @@ import { uniform } from "three/tsl";
 import { mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js';
 import { SimplexNoise } from "three/addons/math/SimplexNoise.js";
 
-import { protozoa, dysonSphere } from "tsl-textures";
+import { dysonSphere, protozoa } from "tsl-textures";
 
 
 

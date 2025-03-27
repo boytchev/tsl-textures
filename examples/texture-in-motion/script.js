@@ -3,7 +3,7 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 
 import { Fn, If, mix, positionLocal, positionWorld, uniform, vec3 } from 'three/tsl';
 
-import { noise, hideFallbackWarning, showFallbackWarning, dysonSphere, camouflage, dalmatianSpots, planet } from "tsl-textures";
+import { camouflage, dalmatianSpots, dysonSphere, hideFallbackWarning, noise, planet, showFallbackWarning } from "tsl-textures";
 
 
 // general setup

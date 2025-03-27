@@ -17,7 +17,7 @@
 			"three/webgpu": "https://cdn.jsdelivr.net/npm/three@0.174.0/build/three.webgpu.min.js",
 			"three/tsl": "https://cdn.jsdelivr.net/npm/three@0.174.0/build/three.tsl.min.js",
 			"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.174.0/examples/jsm/",
-			"tsl-textures": "../src/tsl-textures.js"
+			"tsl-textures": "../dist/tsl-textures.min.js"
 		}
 	  }
 	</script>
@@ -28,35 +28,35 @@
 
 	<script type="module">
 
-		import { install, params } from "./online.js";
-		import { caveArt } from "tsl-textures";
+import { install, params } from "./online.js";
+import { caveArt } from "tsl-textures";
 
 
 
-		var gui = install( caveArt );
-		
-		gui.add( params, 'scale' )
-			.min( 0 ).max( 4 )
-			.name( '<right>scale</right>' )
-			.$input.classList.add( 'top' );
-		
-		gui.add( params, 'thinness' )
-			.min( 0 ).max( 4 )
-			.name( '<right>thinness</right>' );
+var gui = install( caveArt );
 
-		gui.add( params, 'noise' )
-			.min( 0 ).max( 1 ).step( 0.01 )
-			.name( '<right>noise</right>' )
-			.$input.classList.add( 'bottom' );
+gui.add( params, 'scale' )
+	.min( 0 ).max( 4 )
+	.name( '<right>scale</right>' )
+	.$input.classList.add( 'top' );
 
-		gui.addColor( params, 'color' )
-			.name( 'Color <right>main</right>' )
-			.$text.classList.add( 'top' );
-		
-		gui.addColor( params, 'background' )
-			.name( '<right>background</right>' )
-			.$text.classList.add( 'bottom' );
-		
+gui.add( params, 'thinness' )
+	.min( 0 ).max( 4 )
+	.name( '<right>thinness</right>' );
+
+gui.add( params, 'noise' )
+	.min( 0 ).max( 1 ).step( 0.01 )
+	.name( '<right>noise</right>' )
+	.$input.classList.add( 'bottom' );
+
+gui.addColor( params, 'color' )
+	.name( 'Color <right>main</right>' )
+	.$text.classList.add( 'top' );
+
+gui.addColor( params, 'background' )
+	.name( '<right>background</right>' )
+	.$text.classList.add( 'bottom' );
+
 	</script>
 </body>
 </html>

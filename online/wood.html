@@ -17,7 +17,7 @@
 			"three/webgpu": "https://cdn.jsdelivr.net/npm/three@0.174.0/build/three.webgpu.min.js",
 			"three/tsl": "https://cdn.jsdelivr.net/npm/three@0.174.0/build/three.tsl.min.js",
 			"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.174.0/examples/jsm/",
-			"tsl-textures": "../src/tsl-textures.js"
+			"tsl-textures": "../dist/tsl-textures.min.js"
 		}
 	  }
 	</script>
@@ -28,48 +28,48 @@
 
 	<script type="module">
 
-		import { install, params } from "./online.js";
-		import { wood } from "tsl-textures";
+import { install, params } from "./online.js";
+import { wood } from "tsl-textures";
 
 
-		var gui = install( wood );
-		
-		gui.add( params, 'scale' )
-			.min( 1 ).max( 4 )
-			.name( 'Scale' )
-			.$input.classList.add( 'top' );
+var gui = install( wood );
 
-		gui.add( params, 'rings' )
-			.min( 1 ).max( 10 )
-			.name( 'Rings<right>count</right>' );
+gui.add( params, 'scale' )
+	.min( 1 ).max( 4 )
+	.name( 'Scale' )
+	.$input.classList.add( 'top' );
 
-		gui.add( params, 'length' )
-			.min( 1 ).max( 10 )
-			.name( '<right>length</right>' );
+gui.add( params, 'rings' )
+	.min( 1 ).max( 10 )
+	.name( 'Rings<right>count</right>' );
 
-		gui.add( params, 'angle' )
-			.min( -90 ).max( 90 )
-			.name( '<right>angle</right>' )
-			.$input.classList.add( 'bottom' );
+gui.add( params, 'length' )
+	.min( 1 ).max( 10 )
+	.name( '<right>length</right>' );
 
-		gui.add( params, 'fibers' )
-			.min( 0 ).max( 1 )
-			.name( 'Fibers' )
-			.$input.classList.add( 'top' );
+gui.add( params, 'angle' )
+	.min( -90 ).max( 90 )
+	.name( '<right>angle</right>' )
+	.$input.classList.add( 'bottom' );
 
-		gui.add( params, 'fibersDensity' )
-			.min( 2 ).max( 15 )
-			.name( '<right>density</right>' )
-			.$input.classList.add( 'bottom' );
-			
-		gui.addColor( params, 'color' )
-			.name( 'Color <right>main</right>' )
-			.$text.classList.add( 'top' );
-		
-		gui.addColor( params, 'background' )
-			.name( '<right>background</right>' )
-			.$text.classList.add( 'bottom' );
-		
+gui.add( params, 'fibers' )
+	.min( 0 ).max( 1 )
+	.name( 'Fibers' )
+	.$input.classList.add( 'top' );
+
+gui.add( params, 'fibersDensity' )
+	.min( 2 ).max( 15 )
+	.name( '<right>density</right>' )
+	.$input.classList.add( 'bottom' );
+
+gui.addColor( params, 'color' )
+	.name( 'Color <right>main</right>' )
+	.$text.classList.add( 'top' );
+
+gui.addColor( params, 'background' )
+	.name( '<right>background</right>' )
+	.$text.classList.add( 'bottom' );
+
 	</script>
 </body>
 </html>
