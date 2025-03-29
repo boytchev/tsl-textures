@@ -1,5 +1,8 @@
 # TSL Textures
 
+## 2.0.1
+* Upgraded to Three.js r175
+
 ## 2.0.0
 * All textures served via one tsl-textures.js file from dist
 
