@@ -30,7 +30,7 @@
     "package.json",
     "README.md",
     "dist",
-	"src"
+    "src"
   ],
   "license": "MIT",
   "devDependencies": {
@@ -38,7 +38,9 @@
     "eslint": "^9.4.0",
     "eslint-plugin-html": "^8.1.1",
     "globals": "^15.4.0",
-    "rollup": "^4.37.0",
-    "rollup-plugin-uglify": "^5.0.2"
+    "rollup": "^4.37.0"
+  },
+  "dependencies": {
+    "@rollup/plugin-terser": "^0.4.4"
   }
 }
