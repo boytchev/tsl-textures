@@ -99,6 +99,13 @@ const toHsl = tsl.Fn( ([ rgb ]) => {
 
 } );
 
+toHsl.setLayout( {
+	name: 'toHsl',
+	type: 'vec3',
+	inputs: [
+		{ name: 'rgb', type: 'vec3' },
+	]
+} );
 
 
 
@@ -157,6 +164,15 @@ const applyEuler = tsl.Fn( ([ vec, eu ]) => {
 
 } );
 
+applyEuler.setLayout( {
+	name: 'applyEuler',
+	type: 'vec4',
+	inputs: [
+		{ name: 'vec', type: 'vec3' },
+		{ name: 'eu', type: 'vec3' },
+	]
+} );
+
 
 // convert Euler XYZ angles to quaternion
 const quaternionFromEuler = tsl.Fn( ([ eu ]) => {
@@ -178,6 +194,14 @@ const quaternionFromEuler = tsl.Fn( ([ eu ]) => {
 
 } );
 
+quaternionFromEuler.setLayout( {
+	name: 'quaternionFromEuler',
+	type: 'vec4',
+	inputs: [
+		{ name: 'eu', type: 'vec3' },
+	]
+} );
+
 
 // apply quaternion rotation to a vector
 const applyQuaternion = tsl.Fn( ([ vec, quat ]) => {
@@ -188,6 +212,14 @@ const applyQuaternion = tsl.Fn( ([ vec, quat ]) => {
 
 } );
 
+applyQuaternion.setLayout( {
+	name: 'applyQuaternion',
+	type: 'vec3',
+	inputs: [
+		{ name: 'vec', type: 'vec3' },
+		{ name: 'quat', type: 'vec4' },
+	]
+} );
 
 
 // exponential version of remap
@@ -196,18 +228,19 @@ const remapExp = tsl.Fn( ([ x, fromMin, fromMax, toMin, toMax ]) => {
 	x = tsl.remap( x, fromMin, fromMax, 0, 1 );
 	x = tsl.pow( 2, tsl.mul( x, tsl.log2( toMax.div( toMin ) ) ).add( tsl.log2( toMin ) ) );
 	return x;
-	/*
 
-function mapExp( x, toMin, toMax, fromMin=0, fromMax=100 ) {
+} );
 
-	x = map( x, 0, 1, fromMin, fromMax );
-	x = 2**( x * Math.log2( toMax/toMin ) + Math.log2( toMin ) );
-
-	return x;
-
-}
-*/
-
+remapExp.setLayout( {
+	name: 'remapExp',
+	type: 'float',
+	inputs: [
+		{ name: 'x', type: 'float' },
+		{ name: 'fromMin', type: 'float' },
+		{ name: 'fromMax', type: 'float' },
+		{ name: 'toMin', type: 'float' },
+		{ name: 'toMax', type: 'float' },
+	]
 } );
 
 
@@ -217,6 +250,14 @@ const vnoise = tsl.Fn( ([ v ])=>{
 
 	return v.dot( tsl.vec3( 12.9898, 78.233, -97.5123 ) ).sin().mul( 43758.5453 ).fract().mul( 2 ).sub( 1 );
 
+} );
+
+vnoise.setLayout( {
+	name: 'vnoise',
+	type: 'float',
+	inputs: [
+		{ name: 'v', type: 'vec3' },
+	]
 } );
 
 
@@ -235,6 +276,14 @@ const matRotX = tsl.Fn( ([ angle ])=>{
 
 } );
 
+matRotX.setLayout( {
+	name: 'matRotX',
+	type: 'mat4',
+	inputs: [
+		{ name: 'angle', type: 'float' },
+	]
+} );
+
 
 
 // generate Y-rotation matrix
@@ -249,6 +298,14 @@ const matRotY = tsl.Fn( ([ angle ])=>{
 		sin, 0, cos, 0,
 		0, 0, 0, 1 );
 
+} );
+
+matRotY.setLayout( {
+	name: 'matRotY',
+	type: 'mat4',
+	inputs: [
+		{ name: 'angle', type: 'float' },
+	]
 } );
 
 
@@ -267,6 +324,14 @@ const matRotZ = tsl.Fn( ([ angle ])=>{
 
 } );
 
+matRotZ.setLayout( {
+	name: 'matRotZ',
+	type: 'mat4',
+	inputs: [
+		{ name: 'angle', type: 'float' },
+	]
+} );
+
 
 
 // generate YXZ rotation matrix
@@ -278,6 +343,14 @@ const matRotYXZ = tsl.Fn( ([ angles ])=>{
 
 	return RY.mul( RX ).mul( RZ );
 
+} );
+
+matRotYXZ.setLayout( {
+	name: 'matRotYXZ',
+	type: 'mat4',
+	inputs: [
+		{ name: 'angles', type: 'vec3' },
+	]
 } );
 
 
@@ -293,6 +366,14 @@ const matScale = tsl.Fn( ([ scales ])=>{
 
 } );
 
+matScale.setLayout( {
+	name: 'matScale',
+	type: 'mat4',
+	inputs: [
+		{ name: 'scales', type: 'vec3' },
+	]
+} );
+
 
 
 // generate translation matrix
@@ -304,6 +385,14 @@ const matTrans = tsl.Fn( ([ vector ])=>{
 		0, 0, 1, 0,
 		vector.x, vector.y, vector.z, 1 );
 
+} );
+
+matTrans.setLayout( {
+	name: 'matTrans',
+	type: 'mat4',
+	inputs: [
+		{ name: 'vector', type: 'vec3' },
+	]
 } );
 
 
@@ -339,6 +428,16 @@ const selectPlanar = tsl.Fn( ([ pos, selAngles, selCenter, selWidth ])=>{
 
 } );
 
+selectPlanar.setLayout( {
+	name: 'selectPlanar',
+	type: 'float',
+	inputs: [
+		{ name: 'pos', type: 'vec3' },
+		{ name: 'selAngles', type: 'vec2' },
+		{ name: 'selCenter', type: 'vec3' },
+		{ name: 'selWidth', type: 'float' },
+	]
+} );
 
 
 const overlayPlanar = tsl.Fn( ( params )=>{
@@ -365,6 +464,14 @@ const normalVector = tsl.Fn( ([ pos ])=>{
 
 	return tsl.transformNormalToView( tsl.cross( dU, dV ).normalize() );
 
+} );
+
+normalVector.setLayout( {
+	name: 'normalVector',
+	type: 'vec3',
+	inputs: [
+		{ name: 'pos', type: 'vec3' },
+	]
 } );
 
 
