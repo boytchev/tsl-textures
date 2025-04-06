@@ -1,5 +1,8 @@
 # TSL Textures
 
+## 2.0.2
+* Added layouts to some TSL functions
+
 ## 2.0.1
 * Upgraded to Three.js r175
 
