@@ -1,0 +1,46 @@
+﻿<!DOCTYPE html>
+
+
+<html>
+
+
+<head>
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+	<style>
+		body {
+			margin: 0;
+			overflow: hidden;
+		}
+		
+		img {
+			position: absolute;
+			z-index: 100;
+			height: 100%;
+			box-shadow: -10px 0px 30px gray, 10px 0px 30px gray;
+		}
+	</style>
+	
+	<script type="importmap">
+	  {
+		"imports": {
+			"three": "https://cdn.jsdelivr.net/npm/three@0.175.0/build/three.webgpu.min.js",
+			"three/webgpu": "https://cdn.jsdelivr.net/npm/three@0.175.0/build/three.webgpu.min.js",
+			"three/tsl": "https://cdn.jsdelivr.net/npm/three@0.175.0/build/three.tsl.min.js",
+			"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.175.0/examples/jsm/",
+			"tsl-textures": "../../src/tsl-textures.js"
+		}
+	  }
+	</script>
+</head>
+
+
+<body>
+	<img src="image-left.jpg" style="left: 0px">
+	<img src="image-right.jpg" style="right: 00px">
+	
+	<script type="module">
+		import "./script-2.js";
+	</script>
+</body>
+</html>
