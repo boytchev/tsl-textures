@@ -5,9 +5,9 @@
   "main": "./src/tsl-textures.js",
   "module": "./src/tsl-textures.js",
   "exports": {
-    ".": {
-      "require": "./dist/tsl-textures.js",
-      "import": "./dist/tsl-textures.js"
+    "./tsl-textures.js": {
+      "require": "./dist/cjs/tsl-textures.js",
+      "import": "./dist/esm/tsl-textures.js"
     }
   },
   "repository": {
@@ -30,15 +30,17 @@
     "package.json",
     "README.md",
     "dist",
-	"src"
+    "src"
   ],
   "license": "MIT",
   "devDependencies": {
     "@eslint/js": "^9.4.0",
+    "@rollup/plugin-commonjs": "^28.0.3",
+    "@rollup/plugin-node-resolve": "^16.0.1",
+    "@rollup/plugin-terser": "^0.4.4",
     "eslint": "^9.4.0",
     "eslint-plugin-html": "^8.1.1",
-    "globals": "^15.4.0",
-    "rollup": "^4.37.0",
-    "rollup-plugin-uglify": "^5.0.2"
+    "globals": "^15.15.0",
+    "rollup": "^4.37.0"
   }
 }
