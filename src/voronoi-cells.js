@@ -52,7 +52,7 @@ var voronoiCells = Fn( ( params )=>{
 
 
 	var n = noise( minCell.mul( Math.PI ) ).toVar();
-	var k = mix( minDist, n.add( 1 ).div( 2 ), params.flat );
+	var k = mix( minDist, n.add( 1 ).div( 2 ), params.facet );
 
 	var color = mix( params.color, params.background, k ).toVar();
 	var randomColor = vec3( n.mul( 16.8 ), n.mul( 31.4159 ), n.mul( 27.1828 ) ).sin().add( 1 ).div( 2 );
@@ -68,7 +68,7 @@ voronoiCells.defaults = {
 
 	scale: 2,
 	variation: 0,
-	flat: 0,
+	facet: 0,
 
 	color: new Color( 0 ),
 	background: new Color( 0xc0d0ff ),

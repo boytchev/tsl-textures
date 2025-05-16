@@ -211,7 +211,7 @@ quaternionFromEuler.setLayout( {
 // apply quaternion rotation to a vector
 const applyQuaternion = Fn( ([ vec, quat ]) => {
 
-	var t = cross( quat, vec ).mul( 2 ).toVar( );
+	var t = cross( quat.xyz, vec ).mul( 2 ).toVar( );
 
 	return add( vec, t.mul( quat.w ), cross( quat.xyz, t ) );
 

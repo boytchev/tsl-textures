@@ -206,7 +206,7 @@ quaternionFromEuler.setLayout( {
 // apply quaternion rotation to a vector
 const applyQuaternion = tsl.Fn( ([ vec, quat ]) => {
 
-	var t = tsl.cross( quat, vec ).mul( 2 ).toVar( );
+	var t = tsl.cross( quat.xyz, vec ).mul( 2 ).toVar( );
 
 	return tsl.add( vec, t.mul( quat.w ), tsl.cross( quat.xyz, t ) );
 
@@ -665,7 +665,7 @@ var circles = tsl.Fn( ( params ) => {
 
 	params = prepare( { ...circles.defaults, ...params } );
 
-	var pos = tsl.positionGeometry.normalize();
+	var pos = tsl.select( params.flat, tsl.positionGeometry, tsl.positionGeometry.normalize() );
 
 	var angle = tsl.acos( tsl.clamp( pos.y, -1, 1 ) ).mul( 20 );
 
@@ -704,6 +704,8 @@ circles.defaults = {
 	variety: 1,
 
 	color: new three.Color( 0xF0E0D0 ),
+
+	flat: 0,
 
 	seed: 0,
 };
@@ -1135,20 +1137,22 @@ var grid = tsl.Fn( ( params ) => {
 
 	params = prepare( { ...grid.defaults, ...params } );
 
-	var uv = tsl.equirectUV( tsl.positionGeometry.normalize() ).toVar(),
-		a = tsl.mul( uv.x, 2*Math.PI ),
+	var aspect = tsl.select( params.flat, tsl.screenSize.x.div( tsl.screenSize.y ), 2 );
+
+	var uv = tsl.select( params.flat, tsl.screenUV, tsl.equirectUV( tsl.positionGeometry.normalize() ) ).toVar(),
+		a = tsl.mul( uv.x, aspect, Math.PI ),
 		b = tsl.mul( uv.y, Math.PI ).toVar();
 
 	var uTo = tsl.div( tsl.round( tsl.mul( uv.x, params.countU ) ), params.countU ),
 		vTo = tsl.div( tsl.round( tsl.mul( uv.y, params.countV ) ), params.countV ),
-		aTo = tsl.mul( uTo, 2*Math.PI ),
+		aTo = tsl.mul( uTo, aspect, Math.PI ),
 		bTo = tsl.mul( vTo, Math.PI );
 
-	var angleU = tsl.abs( tsl.sub( a, aTo ) ).mul( tsl.sin( b ) ),
+	var angleU = tsl.abs( tsl.sub( a, aTo ) ).mul( tsl.select( params.flat, 1, tsl.sin( b ) ) ),
 		angleV = tsl.abs( tsl.sub( b, bTo ) ),
 		angle = tsl.min( angleU, angleV );
 
-	var treshold = tsl.mul( tsl.min( tsl.div( 2*Math.PI, params.countU ), tsl.div( Math.PI, params.countV ) ), tsl.remapClamp( tsl.pow( params.thinness, 0.5 ), 0, 1, 0.9, 0.04 ), 0.5 );
+	var treshold = tsl.mul( tsl.min( tsl.div( aspect.mul( Math.PI ), params.countU ), tsl.div( Math.PI, params.countV ) ), tsl.remapClamp( tsl.pow( params.thinness, 0.5 ), 0, 1, 0.9, 0.04 ), 0.5 );
 	var k = tsl.oneMinus( tsl.smoothstep( tsl.sub( treshold, 0.002 ), tsl.add( treshold, 0.002 ), angle ) );
 
 	return tsl.mix( params.background, params.color, k );
@@ -1167,6 +1171,8 @@ grid.defaults = {
 
 	color: new three.Color( 0x000000 ),
 	background: new three.Color( 0xFFFFFF ),
+
+	flat: 0,
 };
 
 var isolines = tsl.Fn( ( params )=>{
@@ -1513,26 +1519,41 @@ var polkaDots = tsl.Fn( ( params ) => {
 
 	params = prepare( { ...polkaDots.defaults, ...params } );
 
-	var cnt = tsl.pow( 10, params.count ).toVar();
-	var vec = tsl.positionGeometry.normalize().toVar();
-
-	var besti = tsl.oneMinus( vec.y ).mul( cnt ).sub( 1 ).div( 2 );
-
-	var span = tsl.max( 10, cnt.pow( 0.5 ) );
-
-	var mini = besti.sub( span ).floor().clamp( 0, cnt );
-	var maxi = besti.add( span ).floor().clamp( 0, cnt );
-
 	var dist = tsl.float( 1 ).toVar();
- 	tsl.Loop( maxi.sub( mini ), ( { i } )=> {
 
-		var j = tsl.add( i, mini );
-		var theta = tsl.mod( tsl.mul( 2*Math.PI/goldenRatio, j ), 2*Math.PI );
-		var phi = tsl.acos( tsl.oneMinus( tsl.float( j ).mul( 2 ).add( 1 ).div( cnt ) ) );
-		var pnt = spherical( phi, theta );//.normalize();
-		dist.assign( tsl.min( dist, tsl.distance( vec, pnt ) ) );
+	tsl.If( params.flat.equal( 1 ), ()=>{
 
-	} );
+		var cnt = params.count.pow( 2 ).sub( 0.5 ).toVar();
+		var pos = tsl.positionGeometry.xy.mul( cnt ).mul( tsl.mat2( 1, 1, -1, 1 ) );
+		var posTo = pos.round().toVar();
+
+		dist.assign( pos.distance( posTo ).div( cnt ) );
+
+	} ).Else( ()=>{
+
+		var cnt = tsl.pow( 10, params.count ).toVar();
+		var vec = tsl.positionGeometry.normalize().toVar();
+
+		var besti = tsl.oneMinus( vec.y ).mul( cnt ).sub( 1 ).div( 2 );
+
+		var span = tsl.max( 10, cnt.pow( 0.5 ) );
+
+		var mini = besti.sub( span ).floor().clamp( 0, cnt );
+		var maxi = besti.add( span ).floor().clamp( 0, cnt );
+
+		dist.assign( 1 ).toVar();
+
+		tsl.Loop( maxi.sub( mini ), ( { i } )=> {
+
+			var j = tsl.add( i, mini );
+			var theta = tsl.mod( tsl.mul( 2*Math.PI/goldenRatio, j ), 2*Math.PI );
+			var phi = tsl.acos( tsl.oneMinus( tsl.float( j ).mul( 2 ).add( 1 ).div( cnt ) ) );
+			var pnt = spherical( phi, theta );//.normalize();
+			dist.assign( tsl.min( dist, tsl.distance( vec, pnt ) ) );
+
+		} ); // Loop
+
+	} ); // Else
 
 	var size = tsl.exp( params.size.mul( 5 ).sub( 5 ) ).toVar();
 	var blur = params.blur.pow( 4 ).toVar();
@@ -1553,6 +1574,8 @@ polkaDots.defaults = {
 
 	color: new three.Color( 0x000000 ),
 	background: new three.Color( 0xFFFFFF ),
+
+	flat: 0,
 };
 
 var processedWood = tsl.Fn( ( params )=>{
@@ -2359,7 +2382,7 @@ var voronoiCells = tsl.Fn( ( params )=>{
 
 
 	var n = tsl.mx_noise_float( minCell.mul( Math.PI ) ).toVar();
-	var k = tsl.mix( minDist, n.add( 1 ).div( 2 ), params.flat );
+	var k = tsl.mix( minDist, n.add( 1 ).div( 2 ), params.facet );
 
 	var color = tsl.mix( params.color, params.background, k ).toVar();
 	var randomColor = tsl.vec3( n.mul( 16.8 ), n.mul( 31.4159 ), n.mul( 27.1828 ) ).sin().add( 1 ).div( 2 );
@@ -2375,7 +2398,7 @@ voronoiCells.defaults = {
 
 	scale: 2,
 	variation: 0,
-	flat: 0,
+	facet: 0,
 
 	color: new three.Color( 0 ),
 	background: new three.Color( 0xc0d0ff ),
@@ -2436,14 +2459,16 @@ var watermelon = tsl.Fn( ( params )=>{
 
 	params = prepare( { ...watermelon.defaults, ...params } );
 
+	var variation = tsl.select( params.flat, params.variation.mul( 0.85 ).add( 0.15 ), params.variation );
+
 	var pos = tsl.positionGeometry.mul( tsl.exp( params.scale.div( 4 ).add( 2 ) ) ).add( params.seed ).toVar( );
 
-	var uv = tsl.equirectUV( tsl.positionGeometry.normalize() ).toVar(),
-		a = uv.x.mul( params.stripes.round(), 2*Math.PI ).add( tsl.mx_noise_float( pos.mul( tsl.vec3( 1, 0, 1 ) ) ).mul( 2 ) );
+	var uv = tsl.select( params.flat, tsl.screenUV, tsl.equirectUV( tsl.positionGeometry.normalize() ) ).toVar(),
+		a = uv.x.mul( params.stripes.round(), tsl.select( params.flat, Math.PI, 2*Math.PI ) ).add( tsl.mx_noise_float( pos.mul( tsl.vec3( 1, 0.3, 1 ) ) ).mul( 2 ) );
 
 	var k = a.sin().add( 0.5 ).div( 2 ).mul( uv.y.remap( 0, 1, -Math.PI, Math.PI ).cos().add( 1.2 ).clamp( 0, 1 ) )
-		.add( params.variation.mul( 2, tsl.mx_noise_float( pos.mul( 1.5 ) ).div( 2 ) ) )
-		.add( params.variation.mul( 2, tsl.mx_noise_float( pos.mul( 4 ) ).div( 6 ) ) )
+		.add( variation.mul( 2, tsl.mx_noise_float( pos.mul( 1.5 ) ).div( 2 ) ) )
+		.add( variation.mul( 2, tsl.mx_noise_float( pos.mul( 4 ) ).div( 6 ) ) )
 		.toVar();
 
 	k.assign(
@@ -2472,6 +2497,8 @@ watermelon.defaults = {
 
 	color: new three.Color( 'yellowgreen' ),
 	background: new three.Color( 'darkgreen' ),
+
+	flat: 0,
 
 	seed: 0,
 };
@@ -2532,11 +2559,11 @@ var zebraLines = tsl.Fn( ( params ) => {
 
 	params = prepare( { ...zebraLines.defaults, ...params } );
 
-	var pos = tsl.positionGeometry.normalize().toVar( );
+	var pos = tsl.select( params.flat, tsl.positionGeometry, tsl.positionGeometry.normalize() ).toVar( );
 
-	var dir = spherical( params.phi, params.theta ).toVar();
+	var dir = tsl.select( params.flat, tsl.vec2( tsl.cos( params.phi ), tsl.sin( params.phi ) ), spherical( params.phi, params.theta ) ).toVar();
 
-	var angle = tsl.acos( tsl.clamp( dir.dot( pos ), -1, 1 ) );
+	var angle = tsl.select( params.flat, tsl.clamp( dir.dot( pos ), -2, 2 ), tsl.acos( tsl.clamp( dir.dot( pos ), -1, 1 ) ) ).toVar();
 
 	var scale = tsl.exp( params.scale.add( 1 ) ).toVar();
 
@@ -2561,6 +2588,7 @@ zebraLines.defaults = {
 	color: new three.Color( 0x0 ),
 	background: new three.Color( 0xFFFFFF ),
 
+	flat: 0,
 	// no seed for zebra lines
 };
 

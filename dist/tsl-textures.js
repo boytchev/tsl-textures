@@ -1,6 +1,6 @@
 // TSL Textures v2.0.1
 
-import { Fn, min, sub, max, vec3, float, add, If, select, sin, cos, vec4, mul, cross, remap, pow, log2, mat4, smoothstep, positionGeometry, dFdx, dFdy, transformNormalToView, mx_noise_float, uniform, exp, round, pow2, abs, or, mix, acos, clamp, normalLocal, tangentLocal, Loop, floor, oneMinus, equirectUV, div, remapClamp, sqrt, mod, distance, radians, matcapUV, mx_worley_noise_float, sign, tan, reciprocal } from 'three/tsl';
+import { Fn, min, sub, max, vec3, float, add, If, select, sin, cos, vec4, mul, cross, remap, pow, log2, mat4, smoothstep, positionGeometry, dFdx, dFdy, transformNormalToView, mx_noise_float, uniform, exp, round, pow2, abs, or, mix, acos, clamp, normalLocal, tangentLocal, Loop, floor, oneMinus, screenSize, screenUV, equirectUV, div, remapClamp, sqrt, mat2, mod, distance, radians, matcapUV, mx_worley_noise_float, sign, tan, reciprocal, vec2 } from 'three/tsl';
 export { mx_noise_float as noise } from 'three/tsl';
 import { Color, Vector3, Vector2 } from 'three';
 
@@ -205,7 +205,7 @@ quaternionFromEuler.setLayout( {
 // apply quaternion rotation to a vector
 const applyQuaternion = Fn( ([ vec, quat ]) => {
 
-	var t = cross( quat, vec ).mul( 2 ).toVar( );
+	var t = cross( quat.xyz, vec ).mul( 2 ).toVar( );
 
 	return add( vec, t.mul( quat.w ), cross( quat.xyz, t ) );
 
@@ -664,7 +664,7 @@ var circles = Fn( ( params ) => {
 
 	params = prepare( { ...circles.defaults, ...params } );
 
-	var pos = positionGeometry.normalize();
+	var pos = select( params.flat, positionGeometry, positionGeometry.normalize() );
 
 	var angle = acos( clamp( pos.y, -1, 1 ) ).mul( 20 );
 
@@ -703,6 +703,8 @@ circles.defaults = {
 	variety: 1,
 
 	color: new Color( 0xF0E0D0 ),
+
+	flat: 0,
 
 	seed: 0,
 };
@@ -1134,20 +1136,22 @@ var grid = Fn( ( params ) => {
 
 	params = prepare( { ...grid.defaults, ...params } );
 
-	var uv = equirectUV( positionGeometry.normalize() ).toVar(),
-		a = mul( uv.x, 2*Math.PI ),
+	var aspect = select( params.flat, screenSize.x.div( screenSize.y ), 2 );
+
+	var uv = select( params.flat, screenUV, equirectUV( positionGeometry.normalize() ) ).toVar(),
+		a = mul( uv.x, aspect, Math.PI ),
 		b = mul( uv.y, Math.PI ).toVar();
 
 	var uTo = div( round( mul( uv.x, params.countU ) ), params.countU ),
 		vTo = div( round( mul( uv.y, params.countV ) ), params.countV ),
-		aTo = mul( uTo, 2*Math.PI ),
+		aTo = mul( uTo, aspect, Math.PI ),
 		bTo = mul( vTo, Math.PI );
 
-	var angleU = abs( sub( a, aTo ) ).mul( sin( b ) ),
+	var angleU = abs( sub( a, aTo ) ).mul( select( params.flat, 1, sin( b ) ) ),
 		angleV = abs( sub( b, bTo ) ),
 		angle = min( angleU, angleV );
 
-	var treshold = mul( min( div( 2*Math.PI, params.countU ), div( Math.PI, params.countV ) ), remapClamp( pow( params.thinness, 0.5 ), 0, 1, 0.9, 0.04 ), 0.5 );
+	var treshold = mul( min( div( aspect.mul( Math.PI ), params.countU ), div( Math.PI, params.countV ) ), remapClamp( pow( params.thinness, 0.5 ), 0, 1, 0.9, 0.04 ), 0.5 );
 	var k = oneMinus( smoothstep( sub( treshold, 0.002 ), add( treshold, 0.002 ), angle ) );
 
 	return mix( params.background, params.color, k );
@@ -1166,6 +1170,8 @@ grid.defaults = {
 
 	color: new Color( 0x000000 ),
 	background: new Color( 0xFFFFFF ),
+
+	flat: 0,
 };
 
 var isolines = Fn( ( params )=>{
@@ -1512,26 +1518,41 @@ var polkaDots = Fn( ( params ) => {
 
 	params = prepare( { ...polkaDots.defaults, ...params } );
 
-	var cnt = pow( 10, params.count ).toVar();
-	var vec = positionGeometry.normalize().toVar();
-
-	var besti = oneMinus( vec.y ).mul( cnt ).sub( 1 ).div( 2 );
-
-	var span = max( 10, cnt.pow( 0.5 ) );
-
-	var mini = besti.sub( span ).floor().clamp( 0, cnt );
-	var maxi = besti.add( span ).floor().clamp( 0, cnt );
-
 	var dist = float( 1 ).toVar();
- 	Loop( maxi.sub( mini ), ( { i } )=> {
 
-		var j = add( i, mini );
-		var theta = mod( mul( 2*Math.PI/goldenRatio, j ), 2*Math.PI );
-		var phi = acos( oneMinus( float( j ).mul( 2 ).add( 1 ).div( cnt ) ) );
-		var pnt = spherical( phi, theta );//.normalize();
-		dist.assign( min( dist, distance( vec, pnt ) ) );
+	If( params.flat.equal( 1 ), ()=>{
 
-	} );
+		var cnt = params.count.pow( 2 ).sub( 0.5 ).toVar();
+		var pos = positionGeometry.xy.mul( cnt ).mul( mat2( 1, 1, -1, 1 ) );
+		var posTo = pos.round().toVar();
+
+		dist.assign( pos.distance( posTo ).div( cnt ) );
+
+	} ).Else( ()=>{
+
+		var cnt = pow( 10, params.count ).toVar();
+		var vec = positionGeometry.normalize().toVar();
+
+		var besti = oneMinus( vec.y ).mul( cnt ).sub( 1 ).div( 2 );
+
+		var span = max( 10, cnt.pow( 0.5 ) );
+
+		var mini = besti.sub( span ).floor().clamp( 0, cnt );
+		var maxi = besti.add( span ).floor().clamp( 0, cnt );
+
+		dist.assign( 1 ).toVar();
+
+		Loop( maxi.sub( mini ), ( { i } )=> {
+
+			var j = add( i, mini );
+			var theta = mod( mul( 2*Math.PI/goldenRatio, j ), 2*Math.PI );
+			var phi = acos( oneMinus( float( j ).mul( 2 ).add( 1 ).div( cnt ) ) );
+			var pnt = spherical( phi, theta );//.normalize();
+			dist.assign( min( dist, distance( vec, pnt ) ) );
+
+		} ); // Loop
+
+	} ); // Else
 
 	var size = exp( params.size.mul( 5 ).sub( 5 ) ).toVar();
 	var blur = params.blur.pow( 4 ).toVar();
@@ -1552,6 +1573,8 @@ polkaDots.defaults = {
 
 	color: new Color( 0x000000 ),
 	background: new Color( 0xFFFFFF ),
+
+	flat: 0,
 };
 
 var processedWood = Fn( ( params )=>{
@@ -2358,7 +2381,7 @@ var voronoiCells = Fn( ( params )=>{
 
 
 	var n = mx_noise_float( minCell.mul( Math.PI ) ).toVar();
-	var k = mix( minDist, n.add( 1 ).div( 2 ), params.flat );
+	var k = mix( minDist, n.add( 1 ).div( 2 ), params.facet );
 
 	var color = mix( params.color, params.background, k ).toVar();
 	var randomColor = vec3( n.mul( 16.8 ), n.mul( 31.4159 ), n.mul( 27.1828 ) ).sin().add( 1 ).div( 2 );
@@ -2374,7 +2397,7 @@ voronoiCells.defaults = {
 
 	scale: 2,
 	variation: 0,
-	flat: 0,
+	facet: 0,
 
 	color: new Color( 0 ),
 	background: new Color( 0xc0d0ff ),
@@ -2435,14 +2458,16 @@ var watermelon = Fn( ( params )=>{
 
 	params = prepare( { ...watermelon.defaults, ...params } );
 
+	var variation = select( params.flat, params.variation.mul( 0.85 ).add( 0.15 ), params.variation );
+
 	var pos = positionGeometry.mul( exp( params.scale.div( 4 ).add( 2 ) ) ).add( params.seed ).toVar( );
 
-	var uv = equirectUV( positionGeometry.normalize() ).toVar(),
-		a = uv.x.mul( params.stripes.round(), 2*Math.PI ).add( mx_noise_float( pos.mul( vec3( 1, 0, 1 ) ) ).mul( 2 ) );
+	var uv = select( params.flat, screenUV, equirectUV( positionGeometry.normalize() ) ).toVar(),
+		a = uv.x.mul( params.stripes.round(), select( params.flat, Math.PI, 2*Math.PI ) ).add( mx_noise_float( pos.mul( vec3( 1, 0.3, 1 ) ) ).mul( 2 ) );
 
 	var k = a.sin().add( 0.5 ).div( 2 ).mul( uv.y.remap( 0, 1, -Math.PI, Math.PI ).cos().add( 1.2 ).clamp( 0, 1 ) )
-		.add( params.variation.mul( 2, mx_noise_float( pos.mul( 1.5 ) ).div( 2 ) ) )
-		.add( params.variation.mul( 2, mx_noise_float( pos.mul( 4 ) ).div( 6 ) ) )
+		.add( variation.mul( 2, mx_noise_float( pos.mul( 1.5 ) ).div( 2 ) ) )
+		.add( variation.mul( 2, mx_noise_float( pos.mul( 4 ) ).div( 6 ) ) )
 		.toVar();
 
 	k.assign(
@@ -2471,6 +2496,8 @@ watermelon.defaults = {
 
 	color: new Color( 'yellowgreen' ),
 	background: new Color( 'darkgreen' ),
+
+	flat: 0,
 
 	seed: 0,
 };
@@ -2531,11 +2558,11 @@ var zebraLines = Fn( ( params ) => {
 
 	params = prepare( { ...zebraLines.defaults, ...params } );
 
-	var pos = positionGeometry.normalize().toVar( );
+	var pos = select( params.flat, positionGeometry, positionGeometry.normalize() ).toVar( );
 
-	var dir = spherical( params.phi, params.theta ).toVar();
+	var dir = select( params.flat, vec2( cos( params.phi ), sin( params.phi ) ), spherical( params.phi, params.theta ) ).toVar();
 
-	var angle = acos( clamp( dir.dot( pos ), -1, 1 ) );
+	var angle = select( params.flat, clamp( dir.dot( pos ), -2, 2 ), acos( clamp( dir.dot( pos ), -1, 1 ) ) ).toVar();
 
 	var scale = exp( params.scale.add( 1 ) ).toVar();
 
@@ -2560,6 +2587,7 @@ zebraLines.defaults = {
 	color: new Color( 0x0 ),
 	background: new Color( 0xFFFFFF ),
 
+	flat: 0,
 	// no seed for zebra lines
 };
 

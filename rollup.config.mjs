@@ -13,6 +13,7 @@ export default [
 			format: 'es',
 			banner: `// TSL Textures v${pkg.version}\n`,
 		},
+		external: ['three', 'three/tsl'],
 	},
 	{
 		input: './src/tsl-textures.js',
@@ -21,6 +22,7 @@ export default [
 			format: 'es',
 			banner: `/*! TSL Textures v${pkg.version} */\n`,
 		},
+		external: ['three', 'three/tsl'],
 		plugins: [
 			terser({
 				format: {

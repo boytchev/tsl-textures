@@ -1,4 +1,7 @@
 ﻿
+// TO DO:	polka-dots
+
+
 import * as THREE from "three";
 import { uniform } from "three/tsl";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
@@ -25,7 +28,21 @@ var params = {},
 	dynamics = {},
 	selectorParams = { show: false };
 
+const EXPORT_MAP = 1;
+//const EXPORT_EQUI_MAP = 2;
+//const EXPORT_CUBE_MAP = 3;
 
+var exportOptions = {
+	width: 1024,
+	height: 1024,
+	type: EXPORT_MAP,
+	map: null,
+	alphaMap: null,
+	normalMap: null,
+	roughnessMap: null,
+};
+
+var exportCanvas, exportRenderer, exportScene, exportCamera, exportModel, exportDynamics;
 
 // check WebGPU
 showFallbackWarning( );
@@ -407,9 +424,58 @@ function install( tslTexture, useGeometry=USE_BALL, addFeature=ADD_NOTHING ) {
 
 	processParameters( ); // causes recalculation of dynamics
 
-	return gui.addFolder( '<big>Options</big>' );
+	var optionsFolder = gui.addFolder( '<big>Options</big>' );
 
-}
+	if ( !tslTexture.defaults.$positionNode ) {
+
+		var exportFolder = gui.addFolder( '<big>Export</big>' ).close();
+
+		exportOptions.map = ()=>{
+
+			downloadImage( tslTexture, name, 1 );
+
+		};
+
+		exportOptions.normalMap = ()=>{
+
+			downloadImage( tslTexture, name, 2 );
+
+		};
+
+		exportOptions.alphaMap = ()=>{
+
+			downloadImage( tslTexture, name, 3 );
+
+		};
+
+		exportOptions.roughnessMap = ()=>{
+
+			downloadImage( tslTexture, name, 4 );
+
+		};
+
+		exportFolder.add( exportOptions, 'width', [ 4096, 2048, 1024, 512, 256, 128 ]).name( '<right>width</right>' );
+		exportFolder.add( exportOptions, 'height', [ 4096, 2048, 1024, 512, 256, 128 ]).name( '<right>height</right>' );
+
+		exportFolder.add( exportOptions, 'type', { 'Just map': EXPORT_MAP/*, 'Equi map':EXPORT_EQUI_MAP, 'Cube map': EXPORT_CUBE_MAP*/ } ).name( '<right>type</right>' ).onChange( ()=>{} ).disable();
+		if ( !tslTexture.defaults.$normalNode )
+			exportFolder.add( exportOptions, 'map' ).name( 'Download color map (*.jpg)' );
+		if ( tslTexture.defaults.$normalNode || tslTexture.normal )
+			exportFolder.add( exportOptions, 'normalMap' ).name( 'Download normal map (*.jpg)' );
+		if ( tslTexture.opacity )
+			exportFolder.add( exportOptions, 'alphaMap' ).name( 'Download alpha map (*.jpg)' );
+		if ( tslTexture.roughness )
+			exportFolder.add( exportOptions, 'roughnessMap' ).name( 'Download roughness map (*.jpg)' );
+
+		initExport( guiOptions.width??245 );
+
+	}
+
+	return optionsFolder;
+
+} // install
+
+
 
 
 camera.fov = 5;
@@ -420,6 +486,12 @@ camera.updateProjectionMatrix();
 
 
 function processParameters( ) {
+
+	if ( exportCanvas ) {
+
+		exportCanvas.style.display = 'none';
+
+	}
 
 	// copy all numeric parameters from params to dynamics
 	// cobvert all color parameters to THREE.Color
@@ -441,6 +513,34 @@ function processParameters( ) {
 	if ( typeof dynamics.selectorShow !=='undefined' ) {
 
 		dynamics.selectorShow.value = selectorParams.show?1:0;
+
+	}
+
+}
+
+
+function processExportParameters( ) {
+
+	// copy all numeric parameters from params to dynamics
+	// cobvert all color parameters to THREE.Color
+	// ignore parameter called '$...' and 'seed'
+
+	for ( const [ key, value ] of Object.entries( exportDynamics ) )
+		if ( key != 'seed' && key[ 0 ] != '$' )
+			if ( value instanceof THREE.Color )
+				exportDynamics[ key ].value.set( params[ key ]);
+			else
+				if ( params[ key ] instanceof THREE.Vector3 )
+					exportDynamics[ key ].value.copy( params[ key ]);
+				else
+					if ( params[ key ] instanceof THREE.Vector2 )
+						exportDynamics[ key ].value.copy( params[ key ]);
+					else
+						exportDynamics[ key ].value = params[ key ];
+
+	if ( typeof exportDynamics.selectorShow !=='undefined' ) {
+
+		exportDynamics.selectorShow.value = selectorParams.show?1:0;
 
 	}
 
@@ -590,6 +690,157 @@ function refreshSeed( event ) {
 		dynamics.seed.value = params.seed;
 
 	}
+
+}
+
+
+function initExport( left ) {
+
+	var width = exportOptions.width,
+		height = exportOptions.height;
+
+	exportCanvas = document.createElement( 'canvas' );
+	exportCanvas.width = width;
+	exportCanvas.height = height;
+
+	document.body.appendChild( exportCanvas );
+
+	exportCanvas.style = `position: absolute; display: none; width:100px !important; height:100px !important; z-index: 1000; border: solid 6px #101010; border-bottom-right-radius:1em; top:0px; left:${left-6}px; `;
+
+
+	exportRenderer = new THREE.WebGPURenderer( { antialias: true, canvas: exportCanvas } );
+	exportRenderer.setSize( width, height );
+	exportRenderer.outputColorSpace = THREE.LinearSRGBColorSpace;
+
+	exportCanvas.width = width;
+	exportCanvas.height = height;
+
+	exportCanvas.style.width = '100px';
+	exportCanvas.style.height = '100px';
+
+	exportScene = new THREE.Scene();
+
+	exportCamera = new THREE.OrthographicCamera( -width/2, width/2, height/2, -height/2, 0, 10000 );
+	exportCamera.position.set( 0, 0, 1 );
+	exportCamera.lookAt( 0, 0, 0 );
+	exportCamera.zoom = 500;
+	exportCamera.updateProjectionMatrix();
+
+
+}
+
+
+function downloadImage( tslTexture, name, map ) {
+
+	var width = exportOptions.width,
+		height = exportOptions.height;
+
+	var widthPx = Math.round( 100*width/Math.max( width, height ) ),
+		heightPx = Math.round( 100*height/Math.max( width, height ) );
+
+	exportCanvas.width = widthPx;
+	exportCanvas.height = heightPx;
+
+	exportRenderer.setSize( width, height );
+
+	exportCanvas.style.width = widthPx+'px';
+	exportCanvas.style.height = heightPx+'px';
+
+	exportCanvas.style.display = 'block';
+
+	exportCamera.left = -width/2;
+	exportCamera.right = width/2;
+	exportCamera.top = height/2;
+	exportCamera.bottom = -height/2;
+	exportCamera.updateProjectionMatrix();
+
+	exportModel = new THREE.Mesh(
+		new THREE.PlaneGeometry( width/2, height/2 ).translate( 0, 0, -1 ),
+		new THREE.MeshBasicNodeMaterial( { color: 'yellow' } )
+	);
+	exportScene.add( exportModel );
+
+	if ( exportOptions.type==EXPORT_MAP && 'flat' in params ) {
+
+		params.flat = 1;
+
+	}
+
+	exportDynamics = dynamic( params );
+
+	if ( 'seed' in params )
+		exportDynamics.seed.value = params.seed;
+
+
+	processExportParameters( ); // causes recalculation of dynamics
+
+	var suffix = '';
+
+	if ( tslTexture.defaults.$normalNode ) {
+
+		suffix = '-normal';
+		exportModel.material.colorNode = tslTexture( exportDynamics ).div( 2 ).add( 0.5 );
+
+	} else {
+
+		if ( map==2 ) {
+
+			suffix = '-normal';
+			exportModel.material.colorNode = tslTexture.normal( exportDynamics ).div( 2 ).add( 0.5 );
+
+		} else
+			if ( map==3 ) {
+
+				suffix = '-alpha';
+				exportModel.material.colorNode = tslTexture.opacity( exportDynamics );
+
+			} else
+				if ( map==4 ) {
+
+					suffix = '-roughness';
+					exportModel.material.colorNode = tslTexture.roughness( exportDynamics );
+
+				} else {
+
+					suffix = '';
+					exportModel.material.colorNode = tslTexture( exportDynamics );
+
+				}
+
+	} // if-else
+
+
+	var frame = 0;
+	exportRenderer.setAnimationLoop( ()=>{
+
+		frame++;
+		exportRenderer.renderAsync( exportScene, exportCamera );
+		if ( frame>5 ) {
+
+			exportRenderer.setAnimationLoop( null );
+
+			var dataURL = exportCanvas.toDataURL( 'image/jpeg', 1 ); // 0.9 is quality (0 to 1)
+
+			var link = document.createElement( 'a' );
+			link.download = name+suffix;
+			link.href = dataURL;
+
+			document.body.appendChild( link );
+			link.click();
+			document.body.removeChild( link );
+
+			exportScene.remove( exportModel );
+
+			if ( exportOptions.type==EXPORT_MAP && 'flat' in params ) {
+
+				params.flat = 0;
+
+			}
+
+		}
+
+	} );
+
 
 }
 

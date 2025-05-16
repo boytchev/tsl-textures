@@ -1,5 +1,8 @@
 # TSL Textures
 
+## 2.1.0
+* Export for non-seamless not-equirectangular textures
+
 ## 2.0.2
 * Added layouts to some TSL functions
 

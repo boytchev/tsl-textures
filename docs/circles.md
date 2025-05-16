@@ -46,6 +46,7 @@ The parameters of the texture generator are:
 * `variety` &ndash; hue variety of colors, [0, 1]
 * `color` &ndash; main color
 * `background` &ndash; secondary color
+* `flat` &ndash; secret flag, if 0 the texture is for a sphere, if 1 the texture is for a plane
 * `seed` &ndash; number for the random generator, each value generates specific pattern
 
 

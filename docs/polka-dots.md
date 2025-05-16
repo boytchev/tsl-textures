@@ -49,6 +49,7 @@ model.material.colorNode = polkaDots ( {
 * `blur` &ndash; smoothness of dots edges, [0,1]
 * `color` &ndash; color of dots, default 0x000000 (black)
 * `background` &ndash; color of background, default 0xFFFFFF (white)
+* `flat` &ndash; secret flag, if 0 the texture is for a sphere, if 1 the texture is for a plane
 
 
 ### Online generator

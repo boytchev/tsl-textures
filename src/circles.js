@@ -13,7 +13,7 @@ var circles = Fn( ( params ) => {
 
 	params = prepare( { ...circles.defaults, ...params } );
 
-	var pos = positionGeometry.normalize();
+	var pos = select( params.flat, positionGeometry, positionGeometry.normalize() );
 
 	var angle = acos( clamp( pos.y, -1, 1 ) ).mul( 20 );
 
@@ -52,6 +52,8 @@ circles.defaults = {
 	variety: 1,
 
 	color: new Color( 0xF0E0D0 ),
+
+	flat: 0,
 
 	seed: 0,
 };

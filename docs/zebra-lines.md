@@ -54,6 +54,7 @@ model.material.colorNode = zebraLines ( {
 * `theta` &ndash; horizontal angle &theta; of zebra lines axis, [-2&pi;, 2&pi;]
 * `color` &ndash; color of lines
 * `background` &ndash; color of background
+* `flat` &ndash; secret flag, if 0 the texture is for a sphere, if 1 the texture is for a plane
 
 
 ### Online generator

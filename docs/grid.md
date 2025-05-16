@@ -48,6 +48,7 @@ model.material.colorNode = grid ( {
 * `thinness` &ndash; relative width of lines, [0,1]
 * `color` &ndash; color of lines
 * `background` &ndash; color of background
+* `flat` &ndash; secret flag, if 0 the texture is for a sphere, if 1 the texture is for a plane
 
 
 ### Online generator
