@@ -1,5 +1,8 @@
 # TSL Textures
 
+## 2.1.1
+* Fixed issue #17 for Vite
+
 ## 2.1.0
 * Export for non-seamless not-equirectangular textures
 
