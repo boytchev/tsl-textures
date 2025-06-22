@@ -8,6 +8,10 @@
     "./tsl-textures.js": {
       "require": "./dist/cjs/tsl-textures.js",
       "import": "./dist/tsl-textures.js"
+    },
+    ".": {
+      "require": "./dist/cjs/tsl-textures.js",
+      "import": "./dist/tsl-textures.js"
     }
   },
   "repository": {
