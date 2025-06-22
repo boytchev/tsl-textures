@@ -7,7 +7,7 @@
   "exports": {
     "./tsl-textures.js": {
       "require": "./dist/cjs/tsl-textures.js",
-      "import": "./dist/esm/tsl-textures.js"
+      "import": "./dist/tsl-textures.js"
     }
   },
   "repository": {
