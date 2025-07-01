@@ -1,4 +1,4 @@
-// TSL Textures v2.1.0
+// TSL Textures v2.1.1
 
 'use strict';
 

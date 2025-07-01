@@ -1,7 +1,10 @@
 # TSL Textures
 
+## 2.1.2
+* Upgraded to Three.js r178
+
 ## 2.1.1
-* Fixed issue #17 for Vite
+* Fixed issue #17 for Vite (@kotonefami)
 
 ## 2.1.0
 * Export for non-seamless not-equirectangular textures
@@ -20,7 +23,7 @@
 
 ## 1.11.0
 * Upgraded to Three.js r174
-* Merged PR from Mark Roland that fixes NPM usage
+* Merged PR from Mark Roland that fixes NPM usage (@markroland)
 
 ## 1.10.0
 * Upgraded to Three.js r173
