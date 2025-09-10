@@ -1,5 +1,8 @@
 # TSL Textures
 
+## 2.2.0
+* Upgraded to Three.js r180
+
 ## 2.1.2
 * Upgraded to Three.js r178
 

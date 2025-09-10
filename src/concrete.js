@@ -4,7 +4,20 @@
 
 
 import { abs, cos, cross, exp, Fn, normalLocal, positionGeometry, pow, remap, sin, sub, tangentLocal, transformNormalToView, vec3 } from 'three/tsl';
-import { noise, prepare } from './tsl-utils.js';
+import { noise, prepare, TSLFn } from './tsl-utils.js';
+
+
+
+var defaults = {
+	$name: 'Concrete',
+	$normalNode: true,
+
+	scale: 2,
+	density: 0.5,
+	bump: 0.5,
+
+	seed: 0,
+};
 
 
 
@@ -18,9 +31,9 @@ var surfacePos = Fn( ([ pos, normal, bump, density, seed ]) => {
 } );
 
 
-var concrete = Fn( ( params ) => {
+var concrete = TSLFn( ( params ) => {
 
-	params = prepare( { ...concrete.defaults, ...params } );
+	params = prepare( params, defaults );
 
 	var eps = 0.001;
 
@@ -41,20 +54,7 @@ var concrete = Fn( ( params ) => {
 
 	return transformNormalToView( cross( dU, dV ).normalize() );
 
-} );
-
-
-
-concrete.defaults = {
-	$name: 'Concrete',
-	$normalNode: true,
-
-	scale: 2,
-	density: 0.5,
-	bump: 0.5,
-
-	seed: 0,
-};
+}, defaults );
 
 
 

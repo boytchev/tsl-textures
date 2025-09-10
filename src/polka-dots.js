@@ -4,8 +4,23 @@
 
 
 import { Color } from "three";
-import { acos, add, distance, exp, float, Fn, If, Loop, mat2, max, min, mix, mod, mul, oneMinus, positionGeometry, pow, smoothstep, } from 'three/tsl';
-import { prepare, spherical } from './tsl-utils.js';
+import { acos, add, distance, exp, float, If, Loop, mat2, max, min, mix, mod, mul, oneMinus, positionGeometry, pow, smoothstep, } from 'three/tsl';
+import { prepare, spherical, TSLFn } from './tsl-utils.js';
+
+
+
+var defaults = {
+	$name: 'Polka dots',
+
+	count: 2,
+	size: 0.5,
+	blur: 0.25,
+
+	color: new Color( 0x000000 ),
+	background: new Color( 0xFFFFFF ),
+
+	flat: 0,
+};
 
 
 
@@ -13,9 +28,9 @@ var goldenRatio = ( 1+5**0.5 )/2;
 
 
 
-var polkaDots = Fn( ( params ) => {
+var polkaDots = TSLFn( ( params ) => {
 
-	params = prepare( { ...polkaDots.defaults, ...params } );
+	params = prepare( params, defaults );
 
 	var dist = float( 1 ).toVar();
 
@@ -59,22 +74,7 @@ var polkaDots = Fn( ( params ) => {
 
 	return mix( params.color, params.background, k );
 
-} );
-
-
-
-polkaDots.defaults = {
-	$name: 'Polka dots',
-
-	count: 2,
-	size: 0.5,
-	blur: 0.25,
-
-	color: new Color( 0x000000 ),
-	background: new Color( 0xFFFFFF ),
-
-	flat: 0,
-};
+}, defaults );
 
 
 

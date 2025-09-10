@@ -543,7 +543,28 @@ function hideFallbackWarning( ) {
 
 
 // converts all numeric, color and vector properties to nodes
-function prepare( params ) {
+function prepare( userParams, defaults ) {
+
+	var propertyNames = [];
+	for ( var item of userParams ) {
+
+	  if ( item && typeof item === 'object' ) {
+
+			propertyNames = Object.keys( item );
+			break;
+
+		}
+
+	}
+
+	var params = { ...defaults };
+
+	for ( var key of propertyNames ) {
+
+		if ( typeof userParams[ key ] !== 'undefined' )
+			params[ key ] = userParams[ key ];
+
+	}
 
 	for ( var name of Object.keys( params ) ) {
 
@@ -573,6 +594,175 @@ function noised( pos, scale=1, octave=1, seed=0 ) {
 
 
 
+// a shim (proposed by Grok) to recover from a change of how Fn
+// is proxied since Three.js v0.180.0
+
+// explanation from Grok:
+/*
+In 0.179.0, TSL.Fn likely returned a plain function, allowing a.defaults
+to work without Proxy interference. In 0.180.0, the Proxy wrapping an FnNode
+instance blocks defaults access (returns undefined) and requires specific FnNode
+behavior, making the wrapper incompatible.
+
+Solutions to Fix the Error and Access a.defaultsWe need a solution that:
+
+* Makes a.defaults directly accessible.
+* Preserves TSL compatibility by ensuring the object passed to TSL behaves
+like a TSL.Fn Proxy.
+* Avoids separate defaults variables.
+* Mimics the 0.179.0 API where a.defaults worked.
+
+Given the error, direct property access on the TSL.Fn Proxy (e.g., Object.defineProperty(a, 'defaults', {...})) fails because the get trap
+returns undefined for unknown properties on FnNode. The non-Proxy wrapper
+breaks TSL, so let’s try a refined approach that balances compatibility and
+accessibility.1. Proxy Wrapper with FnNode PrototypeInstead of a non-Proxy
+wrapper, create a Proxy that mimics TSL.Fn but stores defaults separately to
+bypass FnNode’s get behavior. To avoid breaking TSL, ensure the Proxy’s target
+has the FnNode prototype.
+
+Why This Might Work:
+
+* The Proxy’s target inherits the FnNode prototype (via fn.call), making it
+appear more like the original TSL.Fn Proxy to TSL’s checks.
+* defaults is stored in a Map, bypassing FnNode’s get trap that returns
+undefined.
+* a.fn exposes the original TSL.Fn Proxy for TSL operations.
+* Function calls (a(...)) are forwarded to the original Proxy.
+* Matches Object.getOwnPropertyDescriptor behavior.
+
+*/
+
+function TSLFn( jsFunc, defaults, layout = null ) {
+
+	var opacity = null;
+	var roughness = null;
+	var normal = null;
+
+	const fn = Fn( jsFunc, layout );
+	const customProps = new Map();
+	customProps.set( 'defaults', defaults );
+	customProps.set( 'opacity', opacity );
+	customProps.set( 'roughness', roughness );
+	customProps.set( 'normal', normal );
+
+	// Create a target with FnNode prototype to mimic TSL.Fn
+	const target = function () {};
+
+	Object.setPrototypeOf( target, Object.getPrototypeOf( fn.call ) ); // Inherit FnNode prototype
+
+	return new Proxy( target, {
+		get( target, prop, receiver ) {
+
+			if ( prop === 'defaults' ) {
+
+				return customProps.get( 'defaults' );
+
+			}
+
+			if ( prop === 'opacity' ) {
+
+				return customProps.get( 'opacity' );
+
+			}
+
+			if ( prop === 'roughness' ) {
+
+				return customProps.get( 'roughness' );
+
+			}
+
+			if ( prop === 'normal' ) {
+
+				return customProps.get( 'normal' );
+
+			}
+
+			if ( prop === 'fn' ) {
+
+				return fn; // Expose original TSL.Fn Proxy
+
+			}
+
+			return Reflect.get( fn, prop, receiver ); // Forward to original Proxy
+
+		},
+		set( target, prop, value, receiver ) {
+
+			if ( prop === 'defaults' ) {
+
+				customProps.set( 'defaults', value );
+				return true;
+
+			}
+
+			if ( prop === 'opacity' ) {
+
+				customProps.set( 'opacity', value );
+				return true;
+
+			}
+
+			if ( prop === 'roughness' ) {
+
+				customProps.set( 'roughness', value );
+				return true;
+
+			}
+
+			if ( prop === 'normal' ) {
+
+				customProps.set( 'normal', value );
+				return true;
+
+			}
+
+			return Reflect.set( fn, prop, value, receiver );
+
+		},
+		apply( target, thisArg, args ) {
+
+			return Reflect.apply( fn, thisArg, args ); // Delegate calls to original Proxy
+
+		},
+		getOwnPropertyDescriptor( target, prop ) {
+
+			if ( prop === 'defaults' ) {
+
+				return {
+					value: customProps.get( 'defaults' ),
+					writable: true,
+					enumerable: true,
+					configurable: true,
+				};
+
+			}
+
+			if ( prop === 'opacity' ) {
+
+				Reflect.getOwnPropertyDescriptor( opacity, prop );
+
+			}
+
+			if ( prop === 'roughness' ) {
+
+				Reflect.getOwnPropertyDescriptor( roughness, prop );
+
+			}
+
+			if ( prop === 'normal' ) {
+
+				Reflect.getOwnPropertyDescriptor( normal, prop );
+
+			}
+
+			return Reflect.getOwnPropertyDescriptor( fn, prop );
+
+		}
+	} );
+
+} // TSLFn
+
+
 export
 {
 	mx_noise_float as noise
@@ -599,5 +789,6 @@ export
 	showFallbackWarning,
 	hideFallbackWarning,
 	normalVector,
-	prepare
+	prepare,
+	TSLFn
 };

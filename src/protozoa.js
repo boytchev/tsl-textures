@@ -5,7 +5,23 @@
 
 import { Color } from "three";
 import { exp, float, Fn, Loop, matcapUV, mix, positionGeometry, vec3 } from 'three/tsl';
-import { noise, prepare } from './tsl-utils.js';
+import { noise, prepare, TSLFn } from './tsl-utils.js';
+
+
+
+var defaults = {
+	$name: 'Protozoa',
+
+	scale: 1.5,
+	fat: 0.7,
+	amount: 0.4,
+
+	color: new Color( 0xA0A0A0 ),
+	subcolor: new Color( 0xE0E8FF ),
+	background: new Color( 0xF0F8FF ),
+
+	seed: 0,
+};
 
 
 
@@ -17,9 +33,9 @@ var pnoise = Fn( ([ pos, fat ])=>{
 
 
 
-var protozoa = Fn( ( params )=>{
+var protozoa = TSLFn( ( params )=>{
 
-	params = prepare( { ...protozoa.defaults, ...params } );
+	params = prepare( params, defaults );
 
 	var pos = positionGeometry.mul( exp( params.scale.sub( 1 ) ) ).add( params.seed ).toVar( );
 
@@ -52,22 +68,7 @@ var protozoa = Fn( ( params )=>{
 
 	return mix( params.background, mix( params.color, params.subcolor, n2.mul( 0.1 ) ), n1 );
 
-} );
-
-
-protozoa.defaults = {
-	$name: 'Protozoa',
-
-	scale: 1.5,
-	fat: 0.7,
-	amount: 0.4,
-
-	color: new Color( 0xA0A0A0 ),
-	subcolor: new Color( 0xE0E8FF ),
-	background: new Color( 0xF0F8FF ),
-
-	seed: 0,
-};
+}, defaults );
 
 
 

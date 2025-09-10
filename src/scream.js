@@ -4,14 +4,28 @@
 
 
 import { Color } from "three";
-import { add, cos, exp, Fn, mix, positionGeometry, sin } from 'three/tsl';
-import { hsl, noise, prepare, toHsl } from './tsl-utils.js';
+import { add, cos, exp, mix, positionGeometry, sin } from 'three/tsl';
+import { hsl, noise, prepare, toHsl, TSLFn } from './tsl-utils.js';
 
 
 
-var scream = Fn( ( params ) => {
+var defaults = {
+	$name: 'Scream',
 
-	params = prepare( { ...scream.defaults, ...params } );
+	scale: 2,
+	variety: 1,
+
+	color: new Color( 0xF0F060 ),
+	background: new Color( 0xD09090 ),
+
+	seed: 0,
+};
+
+
+
+var scream = TSLFn( ( params ) => {
+
+	params = prepare( params, defaults );
 
 	var pos = positionGeometry.mul( exp( params.scale ) ).add( params.seed ).toVar( );
 
@@ -27,7 +41,7 @@ var scream = Fn( ( params ) => {
 
 	return hsl( add( HSL.x, params.variety.mul( sin( k.mul( Math.PI ) ) ).mul( 0.5 ) ), HSL.y, HSL.z );
 
-} );
+}, defaults );
 
 
 

@@ -4,14 +4,29 @@
 
 
 import { Color } from "three";
-import { add, div, exp, Fn, If, mix, mul, oneMinus, positionGeometry, pow } from 'three/tsl';
-import { noise, prepare } from './tsl-utils.js';
+import { add, div, exp, If, mix, mul, oneMinus, positionGeometry, pow } from 'three/tsl';
+import { noise, prepare, TSLFn } from './tsl-utils.js';
 
 
 
-var marble = Fn( ( params ) => {
+var defaults = {
+	$name: 'Marble',
 
-	params = prepare( { ...marble.defaults, ...params } );
+	scale: 1.2,
+	thinness: 5,
+	noise: 0.3,
+
+	color: new Color( 0x4545D3 ),
+	background: new Color( 0xF0F8FF ),
+
+	seed: 0,
+};
+
+
+
+var marble = TSLFn( ( params ) => {
+
+	params = prepare( params, defaults );
 
 	var pos = positionGeometry.mul( exp( params.scale ) ).add( params.seed ).toVar( );
 
@@ -49,22 +64,7 @@ var marble = Fn( ( params ) => {
 
 	return mix( params.background, params.color, k );
 
-} );
-
-
-
-marble.defaults = {
-	$name: 'Marble',
-
-	scale: 1.2,
-	thinness: 5,
-	noise: 0.3,
-
-	color: new Color( 0x4545D3 ),
-	background: new Color( 0xF0F8FF ),
-
-	seed: 0,
-};
+}, defaults );
 
 
 

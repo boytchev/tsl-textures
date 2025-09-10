@@ -4,14 +4,31 @@
 
 
 import { Color } from "three";
-import { exp, Fn, mix, positionGeometry, vec3 } from 'three/tsl';
-import { noise, prepare } from './tsl-utils.js';
+import { exp, mix, positionGeometry, vec3 } from 'three/tsl';
+import { noise, prepare, TSLFn } from './tsl-utils.js';
 
 
 
-var tigerFur = Fn( ( params )=>{
+var defaults = {
+	$name: 'Tiger fur',
 
-	params = prepare( { ...tigerFur.defaults, ...params } );
+	scale: 2,
+	length: 4,
+	blur: 0.3,
+	strength: 0.3,
+	hairs: 0.5,
+
+	color: new Color( 0xFFAA00 ),
+	bottomColor: new Color( 0xFFFFEE ),
+
+	seed: 0,
+};
+
+
+
+var tigerFur = TSLFn( ( params )=>{
+
+	params = prepare( params, defaults );
 
 	var scale = params.scale.div( 2 ).add( 1 ).toVar();
 	var pos = positionGeometry.mul( exp( scale ) ).add( params.seed ).toVar( );
@@ -26,7 +43,7 @@ var tigerFur = Fn( ( params )=>{
 
 	return mix( params.bottomColor, params.color, n ).mul( k );
 
-} );
+}, defaults );
 
 
 tigerFur.defaults = {

@@ -4,14 +4,31 @@
 
 
 import { Color } from "three";
-import { acos, clamp, cos, exp, Fn, mix, positionGeometry, select, sin, vec2 } from 'three/tsl';
-import { prepare, spherical } from './tsl-utils.js';
+import { acos, clamp, cos, exp, mix, positionGeometry, select, sin, vec2 } from 'three/tsl';
+import { prepare, spherical, TSLFn } from './tsl-utils.js';
 
 
 
-var zebraLines = Fn( ( params ) => {
+var defaults = {
+	$name: 'Zebra lines',
 
-	params = prepare( { ...zebraLines.defaults, ...params } );
+	scale: 2,
+	thinness: 0.5,
+	phi: 0,
+	theta: 0,
+
+	color: new Color( 0x0 ),
+	background: new Color( 0xFFFFFF ),
+
+	flat: 0,
+	// no seed for zebra lines
+};
+
+
+
+var zebraLines = TSLFn( ( params ) => {
+
+	params = prepare( params, defaults );
 
 	var pos = select( params.flat, positionGeometry, positionGeometry.normalize() ).toVar( );
 
@@ -27,24 +44,7 @@ var zebraLines = Fn( ( params ) => {
 
 	return mix( params.background, params.color, k );
 
-} );
-
-
-
-zebraLines.defaults = {
-	$name: 'Zebra lines',
-
-	scale: 2,
-	thinness: 0.5,
-	phi: 0,
-	theta: 0,
-
-	color: new Color( 0x0 ),
-	background: new Color( 0xFFFFFF ),
-
-	flat: 0,
-	// no seed for zebra lines
-};
+}, defaults );
 
 
 

@@ -4,14 +4,29 @@
 
 
 import { Color } from "three";
-import { acos, clamp, exp, float, Fn, positionGeometry, select, sin } from 'three/tsl';
-import { hsl, prepare, toHsl } from './tsl-utils.js';
+import { acos, clamp, exp, float, positionGeometry, select, sin } from 'three/tsl';
+import { hsl, prepare, toHsl, TSLFn } from './tsl-utils.js';
 
 
 
-var circles = Fn( ( params ) => {
+var defaults = {
+	$name: 'Circles',
 
-	params = prepare( { ...circles.defaults, ...params } );
+	scale: 2,
+	variety: 1,
+
+	color: new Color( 0xF0E0D0 ),
+
+	flat: 0,
+
+	seed: 0,
+};
+
+
+
+var circles = TSLFn( ( params ) => {
+
+	params = prepare( params, defaults );
 
 	var pos = select( params.flat, positionGeometry, positionGeometry.normalize() );
 
@@ -41,22 +56,7 @@ var circles = Fn( ( params ) => {
 
 	return hsl( huei.add( huef ).div( 10 ), HSL.y, HSL.z );
 
-} );
-
-
-
-circles.defaults = {
-	$name: 'Circles',
-
-	scale: 2,
-	variety: 1,
-
-	color: new Color( 0xF0E0D0 ),
-
-	flat: 0,
-
-	seed: 0,
-};
+}, defaults );
 
 
 

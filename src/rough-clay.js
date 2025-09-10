@@ -4,7 +4,20 @@
 
 
 import { cross, exp, Fn, mx_worley_noise_float, normalLocal, positionGeometry, sub, tangentLocal, transformNormalToView } from 'three/tsl';
-import { noise, prepare } from './tsl-utils.js';
+import { noise, prepare, TSLFn } from './tsl-utils.js';
+
+
+
+var defaults = {
+	$name: 'Rough clay',
+	$normalNode: true,
+
+	scale: 2,
+	bump: 0.5,
+	curvature: 0.2,
+
+	seed: 0,
+};
 
 
 
@@ -17,9 +30,11 @@ var surfacePos = Fn( ([ pos, normal, bump, curvature ]) => {
 
 } );
 
-var roughClay = Fn( ( params ) => {
 
-	params = prepare( { ...roughClay.defaults, ...params } );
+
+var roughClay = TSLFn( ( params ) => {
+
+	params = prepare( params, defaults );
 
 	var eps = 0.001;
 
@@ -40,20 +55,7 @@ var roughClay = Fn( ( params ) => {
 	return transformNormalToView( cross( dU, dV ).normalize() );
 
 
-} );
-
-
-
-roughClay.defaults = {
-	$name: 'Rough clay',
-	$normalNode: true,
-
-	scale: 2,
-	bump: 0.5,
-	curvature: 0.2,
-
-	seed: 0,
-};
+}, defaults );
 
 
 

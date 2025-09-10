@@ -5,14 +5,26 @@
 
 import { Color } from "three";
 import { add, clamp, exp, Fn, mix, mul, positionGeometry, vec4 } from 'three/tsl';
-import { noised, prepare } from './tsl-utils.js';
+import { noised, prepare, TSLFn } from './tsl-utils.js';
+
+
+
+var defaults = {
+	$name: 'Clouds',
+
+	scale: 2,
+	density: 0.5,
+	opacity: 1,
+
+	color: new Color( 0xFFFFFF ),
+	subcolor: new Color( 0xA0A0B0 ),
+
+	seed: 0,
+};
 
 
 
 var _clouds = Fn( ( params ) => {
-
-	// prepare parameters
-	params = prepare( { ...clouds.defaults, ...params } );
 
 	const pos = positionGeometry;
 	const scale = exp( params.scale.div( 1.5 ).sub( 0.5 ) );
@@ -36,34 +48,25 @@ var _clouds = Fn( ( params ) => {
 
 
 
-var clouds = Fn( ( params ) => {
+var clouds = TSLFn( ( params ) => {
+
+	// prepare parameters
+	params = prepare( params, defaults );
 
 	return _clouds( params ).rgb;
 
-} );
+}, defaults );
 
 
 
-clouds.opacity = Fn( ( params ) => {
+clouds.opacity = TSLFn( ( params ) => {
+
+	// prepare parameters
+	params = prepare( params, defaults );
 
 	return _clouds( params ).a;
 
-} );
-
-
-
-clouds.defaults = {
-	$name: 'Clouds',
-
-	scale: 2,
-	density: 0.5,
-	opacity: 1,
-
-	color: new Color( 0xFFFFFF ),
-	subcolor: new Color( 0xA0A0B0 ),
-
-	seed: 0,
-};
+}, defaults );
 
 
 

@@ -5,7 +5,25 @@
 
 import { Color } from 'three';
 import { exp, Fn, Loop, mix, positionGeometry } from 'three/tsl';
-import { noise, prepare } from './tsl-utils.js';
+import { noise, prepare, TSLFn } from './tsl-utils.js';
+
+
+
+var defaults = {
+	$name: 'rust',
+
+	scale: 2,
+	iterations: 8,
+	amount: -0.3,
+	opacity: 0.5,
+	noise: 0.5,
+	noiseScale: 0.5,
+
+	color: new Color( 0xC08000 ),
+	background: new Color( 0x000020 ),
+
+	seed: 0,
+};
 
 
 
@@ -33,9 +51,9 @@ var _rust = Fn( ( params )=>{
 } );
 
 
-var rust = Fn( ( params )=>{
+var rust = TSLFn( ( params )=>{
 
-	params = prepare( { ...rust.defaults, ...params } );
+	params = prepare( params, defaults );
 
 	var k = _rust( params ).mul( 1.25 ).pow( 0.5 );
 
@@ -45,36 +63,19 @@ var rust = Fn( ( params )=>{
 
 	return mix( params.color, params.background, k );
 
-} );
+}, defaults );
 
 
 
-rust.opacity = Fn( ( params )=>{
+rust.opacity = TSLFn( ( params )=>{
 
-	params = prepare( { ...rust.defaults, ...params } );
+	params = prepare( params, defaults );
 
 	var k = _rust( params ).mul( params.opacity.add( 0.2 ) );
 
 	return k.oneMinus();
 
-} );
-
-
-rust.defaults = {
-	$name: 'rust',
-
-	scale: 2,
-	iterations: 8,
-	amount: -0.3,
-	opacity: 0.5,
-	noise: 0.5,
-	noiseScale: 0.5,
-
-	color: new Color( 0xC08000 ),
-	background: new Color( 0x000020 ),
-
-	seed: 0,
-};
+}, defaults );
 
 
 

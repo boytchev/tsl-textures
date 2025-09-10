@@ -4,14 +4,30 @@
 
 
 import { Color } from "three";
-import { exp, Fn, mix, positionGeometry, vec3 } from 'three/tsl';
-import { hsl, noise, prepare, toHsl } from './tsl-utils.js';
+import { exp, mix, positionGeometry, vec3 } from 'three/tsl';
+import { hsl, noise, prepare, toHsl, TSLFn } from './tsl-utils.js';
 
 
 
-var gasGiant = Fn( ( params )=>{
+var defaults = {
+	$name: 'Gas giant',
 
-	params = prepare( { ...gasGiant.defaults, ...params } );
+	scale: 2,
+	turbulence: 0.3,
+	blur: 0.6,
+
+	colorA: new Color( 0xFFF8F0 ),
+	colorB: new Color( 0xF0E8B0 ),
+	colorC: new Color( 0xAFA0D0 ),
+
+	seed: 0,
+};
+
+
+
+var gasGiant = TSLFn( ( params )=>{
+
+	params = prepare( params, defaults );
 
 	var scale = params.scale.div( 2 ).add( 1 ).toVar();
 	var pos = positionGeometry.mul( exp( scale ) ).add( params.seed ).toVar( );
@@ -45,22 +61,7 @@ var gasGiant = Fn( ( params )=>{
 
 	return color.mul( k );
 
-} );
-
-
-gasGiant.defaults = {
-	$name: 'Gas giant',
-
-	scale: 2,
-	turbulence: 0.3,
-	blur: 0.6,
-
-	colorA: new Color( 0xFFF8F0 ),
-	colorB: new Color( 0xF0E8B0 ),
-	colorC: new Color( 0xAFA0D0 ),
-
-	seed: 0,
-};
+}, defaults );
 
 
 

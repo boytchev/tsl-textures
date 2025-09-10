@@ -5,7 +5,23 @@
 
 import { Vector2, Vector3 } from "three";
 import { cross, Fn, normalLocal, positionGeometry, sub, tangentLocal, transformNormalToView, vec4 } from 'three/tsl';
-import { matRotYXZ, matTrans, prepare, selectPlanar } from './tsl-utils.js';
+import { matRotYXZ, matTrans, prepare, selectPlanar, TSLFn } from './tsl-utils.js';
+
+
+
+var defaults = {
+	$name: 'Rotator',
+	$positionNode: true,
+	$selectorPlanar: true,
+
+	angles: new Vector3( 0.4, -0.6, 0 ),
+	center: new Vector3( 0, 0, 0 ),
+
+	selectorCenter: new Vector3( 0, 0, 0 ),
+	selectorAngles: new Vector2( 0, 0 ),
+	selectorWidth: 2,
+
+};
 
 
 
@@ -23,19 +39,19 @@ var surfacePos = Fn( ([ pos, params ])=>{
 
 
 
-var rotator = Fn( ( params )=>{
+var rotator = TSLFn( ( params )=>{
 
-	params = prepare( { ...rotator.defaults, ...params } );
+	params = prepare( params, defaults );
 
 	return surfacePos( positionGeometry, params );
 
-} );
+}, defaults );
 
 
 
-rotator.normal = Fn( ( params ) => {
+rotator.normal = TSLFn( ( params ) => {
 
-	params = prepare( { ...rotator.defaults, ...params } );
+	params = prepare( params, defaults );
 
 	var eps = 0.01;
 
@@ -53,23 +69,7 @@ rotator.normal = Fn( ( params ) => {
 
 	return transformNormalToView( cross( dU, dV ).normalize() );
 
-} );
-
-
-
-rotator.defaults = {
-	$name: 'Rotator',
-	$positionNode: true,
-	$selectorPlanar: true,
-
-	angles: new Vector3( 0.4, -0.6, 0 ),
-	center: new Vector3( 0, 0, 0 ),
-
-	selectorCenter: new Vector3( 0, 0, 0 ),
-	selectorAngles: new Vector2( 0, 0 ),
-	selectorWidth: 2,
-
-};
+}, defaults );
 
 
 

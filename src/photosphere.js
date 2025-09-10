@@ -4,14 +4,27 @@
 
 
 import { Color } from "three";
-import { exp, Fn, Loop, mix, positionGeometry, vec3 } from 'three/tsl';
-import { applyEuler, noise, prepare } from './tsl-utils.js';
+import { exp, Loop, mix, positionGeometry, vec3 } from 'three/tsl';
+import { applyEuler, noise, prepare, TSLFn } from './tsl-utils.js';
 
 
 
-var photosphere = Fn( ( params ) => {
+var defaults = {
+	$name: 'Photosphere',
 
-	params = prepare( { ...photosphere.defaults, ...params } );
+	scale: 2,
+
+	color: new Color( 0xFFFF00 ),
+	background: new Color( 0xFF0000 ),
+
+	seed: 0,
+};
+
+
+
+var photosphere = TSLFn( ( params ) => {
+
+	params = prepare( params, defaults );
 
 	var scale = exp( params.scale.add( 1 ) ).toVar( );
 	var pos = positionGeometry.toVar( );
@@ -30,20 +43,7 @@ var photosphere = Fn( ( params ) => {
 
 	return mix( params.background, params.color, k );
 
-} );
-
-
-
-photosphere.defaults = {
-	$name: 'Photosphere',
-
-	scale: 2,
-
-	color: new Color( 0xFFFF00 ),
-	background: new Color( 0xFF0000 ),
-
-	seed: 0,
-};
+}, defaults );
 
 
 

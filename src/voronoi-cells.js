@@ -5,7 +5,22 @@
 
 import { Color } from 'three';
 import { exp, float, Fn, If, Loop, mix, positionGeometry, vec3 } from 'three/tsl';
-import { noise, prepare } from './tsl-utils.js';
+import { noise, prepare, TSLFn } from './tsl-utils.js';
+
+
+
+var defaults = {
+	$name: 'Voronoi cells',
+
+	scale: 2,
+	variation: 0,
+	facet: 0,
+
+	color: new Color( 0 ),
+	background: new Color( 0xc0d0ff ),
+
+	seed: 0,
+};
 
 
 
@@ -16,9 +31,9 @@ var cellCenter = Fn( ([ cell ])=>{
 } );
 
 
-var voronoiCells = Fn( ( params )=>{
+var voronoiCells = TSLFn( ( params )=>{
 
-	params = prepare( { ...voronoiCells.defaults, ...params } );
+	params = prepare( params, defaults );
 
 	var pos = positionGeometry.mul( exp( params.scale.div( 2 ).add( 0.5 ) ) ).add( params.seed ).toVar( );
 
@@ -59,22 +74,7 @@ var voronoiCells = Fn( ( params )=>{
 
 	return mix( color, mix( color, randomColor, params.variation ), params.variation );
 
-} );
-
-
-
-voronoiCells.defaults = {
-	$name: 'Voronoi cells',
-
-	scale: 2,
-	variation: 0,
-	facet: 0,
-
-	color: new Color( 0 ),
-	background: new Color( 0xc0d0ff ),
-
-	seed: 0,
-};
+}, defaults );
 
 
 

@@ -4,14 +4,28 @@
 
 
 import { Color } from "three";
-import { abs, exp, float, floor, Fn, Loop, max, mix, mul, oneMinus, positionGeometry, pow, sin } from 'three/tsl';
-import { noise, prepare } from './tsl-utils.js';
+import { abs, exp, float, floor, Loop, max, mix, mul, oneMinus, positionGeometry, pow, sin } from 'three/tsl';
+import { noise, prepare, TSLFn } from './tsl-utils.js';
 
 
 
-var entangled = Fn( ( params ) => {
+var defaults = {
+	$name: 'Entangled',
 
-	params = prepare( { ...entangled.defaults, ...params } );
+	scale: 2,
+	density: 10,
+
+	color: new Color( 0x002040 ),
+	background: new Color( 0xFFFFFF ),
+
+	seed: 0,
+};
+
+
+
+var entangled = TSLFn( ( params ) => {
+
+	params = prepare( params, defaults );
 
 	var scale = exp( params.scale.div( 2 ) ).toVar( );
 	var pos = positionGeometry.add( params.seed ).toVar( );
@@ -30,21 +44,7 @@ var entangled = Fn( ( params ) => {
 
 	return mix( params.color, params.background, k );
 
-} );
-
-
-
-entangled.defaults = {
-	$name: 'Entangled',
-
-	scale: 2,
-	density: 10,
-
-	color: new Color( 0x002040 ),
-	background: new Color( 0xFFFFFF ),
-
-	seed: 0,
-};
+}, defaults );
 
 
 

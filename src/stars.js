@@ -4,15 +4,29 @@
 
 
 import { Color } from "three";
-import { abs, add, exp, Fn, mix, positionGeometry, select } from 'three/tsl';
-import { hsl, noise, prepare, toHsl } from './tsl-utils.js';
+import { abs, add, exp, mix, positionGeometry, select } from 'three/tsl';
+import { hsl, noise, prepare, toHsl, TSLFn } from './tsl-utils.js';
 
 
 
+var defaults = {
+	$name: 'Stars',
 
-var stars = Fn( ( params ) => {
+	scale: 2,
+	density: 2,
+	variation: 0,
 
-	params = prepare( { ...stars.defaults, ...params } );
+	color: new Color( 0xfff5f0 ),
+	background: new Color( 0x000060 ),
+
+	seed: 0,
+};
+
+
+
+var stars = TSLFn( ( params ) => {
+
+	params = prepare( params, defaults );
 
 	var pos = positionGeometry.mul( exp( params.scale.div( 2 ).add( 3 ) ) ).add( params.seed ).toVar( );
 
@@ -26,22 +40,8 @@ var stars = Fn( ( params ) => {
 
 	return hsl( add( col.x, dS ), col.y, col.z );
 
-} );
+}, defaults );
 
-
-
-stars.defaults = {
-	$name: 'Stars',
-
-	scale: 2,
-	density: 2,
-	variation: 0,
-
-	color: new Color( 0xfff5f0 ),
-	background: new Color( 0x000060 ),
-
-	seed: 0,
-};
 
 
 export { stars };

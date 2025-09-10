@@ -4,14 +4,31 @@
 
 
 import { Color } from "three";
-import { add, cos, exp, Fn, mix, positionGeometry, radians, sin, sub, vec3 } from 'three/tsl';
-import { noise, prepare } from './tsl-utils.js';
+import { add, cos, exp, mix, positionGeometry, radians, sin, sub, vec3 } from 'three/tsl';
+import { noise, prepare, TSLFn } from './tsl-utils.js';
 
 
 
-var processedWood = Fn( ( params )=>{
+var defaults = {
+	$name: 'Processed wood',
+	$width: 260,
 
-	params = prepare( { ...processedWood.defaults, ...params } );
+	scale: 2,
+	length: 4,
+	strength: 0.3,
+	angle: 0,
+
+	color: new Color( 0x702020 ),
+	background: new Color( 0xF0D0A0 ),
+
+	seed: 0,
+};
+
+
+
+var processedWood = TSLFn( ( params )=>{
+
+	params = prepare( params, defaults );
 
 	var angle = radians( params.angle ).toVar();
 	var posLocal = vec3(
@@ -30,23 +47,7 @@ var processedWood = Fn( ( params )=>{
 
 	return mix( params.color, params.background, k );
 
-} );
-
-
-processedWood.defaults = {
-	$name: 'Processed wood',
-	$width: 260,
-
-	scale: 2,
-	length: 4,
-	strength: 0.3,
-	angle: 0,
-
-	color: new Color( 0x702020 ),
-	background: new Color( 0xF0D0A0 ),
-
-	seed: 0,
-};
+}, defaults );
 
 
 

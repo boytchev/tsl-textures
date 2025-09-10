@@ -4,14 +4,31 @@
 
 
 import { Color } from "three";
-import { abs, exp, Fn, oneMinus, positionGeometry, select, sqrt, vec3 } from 'three/tsl';
-import { hsl, noise, prepare, toHsl } from './tsl-utils.js';
+import { abs, exp, oneMinus, positionGeometry, select, sqrt, vec3 } from 'three/tsl';
+import { hsl, noise, prepare, toHsl, TSLFn } from './tsl-utils.js';
 
 
 
-var neonLights = Fn( ( params ) => {
+var defaults = {
+	$name: 'Neon Lights',
 
-	params = prepare( { ...neonLights.defaults, ...params } );
+	scale: 1.5,
+	thinness: 0.8,
+	mode: 0, // 0=additive, 1=subtractive
+
+	colorA: new Color( 0xFF0000 ),
+	colorB: new Color( 0x00FF00 ),
+	colorC: new Color( 0x0000FF ),
+	background: new Color( 0x000000 ),
+
+	seed: 0,
+};
+
+
+
+var neonLights = TSLFn( ( params ) => {
+
+	params = prepare( params, defaults );
 
 	var pos = positionGeometry;//.mul( exp( params.scale ) ).add( params.seed ).toVar( );
 
@@ -55,24 +72,7 @@ var neonLights = Fn( ( params ) => {
 
 	return color;
 
-} );
-
-
-
-neonLights.defaults = {
-	$name: 'Neon Lights',
-
-	scale: 1.5,
-	thinness: 0.8,
-	mode: 0, // 0=additive, 1=subtractive
-
-	colorA: new Color( 0xFF0000 ),
-	colorB: new Color( 0x00FF00 ),
-	colorC: new Color( 0x0000FF ),
-	background: new Color( 0x000000 ),
-
-	seed: 0,
-};
+}, defaults );
 
 
 

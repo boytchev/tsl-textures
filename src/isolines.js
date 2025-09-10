@@ -4,29 +4,12 @@
 
 
 import { Color } from "three";
-import { add, exp, Fn, mix, oneMinus, positionGeometry, sin, smoothstep, sub } from 'three/tsl';
-import { noise, prepare } from './tsl-utils.js';
+import { add, exp, mix, oneMinus, positionGeometry, sin, smoothstep, sub } from 'three/tsl';
+import { noise, prepare, TSLFn } from './tsl-utils.js';
 
 
 
-var isolines = Fn( ( params )=>{
-
-	params = prepare( { ...isolines.defaults, ...params } );
-
-	var pos = positionGeometry.mul( exp( params.scale ) ).add( params.seed ).toVar( );
-
-	var k = noise( pos ).mul( params.density );
-
-	k = oneMinus( sin( k ) ).div( 2 );
-
-	k = smoothstep( sub( params.thinness, params.blur ), add( params.thinness, params.blur ), k );
-
-	return mix( params.color, params.background, k );
-
-} );
-
-
-isolines.defaults = {
+var defaults = {
 	$name: 'Isolines',
 
 	scale: 2,
@@ -39,6 +22,24 @@ isolines.defaults = {
 
 	seed: 0,
 };
+
+
+
+var isolines = TSLFn( ( params )=>{
+
+	params = prepare( params, defaults );
+
+	var pos = positionGeometry.mul( exp( params.scale ) ).add( params.seed ).toVar( );
+
+	var k = noise( pos ).mul( params.density );
+
+	k = oneMinus( sin( k ) ).div( 2 );
+
+	k = smoothstep( sub( params.thinness, params.blur ), add( params.thinness, params.blur ), k );
+
+	return mix( params.color, params.background, k );
+
+}, defaults );
 
 
 

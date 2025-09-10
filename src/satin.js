@@ -4,14 +4,27 @@
 
 
 import { Color } from "three";
-import { abs, exp, Fn, mix, positionGeometry, pow, vec3 } from 'three/tsl';
-import { noise, prepare } from './tsl-utils.js';
+import { abs, exp, mix, positionGeometry, pow, vec3 } from 'three/tsl';
+import { noise, prepare, TSLFn } from './tsl-utils.js';
 
 
 
-var satin = Fn( ( params ) => {
+var defaults = {
+	$name: 'Satin',
 
-	params = prepare( { ...satin.defaults, ...params } );
+	scale: 2,
+
+	color: new Color( 0x7080FF ),
+	background: new Color( 0x000050 ),
+
+	seed: 0,
+};
+
+
+
+var satin = TSLFn( ( params ) => {
+
+	params = prepare( params, defaults );
 
 	var pos = positionGeometry.toVar( );
 
@@ -29,7 +42,7 @@ var satin = Fn( ( params ) => {
 
 	return mix( params.background, params.color, k );
 
-} );
+}, defaults );
 
 
 

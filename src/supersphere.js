@@ -4,7 +4,17 @@
 
 
 import { cross, float, Fn, normalLocal, positionGeometry, sub, tangentLocal, transformNormalToView } from 'three/tsl';
-import { prepare } from './tsl-utils.js';
+import { prepare, TSLFn } from './tsl-utils.js';
+
+
+
+var defaults = {
+	$name: 'Supersphere',
+	$positionNode: true,
+
+	exponent: 3,
+
+};
 
 
 
@@ -24,19 +34,19 @@ var surfacePos = Fn( ([ pos, params ])=>{
 
 
 
-var supersphere = Fn( ( params )=>{
+var supersphere = TSLFn( ( params )=>{
 
-	params = prepare( { ...supersphere.defaults, ...params } );
+	params = prepare( params, defaults );
 
 	return surfacePos( positionGeometry, params );
 
-} );
+}, defaults );
 
 
 
-supersphere.normal = Fn( ( params ) => {
+supersphere.normal = TSLFn( ( params ) => {
 
-	params = prepare( { ...supersphere.defaults, ...params } );
+	params = prepare( params, defaults );
 
 	var eps = 0.01;
 
@@ -54,17 +64,7 @@ supersphere.normal = Fn( ( params ) => {
 
 	return transformNormalToView( cross( dU, dV ).normalize() );
 
-} );
-
-
-
-supersphere.defaults = {
-	$name: 'Supersphere',
-	$positionNode: true,
-
-	exponent: 3,
-
-};
+}, defaults );
 
 
 

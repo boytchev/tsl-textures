@@ -5,7 +5,22 @@
 
 import { Color } from 'three';
 import { exp, float, Fn, If, Loop, mix, positionGeometry, vec3 } from 'three/tsl';
-import { noise, prepare, vnoise } from './tsl-utils.js';
+import { noise, prepare, TSLFn, vnoise } from './tsl-utils.js';
+
+
+
+var defaults = {
+	$name: 'Cork',
+
+	scale: 1,
+	straight: 1,
+	noise: 0.3,
+
+	color: new Color( 0xfff0c0 ),
+	background: new Color( 0xd08060 ),
+
+	seed: 0,
+};
 
 
 
@@ -16,9 +31,9 @@ var cellCenter = Fn( ([ cell ])=>{
 } );
 
 
-var cork = Fn( ( params )=>{
+var cork = TSLFn( ( params )=>{
 
-	params = prepare( { ...cork.defaults, ...params } );
+	params = prepare( params, defaults );
 
 	var pos = positionGeometry.mul( exp( params.scale.div( 1.5 ).add( 1 ) ) ).add( params.seed ).toVar( );
 
@@ -63,22 +78,7 @@ var cork = Fn( ( params )=>{
 
 	return color;
 
-} );
-
-
-
-cork.defaults = {
-	$name: 'Cork',
-
-	scale: 1,
-	straight: 1,
-	noise: 0.3,
-
-	color: new Color( 0xfff0c0 ),
-	background: new Color( 0xd08060 ),
-
-	seed: 0,
-};
+}, defaults );
 
 
 

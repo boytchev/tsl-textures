@@ -4,14 +4,27 @@
 
 
 import { Color } from "three";
-import { exp, Fn, mix, positionGeometry } from 'three/tsl';
-import { noise, prepare } from './tsl-utils.js';
+import { exp, mix, positionGeometry } from 'three/tsl';
+import { noise, prepare, TSLFn } from './tsl-utils.js';
 
 
 
-var karstRock = Fn( ( params )=>{
+var defaults = {
+	$name: 'Karst rock',
 
-	params = prepare( { ...karstRock.defaults, ...params } );
+	scale: 2,
+
+	color: new Color( 0xFFF4F0 ),
+	background: new Color( 0xD0D0D0 ),
+
+	seed: 0,
+};
+
+
+
+var karstRock = TSLFn( ( params )=>{
+
+	params = prepare( params, defaults );
 
 	var pos = positionGeometry.mul( exp( params.scale ) ).add( params.seed.sin().mul( 5 ) ).toVar( );
 
@@ -24,20 +37,7 @@ var karstRock = Fn( ( params )=>{
 
 	return mix( params.background, params.color, k ).mul( k.pow( 0.1 ) );
 
-} );
-
-
-
-karstRock.defaults = {
-	$name: 'Karst rock',
-
-	scale: 2,
-
-	color: new Color( 0xFFF4F0 ),
-	background: new Color( 0xD0D0D0 ),
-
-	seed: 0,
-};
+}, defaults );
 
 
 

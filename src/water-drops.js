@@ -4,7 +4,20 @@
 
 
 import { cos, cross, exp, Fn, normalLocal, positionGeometry, remap, sin, sub, tangentLocal, transformNormalToView, vec3 } from 'three/tsl';
-import { noise, prepare } from './tsl-utils.js';
+import { noise, prepare, TSLFn } from './tsl-utils.js';
+
+
+
+var defaults = {
+	$name: 'Water Drops',
+	$normalNode: true,
+
+	scale: 1.4,
+	density: 0.5,
+	bump: 0.6,
+
+	seed: 0,
+};
 
 
 
@@ -18,9 +31,10 @@ var surfacePos = Fn( ([ pos, normal, bump, density, seed ]) => {
 } );
 
 
-var waterDrops = Fn( ( params ) => {
 
-	params = prepare( { ...waterDrops.defaults, ...params } );
+var waterDrops = TSLFn( ( params ) => {
+
+	params = prepare( params, defaults );
 
 	var eps = 0.001;
 
@@ -42,20 +56,7 @@ var waterDrops = Fn( ( params ) => {
 
 	return transformNormalToView( cross( dU, dV ).normalize() );
 
-} );
-
-
-
-waterDrops.defaults = {
-	$name: 'Water Drops',
-	$normalNode: true,
-
-	scale: 1.4,
-	density: 0.5,
-	bump: 0.6,
-
-	seed: 0,
-};
+}, defaults );
 
 
 

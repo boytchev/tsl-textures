@@ -5,7 +5,23 @@
 
 import { Color } from 'three';
 import { exp, float, Fn, Loop, mix, positionGeometry, vec3 } from 'three/tsl';
-import { prepare } from './tsl-utils.js';
+import { prepare, TSLFn } from './tsl-utils.js';
+
+
+
+var defaults = {
+	$name: 'Dyson sphere',
+
+	scale: 2,
+	complexity: 2,
+
+	variation: 0,
+
+	color: new Color( 0xc0d0ff ),
+	background: new Color( 0 ),
+
+	seed: 0,
+};
 
 
 
@@ -60,9 +76,9 @@ var noiseg = Fn( ([ pos ])=>{
 
 
 
-var dysonSphere = Fn( ( params )=>{
+var dysonSphere = TSLFn( ( params )=>{
 
-	params = prepare( { ...dysonSphere.defaults, ...params } );
+	params = prepare( params, defaults );
 
 	var pos = positionGeometry.mul( exp( params.scale.div( 2 ).add( 0.5 ) ) ).add( params.seed ).toVar( );
 
@@ -78,23 +94,7 @@ var dysonSphere = Fn( ( params )=>{
 
 	return mix( params.background, params.color, res.x.add( 1 ).div( 5 ) );
 
-} );
-
-
-
-dysonSphere.defaults = {
-	$name: 'Dyson sphere',
-
-	scale: 2,
-	complexity: 2,
-
-	variation: 0,
-
-	color: new Color( 0xc0d0ff ),
-	background: new Color( 0 ),
-
-	seed: 0,
-};
+}, defaults );
 
 
 

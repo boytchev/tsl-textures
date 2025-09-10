@@ -4,15 +4,41 @@
 
 
 import { Color } from 'three';
-import { exp, float, Fn, If, Loop, mix, mul, positionGeometry, remap, smoothstep, vec3 } from 'three/tsl';
-import { noise, prepare } from './tsl-utils.js';
+import { exp, float, If, Loop, mix, mul, positionGeometry, remap, smoothstep, vec3 } from 'three/tsl';
+import { noise, prepare, TSLFn } from './tsl-utils.js';
 
 
 
 
-var planet = Fn( ( params )=>{
+var defaults = {
+	$name: 'Planet',
 
-	params = prepare( { ...planet.defaults, ...params } );
+	scale: 2,
+
+	iterations: 5,
+
+	levelSea: 0.3,
+	levelMountain: 0.7,
+
+	balanceWater: 0.3,
+	balanceSand: 0.2,
+	balanceSnow: 0.8,
+
+	colorDeep: new Color( 0x123a59 ).convertLinearToSRGB(), // SteelBlue
+	colorShallow: new Color( 0x87CEEB ).convertLinearToSRGB(), // SkyBlue
+	colorBeach: new Color( 0xFFFACD ).convertLinearToSRGB(), // LemonChiffon
+	colorGrass: new Color( 0x3CB371 ).convertLinearToSRGB(), // MediumSeaGreen
+	colorForest: new Color( 0x003000 ).convertLinearToSRGB(), // Dark green
+	colorSnow: new Color( 0xF0FFFF ).convertLinearToSRGB(), // Azure
+
+	seed: 0,
+};
+
+
+
+var planet = TSLFn( ( params )=>{
+
+	params = prepare( params, defaults );
 
 	var k = float( 0 ).toVar(),
 		sum = float( 0 ).toVar(),
@@ -99,33 +125,7 @@ var planet = Fn( ( params )=>{
 
 	return color;
 
-} );
-
-
-
-planet.defaults = {
-	$name: 'Planet',
-
-	scale: 2,
-
-	iterations: 5,
-
-	levelSea: 0.3,
-	levelMountain: 0.7,
-
-	balanceWater: 0.3,
-	balanceSand: 0.2,
-	balanceSnow: 0.8,
-
-	colorDeep: new Color( 0x123a59 ).convertLinearToSRGB(), // SteelBlue
-	colorShallow: new Color( 0x87CEEB ).convertLinearToSRGB(), // SkyBlue
-	colorBeach: new Color( 0xFFFACD ).convertLinearToSRGB(), // LemonChiffon
-	colorGrass: new Color( 0x3CB371 ).convertLinearToSRGB(), // MediumSeaGreen
-	colorForest: new Color( 0x003000 ).convertLinearToSRGB(), // Dark green
-	colorSnow: new Color( 0xF0FFFF ).convertLinearToSRGB(), // Azure
-
-	seed: 0,
-};
+}, defaults );
 
 
 

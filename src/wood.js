@@ -4,14 +4,29 @@
 
 
 import { Color } from 'three';
-import { add, cos, exp, float, Fn, Loop, mix, mul, positionGeometry, radians, reciprocal, sin, sub, vec3 } from 'three/tsl';
-import { noise, prepare } from './tsl-utils.js';
+import { add, cos, exp, float, Loop, mix, mul, positionGeometry, radians, reciprocal, sin, sub, vec3 } from 'three/tsl';
+import { noise, prepare, TSLFn } from './tsl-utils.js';
 
 
 
-var wood = Fn( ( params ) => {
+var defaults = {
+	$name: 'Wood',
+	scale: 2.5,
+	rings: 4.5,
+	length: 1,
+	angle: 0,
+	fibers: 0.3,
+	fibersDensity: 10,
+	color: new Color( 0.8, 0.4, 0 ),
+	background: new Color( 0.4, 0.1, 0 ),
+	seed: 0,
+};
 
-	params = prepare( { ...wood.defaults, ...params } );
+
+
+var wood = TSLFn( ( params ) => {
+
+	params = prepare( params, defaults );
 
 	var angle = radians( params.angle ).toVar();
 	var posLocal = vec3(
@@ -44,22 +59,7 @@ var wood = Fn( ( params ) => {
 
 	return mix( params.color, params.background, mix( k, kk, params.fibers ) );
 
-} );
-
-
-
-wood.defaults = {
-	$name: 'Wood',
-	scale: 2.5,
-	rings: 4.5,
-	length: 1,
-	angle: 0,
-	fibers: 0.3,
-	fibersDensity: 10,
-	color: new Color( 0.8, 0.4, 0 ),
-	background: new Color( 0.4, 0.1, 0 ),
-	seed: 0,
-};
+}, defaults );
 
 
 

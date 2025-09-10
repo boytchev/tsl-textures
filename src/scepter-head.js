@@ -4,14 +4,28 @@
 
 
 import { Color } from "three";
-import { abs, add, cos, floor, Fn, max, mix, mod, mul, positionGeometry, remapClamp, sign, tan, vec3 } from 'three/tsl';
-import { hsl, noise, prepare, remapExp, toHsl } from './tsl-utils.js';
+import { abs, add, cos, floor, max, mix, mod, mul, positionGeometry, remapClamp, sign, tan, vec3 } from 'three/tsl';
+import { hsl, noise, prepare, remapExp, toHsl, TSLFn } from './tsl-utils.js';
 
 
 
-var scepterHead = Fn( ( params ) => {
+var defaults = {
+	$name: 'Scepter head',
 
-	params = prepare( { ...scepterHead.defaults, ...params } );
+	xFactor: 10,
+	yFactor: 22,
+	zFactor: 10,
+
+	colorRim: new Color( 0xFFFFFF ),
+	colorA: new Color( 0x70E0FF ),
+	colorB: new Color( 0x3000FF ),
+};
+
+
+
+var scepterHead = TSLFn( ( params ) => {
+
+	params = prepare( params, defaults );
 
 	var pos = positionGeometry;
 
@@ -47,21 +61,7 @@ var scepterHead = Fn( ( params ) => {
 
 	return mix( color1, color2, remapClamp( max( dx, max( dy, dz ) ), 55-10, 55+10 ) );
 
-} );
-
-
-
-scepterHead.defaults = {
-	$name: 'Scepter head',
-
-	xFactor: 10,
-	yFactor: 22,
-	zFactor: 10,
-
-	colorRim: new Color( 0xFFFFFF ),
-	colorA: new Color( 0x70E0FF ),
-	colorB: new Color( 0x3000FF ),
-};
+}, defaults );
 
 
 

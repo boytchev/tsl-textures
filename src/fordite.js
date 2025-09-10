@@ -4,14 +4,23 @@
 
 
 import { Color } from 'three';
-import { exp, Fn, mul, positionGeometry, sin, vec3 } from 'three/tsl';
-import { hsl, noise, prepare } from './tsl-utils.js';
+import { exp, mul, positionGeometry, sin, vec3 } from 'three/tsl';
+import { hsl, noise, prepare, TSLFn } from './tsl-utils.js';
 
 
 
-var fordite = Fn( ( params ) => {
+var defaults = {
+	$name: 'Fordite',
+	scale: 2,
+	color: new Color( 0, 0, 0 ),
+	seed: 0,
+};
 
-	params = prepare( { ...fordite.defaults, ...params } );
+
+
+var fordite = TSLFn( ( params ) => {
+
+	params = prepare( params, defaults );
 
 	var pos = positionGeometry.mul( exp( params.scale ) ).add( params.seed ).toVar( );
 
@@ -29,16 +38,7 @@ var fordite = Fn( ( params ) => {
 		sin( mul( k, Math.PI, 4 ) ).mul( 0.5 ).add( 0.5 )
 	).add( params.color );
 
-} );
-
-
-
-fordite.defaults = {
-	$name: 'Fordite',
-	scale: 2,
-	color: new Color( 0, 0, 0 ),
-	seed: 0,
-};
+}, defaults );
 
 
 

@@ -4,14 +4,29 @@
 
 
 import { Color } from 'three';
-import { exp, Fn, If, positionGeometry, round, vec3 } from 'three/tsl';
-import { noise, prepare } from './tsl-utils.js';
+import { exp, If, positionGeometry, round, vec3 } from 'three/tsl';
+import { noise, prepare, TSLFn } from './tsl-utils.js';
 
 
 
-var camouflage = Fn( ( params )=>{
+var defaults = {
+	$name: 'Camouflage',
 
-	params = prepare( { ...camouflage.defaults, ...params } );
+	scale: 2,
+
+	colorA: new Color( 0xc2bea8 ),
+	colorB: new Color( 0x9c895e ),
+	colorC: new Color( 0x92a375 ),
+	colorD: new Color( 0x717561 ),
+
+	seed: 0,
+};
+
+
+
+var camouflage = TSLFn( ( params )=>{
+
+	params = prepare( params, defaults );
 
 	var pos = positionGeometry.mul( exp( params.scale ) ).add( params.seed ).toVar( );
 
@@ -44,22 +59,7 @@ var camouflage = Fn( ( params )=>{
 
 	return color;
 
-} );
-
-
-
-camouflage.defaults = {
-	$name: 'Camouflage',
-
-	scale: 2,
-
-	colorA: new Color( 0xc2bea8 ),
-	colorB: new Color( 0x9c895e ),
-	colorC: new Color( 0x92a375 ),
-	colorD: new Color( 0x717561 ),
-
-	seed: 0,
-};
+}, defaults );
 
 
 

@@ -4,13 +4,29 @@
 
 
 import { Color } from "three";
-import { exp, float, Fn, Loop, mix, positionGeometry } from 'three/tsl';
-import { noise, prepare } from './tsl-utils.js';
+import { exp, float, Loop, mix, positionGeometry } from 'three/tsl';
+import { noise, prepare, TSLFn } from './tsl-utils.js';
 
 
-var dalmatianSpots = Fn( ( params )=>{
 
-	params = prepare( { ...dalmatianSpots.defaults, ...params } );
+var defaults = {
+	$name: 'Dalmatian spots',
+	$width: 260,
+
+	scale: 2,
+	density: 0.6,
+
+	color: new Color( 0xFFFFFF ),
+	background: new Color( 0x000000 ),
+
+	seed: 0,
+};
+
+
+
+var dalmatianSpots = TSLFn( ( params )=>{
+
+	params = prepare( params, defaults );
 
 	var pos = positionGeometry.mul( exp( params.scale ) ).add( params.seed ).sub( 1000 ).toVar( );
 
@@ -32,21 +48,7 @@ var dalmatianSpots = Fn( ( params )=>{
 
 	return mix( params.background, params.color, k.clamp( 0, 1 ) );
 
-} );
-
-
-dalmatianSpots.defaults = {
-	$name: 'Dalmatian spots',
-	$width: 260,
-
-	scale: 2,
-	density: 0.6,
-
-	color: new Color( 0xFFFFFF ),
-	background: new Color( 0x000000 ),
-
-	seed: 0,
-};
+}, defaults );
 
 
 

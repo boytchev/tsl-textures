@@ -4,14 +4,32 @@
 
 
 import { Color } from 'three';
-import { equirectUV, exp, Fn, mix, positionGeometry, screenUV, select, vec3 } from 'three/tsl';
-import { noise, prepare } from './tsl-utils.js';
+import { equirectUV, exp, mix, positionGeometry, screenUV, select, vec3 } from 'three/tsl';
+import { noise, prepare, TSLFn } from './tsl-utils.js';
 
 
 
-var watermelon = Fn( ( params )=>{
+var defaults = {
+	$name: 'Watermelon',
 
-	params = prepare( { ...watermelon.defaults, ...params } );
+	scale: 2,
+	stripes: 12,
+	variation: 0.5,
+	noise: 0.25,
+
+	color: new Color( 'yellowgreen' ),
+	background: new Color( 'darkgreen' ),
+
+	flat: 0,
+
+	seed: 0,
+};
+
+
+
+var watermelon = TSLFn( ( params )=>{
+
+	params = prepare( params, defaults );
 
 	var variation = select( params.flat, params.variation.mul( 0.85 ).add( 0.15 ), params.variation );
 
@@ -37,25 +55,7 @@ var watermelon = Fn( ( params )=>{
 
 	return color;
 
-} );
-
-
-
-watermelon.defaults = {
-	$name: 'Watermelon',
-
-	scale: 2,
-	stripes: 12,
-	variation: 0.5,
-	noise: 0.25,
-
-	color: new Color( 'yellowgreen' ),
-	background: new Color( 'darkgreen' ),
-
-	flat: 0,
-
-	seed: 0,
-};
+}, defaults );
 
 
 

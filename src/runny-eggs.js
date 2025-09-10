@@ -5,13 +5,30 @@
 
 import { Color } from 'three';
 import { cross, exp, Fn, mix, mx_worley_noise_float, normalLocal, positionGeometry, sub, tangentLocal, transformNormalToView } from 'three/tsl';
-import { prepare } from './tsl-utils.js';
+import { prepare, TSLFn } from './tsl-utils.js';
 
 
 
-var runnyEggs = Fn( ( params ) => {
+var defaults = {
+	$name: 'Runny eggs',
 
-	params = prepare( { ...runnyEggs.defaults, ...params } );
+	scale: 1,
+
+	sizeYolk: 0.2,
+	sizeWhite: 0.7,
+
+	colorYolk: new Color( 'orange' ),
+	colorWhite: new Color( 'white' ),
+	colorBackground: new Color( 'lightgray' ),
+
+	seed: 0,
+};
+
+
+
+var runnyEggs = TSLFn( ( params ) => {
+
+	params = prepare( params, defaults );
 
 	var pos = positionGeometry.mul( exp( params.scale.div( 1 ) ) ).add( params.seed.sin().mul( 10 ) ).toVar( );
 
@@ -24,7 +41,7 @@ var runnyEggs = Fn( ( params ) => {
 
 	return mix( params.colorBackground, mix( params.colorWhite, params.colorYolk, yolks ), whites );
 
-} );
+}, defaults );
 
 
 var surfacePos = Fn( ([ pos, normal, bump, sizeYolk, sizeWhite ]) => {
@@ -40,9 +57,9 @@ var surfacePos = Fn( ([ pos, normal, bump, sizeYolk, sizeWhite ]) => {
 } );
 
 
-runnyEggs.normal = Fn( ( params ) => {
+runnyEggs.normal = TSLFn( ( params ) => {
 
-	params = prepare( { ...runnyEggs.defaults, ...params } );
+	params = prepare( params, defaults );
 
 	var eps = 0.001;
 	var bump = 0.05;
@@ -64,12 +81,12 @@ runnyEggs.normal = Fn( ( params ) => {
 
 	return transformNormalToView( cross( dU, dV ).normalize() );
 
-} );
+}, defaults );
 
 
-runnyEggs.roughness = Fn( ( params ) => {
+runnyEggs.roughness = TSLFn( ( params ) => {
 
-	params = prepare( { ...runnyEggs.defaults, ...params } );
+	params = prepare( params, defaults );
 
 	var pos = positionGeometry.mul( exp( params.scale.div( 1 ) ) ).add( params.seed.sin().mul( 10 ) ).toVar( );
 
@@ -80,23 +97,7 @@ runnyEggs.roughness = Fn( ( params ) => {
 
 	return yolks;
 
-} );
-
-
-runnyEggs.defaults = {
-	$name: 'Runny eggs',
-
-	scale: 1,
-
-	sizeYolk: 0.2,
-	sizeWhite: 0.7,
-
-	colorYolk: new Color( 'orange' ),
-	colorWhite: new Color( 'white' ),
-	colorBackground: new Color( 'lightgray' ),
-
-	seed: 0,
-};
+}, defaults );
 
 
 

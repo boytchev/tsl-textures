@@ -5,7 +5,23 @@
 
 import { Vector2, Vector3 } from "three";
 import { cross, Fn, mix, normalLocal, positionGeometry, sub, tangentLocal, transformNormalToView, vec3, vec4 } from 'three/tsl';
-import { matScale, matTrans, prepare, selectPlanar } from './tsl-utils.js';
+import { matScale, matTrans, prepare, selectPlanar, TSLFn } from './tsl-utils.js';
+
+
+
+var defaults = {
+	$name: 'Scaler',
+	$positionNode: true,
+	$selectorPlanar: true,
+
+	scales: new Vector3( 0.01, 0.9, 1.7 ),
+	center: new Vector3( 0, 0, 0 ),
+
+	selectorCenter: new Vector3( 0, 0, 0 ),
+	selectorAngles: new Vector2( 0, 0 ),
+	selectorWidth: 2,
+
+};
 
 
 
@@ -23,19 +39,19 @@ var surfacePos = Fn( ([ pos, params ])=>{
 
 
 
-var scaler = Fn( ( params )=>{
+var scaler = TSLFn( ( params )=>{
 
-	params = prepare( { ...scaler.defaults, ...params } );
+	params = prepare( params, defaults );
 
 	return surfacePos( positionGeometry, params );
 
-} );
+}, defaults );
 
 
 
-scaler.normal = Fn( ( params ) => {
+scaler.normal = TSLFn( ( params ) => {
 
-	params = prepare( { ...scaler.defaults, ...params } );
+	params = prepare( params, defaults );
 
 	var eps = 0.01;
 
@@ -53,23 +69,7 @@ scaler.normal = Fn( ( params ) => {
 
 	return transformNormalToView( cross( dU, dV ).normalize() );
 
-} );
-
-
-
-scaler.defaults = {
-	$name: 'Scaler',
-	$positionNode: true,
-	$selectorPlanar: true,
-
-	scales: new Vector3( 0.01, 0.9, 1.7 ),
-	center: new Vector3( 0, 0, 0 ),
-
-	selectorCenter: new Vector3( 0, 0, 0 ),
-	selectorAngles: new Vector2( 0, 0 ),
-	selectorWidth: 2,
-
-};
+}, defaults );
 
 
 

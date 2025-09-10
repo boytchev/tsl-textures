@@ -5,7 +5,22 @@
 
 import { Vector2, Vector3 } from "three";
 import { cross, Fn, normalLocal, positionGeometry, sub, tangentLocal, transformNormalToView, vec4 } from 'three/tsl';
-import { matTrans, prepare, selectPlanar } from './tsl-utils.js';
+import { matTrans, prepare, selectPlanar, TSLFn } from './tsl-utils.js';
+
+
+
+var defaults = {
+	$name: 'Translator',
+	$positionNode: true,
+	$selectorPlanar: true,
+
+	distance: new Vector3( -0.5, 0, 0.2 ),
+
+	selectorCenter: new Vector3( 0, 0, 0 ),
+	selectorAngles: new Vector2( 0, 0 ),
+	selectorWidth: 0.7,
+
+};
 
 
 
@@ -21,19 +36,19 @@ var surfacePos = Fn( ([ pos, params ])=>{
 
 
 
-var translator = Fn( ( params )=>{
+var translator = TSLFn( ( params )=>{
 
-	params = prepare( { ...translator.defaults, ...params } );
+	params = prepare( params, defaults );
 
 	return surfacePos( positionGeometry, params );
 
-} );
+}, defaults );
 
 
 
-translator.normal = Fn( ( params ) => {
+translator.normal = TSLFn( ( params ) => {
 
-	params = prepare( { ...translator.defaults, ...params } );
+	params = prepare( params, defaults );
 
 	var eps = 0.01;
 
@@ -51,22 +66,7 @@ translator.normal = Fn( ( params ) => {
 
 	return transformNormalToView( cross( dU, dV ).normalize() );
 
-} );
-
-
-
-translator.defaults = {
-	$name: 'Translator',
-	$positionNode: true,
-	$selectorPlanar: true,
-
-	distance: new Vector3( -0.5, 0, 0.2 ),
-
-	selectorCenter: new Vector3( 0, 0, 0 ),
-	selectorAngles: new Vector2( 0, 0 ),
-	selectorWidth: 0.7,
-
-};
+}, defaults );
 
 
 

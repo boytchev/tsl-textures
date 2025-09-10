@@ -4,13 +4,29 @@
 
 
 import { Color } from "three";
-import { abs, add, exp, float, Fn, If, mix, or, positionGeometry, pow2, sub } from 'three/tsl';
-import { noise, prepare } from './tsl-utils.js';
+import { abs, add, exp, float, If, mix, or, positionGeometry, pow2, sub } from 'three/tsl';
+import { noise, prepare, TSLFn } from './tsl-utils.js';
 
 
-var caveArt = Fn( ( params ) => {
 
-	params = prepare( { ...caveArt.defaults, ...params } );
+var defaults = {
+	$name: 'Cave art',
+
+	scale: 2,
+	thinness: 2,
+	noise: 0.3,
+
+	color: new Color( 0xD34545 ),
+	background: new Color( 0xFFF8F0 ),
+
+	seed: 0,
+};
+
+
+
+var caveArt = TSLFn( ( params ) => {
+
+	params = prepare( params, defaults );
 
 	var pos = positionGeometry.mul( exp( params.scale ) ).add( params.seed ).toVar( );
 
@@ -34,22 +50,7 @@ var caveArt = Fn( ( params ) => {
 
 	return mix( params.background, params.color, k );
 
-} );
-
-
-
-caveArt.defaults = {
-	$name: 'Cave art',
-
-	scale: 2,
-	thinness: 2,
-	noise: 0.3,
-
-	color: new Color( 0xD34545 ),
-	background: new Color( 0xFFF8F0 ),
-
-	seed: 0,
-};
+}, defaults );
 
 
 

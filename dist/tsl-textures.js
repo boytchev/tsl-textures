@@ -1,4 +1,4 @@
-// TSL Textures v2.1.1
+// TSL Textures v2.1.2
 
 import { Fn, min, sub, max, vec3, float, add, If, select, sin, cos, vec4, mul, cross, remap, pow, log2, mat4, smoothstep, positionGeometry, dFdx, dFdy, transformNormalToView, mx_noise_float, uniform, exp, round, pow2, abs, or, mix, acos, clamp, normalLocal, tangentLocal, Loop, floor, oneMinus, screenSize, screenUV, equirectUV, div, remapClamp, sqrt, mat2, mod, distance, radians, matcapUV, mx_worley_noise_float, sign, tan, reciprocal, vec2 } from 'three/tsl';
 export { mx_noise_float as noise } from 'three/tsl';
@@ -537,7 +537,28 @@ function hideFallbackWarning( ) {
 
 
 // converts all numeric, color and vector properties to nodes
-function prepare( params ) {
+function prepare( userParams, defaults ) {
+
+	var propertyNames = [];
+	for ( var item of userParams ) {
+
+	  if ( item && typeof item === 'object' ) {
+
+			propertyNames = Object.keys( item );
+			break;
+
+		}
+
+	}
+
+	var params = { ...defaults };
+
+	for ( var key of propertyNames ) {
+
+		if ( typeof userParams[ key ] !== 'undefined' )
+			params[ key ] = userParams[ key ];
+
+	}
 
 	for ( var name of Object.keys( params ) ) {
 
@@ -565,9 +586,194 @@ function noised( pos, scale=1, octave=1, seed=0 ) {
 
 }
 
-var camouflage = Fn( ( params )=>{
 
-	params = prepare( { ...camouflage.defaults, ...params } );
+
+// a shim (proposed by Grok) to recover from a change of how Fn
+// is proxied since Three.js v0.180.0
+
+// explanation from Grok:
+/*
+In 0.179.0, TSL.Fn likely returned a plain function, allowing a.defaults
+to work without Proxy interference. In 0.180.0, the Proxy wrapping an FnNode
+instance blocks defaults access (returns undefined) and requires specific FnNode
+behavior, making the wrapper incompatible.
+
+Solutions to Fix the Error and Access a.defaultsWe need a solution that:
+
+* Makes a.defaults directly accessible.
+* Preserves TSL compatibility by ensuring the object passed to TSL behaves
+like a TSL.Fn Proxy.
+* Avoids separate defaults variables.
+* Mimics the 0.179.0 API where a.defaults worked.
+
+Given the error, direct property access on the TSL.Fn Proxy (e.g., Object.defineProperty(a, 'defaults', {...})) fails because the get trap
+returns undefined for unknown properties on FnNode. The non-Proxy wrapper
+breaks TSL, so let’s try a refined approach that balances compatibility and
+accessibility.1. Proxy Wrapper with FnNode PrototypeInstead of a non-Proxy
+wrapper, create a Proxy that mimics TSL.Fn but stores defaults separately to
+bypass FnNode’s get behavior. To avoid breaking TSL, ensure the Proxy’s target
+has the FnNode prototype.
+
+Why This Might Work:
+
+* The Proxy’s target inherits the FnNode prototype (via fn.call), making it
+appear more like the original TSL.Fn Proxy to TSL’s checks.
+* defaults is stored in a Map, bypassing FnNode’s get trap that returns
+undefined.
+* a.fn exposes the original TSL.Fn Proxy for TSL operations.
+* Function calls (a(...)) are forwarded to the original Proxy.
+* Matches Object.getOwnPropertyDescriptor behavior.
+
+*/
+
+function TSLFn( jsFunc, defaults, layout = null ) {
+
+	var opacity = null;
+	var roughness = null;
+	var normal = null;
+
+	const fn = Fn( jsFunc, layout );
+	const customProps = new Map();
+	customProps.set( 'defaults', defaults );
+	customProps.set( 'opacity', opacity );
+	customProps.set( 'roughness', roughness );
+	customProps.set( 'normal', normal );
+
+	// Create a target with FnNode prototype to mimic TSL.Fn
+	const target = function () {};
+
+	Object.setPrototypeOf( target, Object.getPrototypeOf( fn.call ) ); // Inherit FnNode prototype
+
+	return new Proxy( target, {
+		get( target, prop, receiver ) {
+
+			if ( prop === 'defaults' ) {
+
+				return customProps.get( 'defaults' );
+
+			}
+
+			if ( prop === 'opacity' ) {
+
+				return customProps.get( 'opacity' );
+
+			}
+
+			if ( prop === 'roughness' ) {
+
+				return customProps.get( 'roughness' );
+
+			}
+
+			if ( prop === 'normal' ) {
+
+				return customProps.get( 'normal' );
+
+			}
+
+			if ( prop === 'fn' ) {
+
+				return fn; // Expose original TSL.Fn Proxy
+
+			}
+
+			return Reflect.get( fn, prop, receiver ); // Forward to original Proxy
+
+		},
+		set( target, prop, value, receiver ) {
+
+			if ( prop === 'defaults' ) {
+
+				customProps.set( 'defaults', value );
+				return true;
+
+			}
+
+			if ( prop === 'opacity' ) {
+
+				customProps.set( 'opacity', value );
+				return true;
+
+			}
+
+			if ( prop === 'roughness' ) {
+
+				customProps.set( 'roughness', value );
+				return true;
+
+			}
+
+			if ( prop === 'normal' ) {
+
+				customProps.set( 'normal', value );
+				return true;
+
+			}
+
+			return Reflect.set( fn, prop, value, receiver );
+
+		},
+		apply( target, thisArg, args ) {
+
+			return Reflect.apply( fn, thisArg, args ); // Delegate calls to original Proxy
+
+		},
+		getOwnPropertyDescriptor( target, prop ) {
+
+			if ( prop === 'defaults' ) {
+
+				return {
+					value: customProps.get( 'defaults' ),
+					writable: true,
+					enumerable: true,
+					configurable: true,
+				};
+
+			}
+
+			if ( prop === 'opacity' ) {
+
+				Reflect.getOwnPropertyDescriptor( opacity, prop );
+
+			}
+
+			if ( prop === 'roughness' ) {
+
+				Reflect.getOwnPropertyDescriptor( roughness, prop );
+
+			}
+
+			if ( prop === 'normal' ) {
+
+				Reflect.getOwnPropertyDescriptor( normal, prop );
+
+			}
+
+			return Reflect.getOwnPropertyDescriptor( fn, prop );
+
+		}
+	} );
+
+} // TSLFn
+
+var defaults$C = {
+	$name: 'Camouflage',
+
+	scale: 2,
+
+	colorA: new Color( 0xc2bea8 ),
+	colorB: new Color( 0x9c895e ),
+	colorC: new Color( 0x92a375 ),
+	colorD: new Color( 0x717561 ),
+
+	seed: 0,
+};
+
+
+
+var camouflage = TSLFn( ( params )=>{
+
+	params = prepare( params, defaults$C );
 
 	var pos = positionGeometry.mul( exp( params.scale ) ).add( params.seed ).toVar( );
 
@@ -600,26 +806,26 @@ var camouflage = Fn( ( params )=>{
 
 	return color;
 
-} );
+}, defaults$C );
 
-
-
-camouflage.defaults = {
-	$name: 'Camouflage',
+var defaults$B = {
+	$name: 'Cave art',
 
 	scale: 2,
+	thinness: 2,
+	noise: 0.3,
 
-	colorA: new Color( 0xc2bea8 ),
-	colorB: new Color( 0x9c895e ),
-	colorC: new Color( 0x92a375 ),
-	colorD: new Color( 0x717561 ),
+	color: new Color( 0xD34545 ),
+	background: new Color( 0xFFF8F0 ),
 
 	seed: 0,
 };
 
-var caveArt = Fn( ( params ) => {
 
-	params = prepare( { ...caveArt.defaults, ...params } );
+
+var caveArt = TSLFn( ( params ) => {
+
+	params = prepare( params, defaults$B );
 
 	var pos = positionGeometry.mul( exp( params.scale ) ).add( params.seed ).toVar( );
 
@@ -643,26 +849,26 @@ var caveArt = Fn( ( params ) => {
 
 	return mix( params.background, params.color, k );
 
-} );
+}, defaults$B );
 
-
-
-caveArt.defaults = {
-	$name: 'Cave art',
+var defaults$A = {
+	$name: 'Circles',
 
 	scale: 2,
-	thinness: 2,
-	noise: 0.3,
+	variety: 1,
 
-	color: new Color( 0xD34545 ),
-	background: new Color( 0xFFF8F0 ),
+	color: new Color( 0xF0E0D0 ),
+
+	flat: 0,
 
 	seed: 0,
 };
 
-var circles = Fn( ( params ) => {
 
-	params = prepare( { ...circles.defaults, ...params } );
+
+var circles = TSLFn( ( params ) => {
+
+	params = prepare( params, defaults$A );
 
 	var pos = select( params.flat, positionGeometry, positionGeometry.normalize() );
 
@@ -692,27 +898,24 @@ var circles = Fn( ( params ) => {
 
 	return hsl( huei.add( huef ).div( 10 ), HSL.y, HSL.z );
 
-} );
+}, defaults$A );
 
-
-
-circles.defaults = {
-	$name: 'Circles',
+var defaults$z = {
+	$name: 'Clouds',
 
 	scale: 2,
-	variety: 1,
+	density: 0.5,
+	opacity: 1,
 
-	color: new Color( 0xF0E0D0 ),
-
-	flat: 0,
+	color: new Color( 0xFFFFFF ),
+	subcolor: new Color( 0xA0A0B0 ),
 
 	seed: 0,
 };
 
-var _clouds = Fn( ( params ) => {
 
-	// prepare parameters
-	params = prepare( { ...clouds.defaults, ...params } );
+
+var _clouds = Fn( ( params ) => {
 
 	const pos = positionGeometry;
 	const scale = exp( params.scale.div( 1.5 ).sub( 0.5 ) );
@@ -736,34 +939,38 @@ var _clouds = Fn( ( params ) => {
 
 
 
-var clouds = Fn( ( params ) => {
+var clouds = TSLFn( ( params ) => {
+
+	// prepare parameters
+	params = prepare( params, defaults$z );
 
 	return _clouds( params ).rgb;
 
-} );
+}, defaults$z );
 
 
 
-clouds.opacity = Fn( ( params ) => {
+clouds.opacity = TSLFn( ( params ) => {
+
+	// prepare parameters
+	params = prepare( params, defaults$z );
 
 	return _clouds( params ).a;
 
-} );
+}, defaults$z );
 
-
-
-clouds.defaults = {
-	$name: 'Clouds',
+var defaults$y = {
+	$name: 'Concrete',
+	$normalNode: true,
 
 	scale: 2,
 	density: 0.5,
-	opacity: 1,
-
-	color: new Color( 0xFFFFFF ),
-	subcolor: new Color( 0xA0A0B0 ),
+	bump: 0.5,
 
 	seed: 0,
 };
+
+
 
 var surfacePos$7 = Fn( ([ pos, normal, bump, density, seed ]) => {
 
@@ -775,9 +982,9 @@ var surfacePos$7 = Fn( ([ pos, normal, bump, density, seed ]) => {
 } );
 
 
-var concrete = Fn( ( params ) => {
+var concrete = TSLFn( ( params ) => {
 
-	params = prepare( { ...concrete.defaults, ...params } );
+	params = prepare( params, defaults$y );
 
 	var eps = 0.001;
 
@@ -798,20 +1005,22 @@ var concrete = Fn( ( params ) => {
 
 	return transformNormalToView( cross( dU, dV ).normalize() );
 
-} );
+}, defaults$y );
 
+var defaults$x = {
+	$name: 'Cork',
 
+	scale: 1,
+	straight: 1,
+	noise: 0.3,
 
-concrete.defaults = {
-	$name: 'Concrete',
-	$normalNode: true,
-
-	scale: 2,
-	density: 0.5,
-	bump: 0.5,
+	color: new Color( 0xfff0c0 ),
+	background: new Color( 0xd08060 ),
 
 	seed: 0,
 };
+
+
 
 var cellCenter$1 = Fn( ([ cell ])=>{
 
@@ -820,9 +1029,9 @@ var cellCenter$1 = Fn( ([ cell ])=>{
 } );
 
 
-var cork = Fn( ( params )=>{
+var cork = TSLFn( ( params )=>{
 
-	params = prepare( { ...cork.defaults, ...params } );
+	params = prepare( params, defaults$x );
 
 	var pos = positionGeometry.mul( exp( params.scale.div( 1.5 ).add( 1 ) ) ).add( params.seed ).toVar( );
 
@@ -867,26 +1076,26 @@ var cork = Fn( ( params )=>{
 
 	return color;
 
-} );
+}, defaults$x );
 
+var defaults$w = {
+	$name: 'Dalmatian spots',
+	$width: 260,
 
+	scale: 2,
+	density: 0.6,
 
-cork.defaults = {
-	$name: 'Cork',
-
-	scale: 1,
-	straight: 1,
-	noise: 0.3,
-
-	color: new Color( 0xfff0c0 ),
-	background: new Color( 0xd08060 ),
+	color: new Color( 0xFFFFFF ),
+	background: new Color( 0x000000 ),
 
 	seed: 0,
 };
 
-var dalmatianSpots = Fn( ( params )=>{
 
-	params = prepare( { ...dalmatianSpots.defaults, ...params } );
+
+var dalmatianSpots = TSLFn( ( params )=>{
+
+	params = prepare( params, defaults$w );
 
 	var pos = positionGeometry.mul( exp( params.scale ) ).add( params.seed ).sub( 1000 ).toVar( );
 
@@ -908,21 +1117,23 @@ var dalmatianSpots = Fn( ( params )=>{
 
 	return mix( params.background, params.color, k.clamp( 0, 1 ) );
 
-} );
+}, defaults$w );
 
-
-dalmatianSpots.defaults = {
-	$name: 'Dalmatian spots',
-	$width: 260,
+var defaults$v = {
+	$name: 'Dyson sphere',
 
 	scale: 2,
-	density: 0.6,
+	complexity: 2,
 
-	color: new Color( 0xFFFFFF ),
-	background: new Color( 0x000000 ),
+	variation: 0,
+
+	color: new Color( 0xc0d0ff ),
+	background: new Color( 0 ),
 
 	seed: 0,
 };
+
+
 
 var noisea = Fn( ([ pos ])=>{
 
@@ -975,9 +1186,9 @@ var noiseg = Fn( ([ pos ])=>{
 
 
 
-var dysonSphere = Fn( ( params )=>{
+var dysonSphere = TSLFn( ( params )=>{
 
-	params = prepare( { ...dysonSphere.defaults, ...params } );
+	params = prepare( params, defaults$v );
 
 	var pos = positionGeometry.mul( exp( params.scale.div( 2 ).add( 0.5 ) ) ).add( params.seed ).toVar( );
 
@@ -993,27 +1204,25 @@ var dysonSphere = Fn( ( params )=>{
 
 	return mix( params.background, params.color, res.x.add( 1 ).div( 5 ) );
 
-} );
+}, defaults$v );
 
-
-
-dysonSphere.defaults = {
-	$name: 'Dyson sphere',
+var defaults$u = {
+	$name: 'Entangled',
 
 	scale: 2,
-	complexity: 2,
+	density: 10,
 
-	variation: 0,
-
-	color: new Color( 0xc0d0ff ),
-	background: new Color( 0 ),
+	color: new Color( 0x002040 ),
+	background: new Color( 0xFFFFFF ),
 
 	seed: 0,
 };
 
-var entangled = Fn( ( params ) => {
 
-	params = prepare( { ...entangled.defaults, ...params } );
+
+var entangled = TSLFn( ( params ) => {
+
+	params = prepare( params, defaults$u );
 
 	var scale = exp( params.scale.div( 2 ) ).toVar( );
 	var pos = positionGeometry.add( params.seed ).toVar( );
@@ -1032,25 +1241,20 @@ var entangled = Fn( ( params ) => {
 
 	return mix( params.color, params.background, k );
 
-} );
+}, defaults$u );
 
-
-
-entangled.defaults = {
-	$name: 'Entangled',
-
+var defaults$t = {
+	$name: 'Fordite',
 	scale: 2,
-	density: 10,
-
-	color: new Color( 0x002040 ),
-	background: new Color( 0xFFFFFF ),
-
+	color: new Color( 0, 0, 0 ),
 	seed: 0,
 };
 
-var fordite = Fn( ( params ) => {
 
-	params = prepare( { ...fordite.defaults, ...params } );
+
+var fordite = TSLFn( ( params ) => {
+
+	params = prepare( params, defaults$t );
 
 	var pos = positionGeometry.mul( exp( params.scale ) ).add( params.seed ).toVar( );
 
@@ -1068,20 +1272,27 @@ var fordite = Fn( ( params ) => {
 		sin( mul( k, Math.PI, 4 ) ).mul( 0.5 ).add( 0.5 )
 	).add( params.color );
 
-} );
+}, defaults$t );
 
+var defaults$s = {
+	$name: 'Gas giant',
 
-
-fordite.defaults = {
-	$name: 'Fordite',
 	scale: 2,
-	color: new Color( 0, 0, 0 ),
+	turbulence: 0.3,
+	blur: 0.6,
+
+	colorA: new Color( 0xFFF8F0 ),
+	colorB: new Color( 0xF0E8B0 ),
+	colorC: new Color( 0xAFA0D0 ),
+
 	seed: 0,
 };
 
-var gasGiant = Fn( ( params )=>{
 
-	params = prepare( { ...gasGiant.defaults, ...params } );
+
+var gasGiant = TSLFn( ( params )=>{
+
+	params = prepare( params, defaults$s );
 
 	var scale = params.scale.div( 2 ).add( 1 ).toVar();
 	var pos = positionGeometry.mul( exp( scale ) ).add( params.seed ).toVar( );
@@ -1115,26 +1326,27 @@ var gasGiant = Fn( ( params )=>{
 
 	return color.mul( k );
 
-} );
+}, defaults$s );
 
+var defaults$r = {
+	$name: 'Grid',
 
-gasGiant.defaults = {
-	$name: 'Gas giant',
+	countU: 32,
+	countV: 16,
 
-	scale: 2,
-	turbulence: 0.3,
-	blur: 0.6,
+	thinness: 0.8,
 
-	colorA: new Color( 0xFFF8F0 ),
-	colorB: new Color( 0xF0E8B0 ),
-	colorC: new Color( 0xAFA0D0 ),
+	color: new Color( 0x000000 ),
+	background: new Color( 0xFFFFFF ),
 
-	seed: 0,
+	flat: 0,
 };
 
-var grid = Fn( ( params ) => {
 
-	params = prepare( { ...grid.defaults, ...params } );
+
+var grid = TSLFn( ( params ) => {
+
+	params = prepare( params, defaults$r );
 
 	var aspect = select( params.flat, screenSize.x.div( screenSize.y ), 2 );
 
@@ -1156,42 +1368,9 @@ var grid = Fn( ( params ) => {
 
 	return mix( params.background, params.color, k );
 
-} );
+}, defaults$r );
 
-
-
-grid.defaults = {
-	$name: 'Grid',
-
-	countU: 32,
-	countV: 16,
-
-	thinness: 0.8,
-
-	color: new Color( 0x000000 ),
-	background: new Color( 0xFFFFFF ),
-
-	flat: 0,
-};
-
-var isolines = Fn( ( params )=>{
-
-	params = prepare( { ...isolines.defaults, ...params } );
-
-	var pos = positionGeometry.mul( exp( params.scale ) ).add( params.seed ).toVar( );
-
-	var k = mx_noise_float( pos ).mul( params.density );
-
-	k = oneMinus( sin( k ) ).div( 2 );
-
-	k = smoothstep( sub( params.thinness, params.blur ), add( params.thinness, params.blur ), k );
-
-	return mix( params.color, params.background, k );
-
-} );
-
-
-isolines.defaults = {
+var defaults$q = {
 	$name: 'Isolines',
 
 	scale: 2,
@@ -1205,9 +1384,40 @@ isolines.defaults = {
 	seed: 0,
 };
 
-var karstRock = Fn( ( params )=>{
 
-	params = prepare( { ...karstRock.defaults, ...params } );
+
+var isolines = TSLFn( ( params )=>{
+
+	params = prepare( params, defaults$q );
+
+	var pos = positionGeometry.mul( exp( params.scale ) ).add( params.seed ).toVar( );
+
+	var k = mx_noise_float( pos ).mul( params.density );
+
+	k = oneMinus( sin( k ) ).div( 2 );
+
+	k = smoothstep( sub( params.thinness, params.blur ), add( params.thinness, params.blur ), k );
+
+	return mix( params.color, params.background, k );
+
+}, defaults$q );
+
+var defaults$p = {
+	$name: 'Karst rock',
+
+	scale: 2,
+
+	color: new Color( 0xFFF4F0 ),
+	background: new Color( 0xD0D0D0 ),
+
+	seed: 0,
+};
+
+
+
+var karstRock = TSLFn( ( params )=>{
+
+	params = prepare( params, defaults$p );
 
 	var pos = positionGeometry.mul( exp( params.scale ) ).add( params.seed.sin().mul( 5 ) ).toVar( );
 
@@ -1220,24 +1430,26 @@ var karstRock = Fn( ( params )=>{
 
 	return mix( params.background, params.color, k ).mul( k.pow( 0.1 ) );
 
-} );
+}, defaults$p );
 
+var defaults$o = {
+	$name: 'Marble',
 
+	scale: 1.2,
+	thinness: 5,
+	noise: 0.3,
 
-karstRock.defaults = {
-	$name: 'Karst rock',
-
-	scale: 2,
-
-	color: new Color( 0xFFF4F0 ),
-	background: new Color( 0xD0D0D0 ),
+	color: new Color( 0x4545D3 ),
+	background: new Color( 0xF0F8FF ),
 
 	seed: 0,
 };
 
-var marble = Fn( ( params ) => {
 
-	params = prepare( { ...marble.defaults, ...params } );
+
+var marble = TSLFn( ( params ) => {
+
+	params = prepare( params, defaults$o );
 
 	var pos = positionGeometry.mul( exp( params.scale ) ).add( params.seed ).toVar( );
 
@@ -1275,26 +1487,28 @@ var marble = Fn( ( params ) => {
 
 	return mix( params.background, params.color, k );
 
-} );
+}, defaults$o );
 
+var defaults$n = {
+	$name: 'Neon Lights',
 
+	scale: 1.5,
+	thinness: 0.8,
+	mode: 0, // 0=additive, 1=subtractive
 
-marble.defaults = {
-	$name: 'Marble',
-
-	scale: 1.2,
-	thinness: 5,
-	noise: 0.3,
-
-	color: new Color( 0x4545D3 ),
-	background: new Color( 0xF0F8FF ),
+	colorA: new Color( 0xFF0000 ),
+	colorB: new Color( 0x00FF00 ),
+	colorC: new Color( 0x0000FF ),
+	background: new Color( 0x000000 ),
 
 	seed: 0,
 };
 
-var neonLights = Fn( ( params ) => {
 
-	params = prepare( { ...neonLights.defaults, ...params } );
+
+var neonLights = TSLFn( ( params ) => {
+
+	params = prepare( params, defaults$n );
 
 	var pos = positionGeometry;//.mul( exp( params.scale ) ).add( params.seed ).toVar( );
 
@@ -1338,28 +1552,24 @@ var neonLights = Fn( ( params ) => {
 
 	return color;
 
-} );
+}, defaults$n );
 
+var defaults$m = {
+	$name: 'Photosphere',
 
+	scale: 2,
 
-neonLights.defaults = {
-	$name: 'Neon Lights',
-
-	scale: 1.5,
-	thinness: 0.8,
-	mode: 0, // 0=additive, 1=subtractive
-
-	colorA: new Color( 0xFF0000 ),
-	colorB: new Color( 0x00FF00 ),
-	colorC: new Color( 0x0000FF ),
-	background: new Color( 0x000000 ),
+	color: new Color( 0xFFFF00 ),
+	background: new Color( 0xFF0000 ),
 
 	seed: 0,
 };
 
-var photosphere = Fn( ( params ) => {
 
-	params = prepare( { ...photosphere.defaults, ...params } );
+
+var photosphere = TSLFn( ( params ) => {
+
+	params = prepare( params, defaults$m );
 
 	var scale = exp( params.scale.add( 1 ) ).toVar( );
 	var pos = positionGeometry.toVar( );
@@ -1378,24 +1588,37 @@ var photosphere = Fn( ( params ) => {
 
 	return mix( params.background, params.color, k );
 
-} );
+}, defaults$m );
 
-
-
-photosphere.defaults = {
-	$name: 'Photosphere',
+var defaults$l = {
+	$name: 'Planet',
 
 	scale: 2,
 
-	color: new Color( 0xFFFF00 ),
-	background: new Color( 0xFF0000 ),
+	iterations: 5,
+
+	levelSea: 0.3,
+	levelMountain: 0.7,
+
+	balanceWater: 0.3,
+	balanceSand: 0.2,
+	balanceSnow: 0.8,
+
+	colorDeep: new Color( 0x123a59 ).convertLinearToSRGB(), // SteelBlue
+	colorShallow: new Color( 0x87CEEB ).convertLinearToSRGB(), // SkyBlue
+	colorBeach: new Color( 0xFFFACD ).convertLinearToSRGB(), // LemonChiffon
+	colorGrass: new Color( 0x3CB371 ).convertLinearToSRGB(), // MediumSeaGreen
+	colorForest: new Color( 0x003000 ).convertLinearToSRGB(), // Dark green
+	colorSnow: new Color( 0xF0FFFF ).convertLinearToSRGB(), // Azure
 
 	seed: 0,
 };
 
-var planet = Fn( ( params )=>{
 
-	params = prepare( { ...planet.defaults, ...params } );
+
+var planet = TSLFn( ( params )=>{
+
+	params = prepare( params, defaults$l );
 
 	var k = float( 0 ).toVar(),
 		sum = float( 0 ).toVar(),
@@ -1482,41 +1705,30 @@ var planet = Fn( ( params )=>{
 
 	return color;
 
-} );
+}, defaults$l );
 
+var defaults$k = {
+	$name: 'Polka dots',
 
+	count: 2,
+	size: 0.5,
+	blur: 0.25,
 
-planet.defaults = {
-	$name: 'Planet',
+	color: new Color( 0x000000 ),
+	background: new Color( 0xFFFFFF ),
 
-	scale: 2,
-
-	iterations: 5,
-
-	levelSea: 0.3,
-	levelMountain: 0.7,
-
-	balanceWater: 0.3,
-	balanceSand: 0.2,
-	balanceSnow: 0.8,
-
-	colorDeep: new Color( 0x123a59 ).convertLinearToSRGB(), // SteelBlue
-	colorShallow: new Color( 0x87CEEB ).convertLinearToSRGB(), // SkyBlue
-	colorBeach: new Color( 0xFFFACD ).convertLinearToSRGB(), // LemonChiffon
-	colorGrass: new Color( 0x3CB371 ).convertLinearToSRGB(), // MediumSeaGreen
-	colorForest: new Color( 0x003000 ).convertLinearToSRGB(), // Dark green
-	colorSnow: new Color( 0xF0FFFF ).convertLinearToSRGB(), // Azure
-
-	seed: 0,
+	flat: 0,
 };
+
+
 
 var goldenRatio = ( 1+5**0.5 )/2;
 
 
 
-var polkaDots = Fn( ( params ) => {
+var polkaDots = TSLFn( ( params ) => {
 
-	params = prepare( { ...polkaDots.defaults, ...params } );
+	params = prepare( params, defaults$k );
 
 	var dist = float( 1 ).toVar();
 
@@ -1560,26 +1772,28 @@ var polkaDots = Fn( ( params ) => {
 
 	return mix( params.color, params.background, k );
 
-} );
+}, defaults$k );
 
+var defaults$j = {
+	$name: 'Processed wood',
+	$width: 260,
 
+	scale: 2,
+	length: 4,
+	strength: 0.3,
+	angle: 0,
 
-polkaDots.defaults = {
-	$name: 'Polka dots',
+	color: new Color( 0x702020 ),
+	background: new Color( 0xF0D0A0 ),
 
-	count: 2,
-	size: 0.5,
-	blur: 0.25,
-
-	color: new Color( 0x000000 ),
-	background: new Color( 0xFFFFFF ),
-
-	flat: 0,
+	seed: 0,
 };
 
-var processedWood = Fn( ( params )=>{
 
-	params = prepare( { ...processedWood.defaults, ...params } );
+
+var processedWood = TSLFn( ( params )=>{
+
+	params = prepare( params, defaults$j );
 
 	var angle = radians( params.angle ).toVar();
 	var posLocal = vec3(
@@ -1598,23 +1812,23 @@ var processedWood = Fn( ( params )=>{
 
 	return mix( params.color, params.background, k );
 
-} );
+}, defaults$j );
 
+var defaults$i = {
+	$name: 'Protozoa',
 
-processedWood.defaults = {
-	$name: 'Processed wood',
-	$width: 260,
+	scale: 1.5,
+	fat: 0.7,
+	amount: 0.4,
 
-	scale: 2,
-	length: 4,
-	strength: 0.3,
-	angle: 0,
-
-	color: new Color( 0x702020 ),
-	background: new Color( 0xF0D0A0 ),
+	color: new Color( 0xA0A0A0 ),
+	subcolor: new Color( 0xE0E8FF ),
+	background: new Color( 0xF0F8FF ),
 
 	seed: 0,
 };
+
+
 
 var pnoise = Fn( ([ pos, fat ])=>{
 
@@ -1624,9 +1838,9 @@ var pnoise = Fn( ([ pos, fat ])=>{
 
 
 
-var protozoa = Fn( ( params )=>{
+var protozoa = TSLFn( ( params )=>{
 
-	params = prepare( { ...protozoa.defaults, ...params } );
+	params = prepare( params, defaults$i );
 
 	var pos = positionGeometry.mul( exp( params.scale.sub( 1 ) ) ).add( params.seed ).toVar( );
 
@@ -1659,22 +1873,23 @@ var protozoa = Fn( ( params )=>{
 
 	return mix( params.background, mix( params.color, params.subcolor, n2.mul( 0.1 ) ), n1 );
 
-} );
+}, defaults$i );
 
+var defaults$h = {
+	$name: 'Rotator',
+	$positionNode: true,
+	$selectorPlanar: true,
 
-protozoa.defaults = {
-	$name: 'Protozoa',
+	angles: new Vector3( 0.4, -0.6, 0 ),
+	center: new Vector3( 0, 0, 0 ),
 
-	scale: 1.5,
-	fat: 0.7,
-	amount: 0.4,
+	selectorCenter: new Vector3( 0, 0, 0 ),
+	selectorAngles: new Vector2( 0, 0 ),
+	selectorWidth: 2,
 
-	color: new Color( 0xA0A0A0 ),
-	subcolor: new Color( 0xE0E8FF ),
-	background: new Color( 0xF0F8FF ),
-
-	seed: 0,
 };
+
+
 
 var surfacePos$6 = Fn( ([ pos, params ])=>{
 
@@ -1690,19 +1905,19 @@ var surfacePos$6 = Fn( ([ pos, params ])=>{
 
 
 
-var rotator = Fn( ( params )=>{
+var rotator = TSLFn( ( params )=>{
 
-	params = prepare( { ...rotator.defaults, ...params } );
+	params = prepare( params, defaults$h );
 
 	return surfacePos$6( positionGeometry, params );
 
-} );
+}, defaults$h );
 
 
 
-rotator.normal = Fn( ( params ) => {
+rotator.normal = TSLFn( ( params ) => {
 
-	params = prepare( { ...rotator.defaults, ...params } );
+	params = prepare( params, defaults$h );
 
 	var eps = 0.01;
 
@@ -1720,23 +1935,20 @@ rotator.normal = Fn( ( params ) => {
 
 	return transformNormalToView( cross( dU, dV ).normalize() );
 
-} );
+}, defaults$h );
 
+var defaults$g = {
+	$name: 'Rough clay',
+	$normalNode: true,
 
+	scale: 2,
+	bump: 0.5,
+	curvature: 0.2,
 
-rotator.defaults = {
-	$name: 'Rotator',
-	$positionNode: true,
-	$selectorPlanar: true,
-
-	angles: new Vector3( 0.4, -0.6, 0 ),
-	center: new Vector3( 0, 0, 0 ),
-
-	selectorCenter: new Vector3( 0, 0, 0 ),
-	selectorAngles: new Vector2( 0, 0 ),
-	selectorWidth: 2,
-
+	seed: 0,
 };
+
+
 
 var surfacePos$5 = Fn( ([ pos, normal, bump, curvature ]) => {
 
@@ -1747,9 +1959,11 @@ var surfacePos$5 = Fn( ([ pos, normal, bump, curvature ]) => {
 
 } );
 
-var roughClay = Fn( ( params ) => {
 
-	params = prepare( { ...roughClay.defaults, ...params } );
+
+var roughClay = TSLFn( ( params ) => {
+
+	params = prepare( params, defaults$g );
 
 	var eps = 0.001;
 
@@ -1770,24 +1984,28 @@ var roughClay = Fn( ( params ) => {
 	return transformNormalToView( cross( dU, dV ).normalize() );
 
 
-} );
+}, defaults$g );
 
+var defaults$f = {
+	$name: 'Runny eggs',
 
+	scale: 1,
 
-roughClay.defaults = {
-	$name: 'Rough clay',
-	$normalNode: true,
+	sizeYolk: 0.2,
+	sizeWhite: 0.7,
 
-	scale: 2,
-	bump: 0.5,
-	curvature: 0.2,
+	colorYolk: new Color( 'orange' ),
+	colorWhite: new Color( 'white' ),
+	colorBackground: new Color( 'lightgray' ),
 
 	seed: 0,
 };
 
-var runnyEggs = Fn( ( params ) => {
 
-	params = prepare( { ...runnyEggs.defaults, ...params } );
+
+var runnyEggs = TSLFn( ( params ) => {
+
+	params = prepare( params, defaults$f );
 
 	var pos = positionGeometry.mul( exp( params.scale.div( 1 ) ) ).add( params.seed.sin().mul( 10 ) ).toVar( );
 
@@ -1800,7 +2018,7 @@ var runnyEggs = Fn( ( params ) => {
 
 	return mix( params.colorBackground, mix( params.colorWhite, params.colorYolk, yolks ), whites );
 
-} );
+}, defaults$f );
 
 
 var surfacePos$4 = Fn( ([ pos, normal, bump, sizeYolk, sizeWhite ]) => {
@@ -1816,9 +2034,9 @@ var surfacePos$4 = Fn( ([ pos, normal, bump, sizeYolk, sizeWhite ]) => {
 } );
 
 
-runnyEggs.normal = Fn( ( params ) => {
+runnyEggs.normal = TSLFn( ( params ) => {
 
-	params = prepare( { ...runnyEggs.defaults, ...params } );
+	params = prepare( params, defaults$f );
 
 	var eps = 0.001;
 	var bump = 0.05;
@@ -1840,12 +2058,12 @@ runnyEggs.normal = Fn( ( params ) => {
 
 	return transformNormalToView( cross( dU, dV ).normalize() );
 
-} );
+}, defaults$f );
 
 
-runnyEggs.roughness = Fn( ( params ) => {
+runnyEggs.roughness = TSLFn( ( params ) => {
 
-	params = prepare( { ...runnyEggs.defaults, ...params } );
+	params = prepare( params, defaults$f );
 
 	var pos = positionGeometry.mul( exp( params.scale.div( 1 ) ) ).add( params.seed.sin().mul( 10 ) ).toVar( );
 
@@ -1856,23 +2074,25 @@ runnyEggs.roughness = Fn( ( params ) => {
 
 	return yolks;
 
-} );
+}, defaults$f );
 
+var defaults$e = {
+	$name: 'rust',
 
-runnyEggs.defaults = {
-	$name: 'Runny eggs',
+	scale: 2,
+	iterations: 8,
+	amount: -0.3,
+	opacity: 0.5,
+	noise: 0.5,
+	noiseScale: 0.5,
 
-	scale: 1,
-
-	sizeYolk: 0.2,
-	sizeWhite: 0.7,
-
-	colorYolk: new Color( 'orange' ),
-	colorWhite: new Color( 'white' ),
-	colorBackground: new Color( 'lightgray' ),
+	color: new Color( 0xC08000 ),
+	background: new Color( 0x000020 ),
 
 	seed: 0,
 };
+
+
 
 var _rust = Fn( ( params )=>{
 
@@ -1898,9 +2118,9 @@ var _rust = Fn( ( params )=>{
 } );
 
 
-var rust = Fn( ( params )=>{
+var rust = TSLFn( ( params )=>{
 
-	params = prepare( { ...rust.defaults, ...params } );
+	params = prepare( params, defaults$e );
 
 	var k = _rust( params ).mul( 1.25 ).pow( 0.5 );
 
@@ -1910,40 +2130,36 @@ var rust = Fn( ( params )=>{
 
 	return mix( params.color, params.background, k );
 
-} );
+}, defaults$e );
 
 
 
-rust.opacity = Fn( ( params )=>{
+rust.opacity = TSLFn( ( params )=>{
 
-	params = prepare( { ...rust.defaults, ...params } );
+	params = prepare( params, defaults$e );
 
 	var k = _rust( params ).mul( params.opacity.add( 0.2 ) );
 
 	return k.oneMinus();
 
-} );
+}, defaults$e );
 
-
-rust.defaults = {
-	$name: 'rust',
+var defaults$d = {
+	$name: 'Satin',
 
 	scale: 2,
-	iterations: 8,
-	amount: -0.3,
-	opacity: 0.5,
-	noise: 0.5,
-	noiseScale: 0.5,
 
-	color: new Color( 0xC08000 ),
-	background: new Color( 0x000020 ),
+	color: new Color( 0x7080FF ),
+	background: new Color( 0x000050 ),
 
 	seed: 0,
 };
 
-var satin = Fn( ( params ) => {
 
-	params = prepare( { ...satin.defaults, ...params } );
+
+var satin = TSLFn( ( params ) => {
+
+	params = prepare( params, defaults$d );
 
 	var pos = positionGeometry.toVar( );
 
@@ -1961,7 +2177,7 @@ var satin = Fn( ( params ) => {
 
 	return mix( params.background, params.color, k );
 
-} );
+}, defaults$d );
 
 
 
@@ -1975,6 +2191,22 @@ satin.defaults = {
 
 	seed: 0,
 };
+
+var defaults$c = {
+	$name: 'Scaler',
+	$positionNode: true,
+	$selectorPlanar: true,
+
+	scales: new Vector3( 0.01, 0.9, 1.7 ),
+	center: new Vector3( 0, 0, 0 ),
+
+	selectorCenter: new Vector3( 0, 0, 0 ),
+	selectorAngles: new Vector2( 0, 0 ),
+	selectorWidth: 2,
+
+};
+
+
 
 var surfacePos$3 = Fn( ([ pos, params ])=>{
 
@@ -1990,19 +2222,19 @@ var surfacePos$3 = Fn( ([ pos, params ])=>{
 
 
 
-var scaler = Fn( ( params )=>{
+var scaler = TSLFn( ( params )=>{
 
-	params = prepare( { ...scaler.defaults, ...params } );
+	params = prepare( params, defaults$c );
 
 	return surfacePos$3( positionGeometry, params );
 
-} );
+}, defaults$c );
 
 
 
-scaler.normal = Fn( ( params ) => {
+scaler.normal = TSLFn( ( params ) => {
 
-	params = prepare( { ...scaler.defaults, ...params } );
+	params = prepare( params, defaults$c );
 
 	var eps = 0.01;
 
@@ -2020,27 +2252,25 @@ scaler.normal = Fn( ( params ) => {
 
 	return transformNormalToView( cross( dU, dV ).normalize() );
 
-} );
+}, defaults$c );
 
+var defaults$b = {
+	$name: 'Scepter head',
 
+	xFactor: 10,
+	yFactor: 22,
+	zFactor: 10,
 
-scaler.defaults = {
-	$name: 'Scaler',
-	$positionNode: true,
-	$selectorPlanar: true,
-
-	scales: new Vector3( 0.01, 0.9, 1.7 ),
-	center: new Vector3( 0, 0, 0 ),
-
-	selectorCenter: new Vector3( 0, 0, 0 ),
-	selectorAngles: new Vector2( 0, 0 ),
-	selectorWidth: 2,
-
+	colorRim: new Color( 0xFFFFFF ),
+	colorA: new Color( 0x70E0FF ),
+	colorB: new Color( 0x3000FF ),
 };
 
-var scepterHead = Fn( ( params ) => {
 
-	params = prepare( { ...scepterHead.defaults, ...params } );
+
+var scepterHead = TSLFn( ( params ) => {
+
+	params = prepare( params, defaults$b );
 
 	var pos = positionGeometry;
 
@@ -2076,25 +2306,25 @@ var scepterHead = Fn( ( params ) => {
 
 	return mix( color1, color2, remapClamp( max( dx, max( dy, dz ) ), 55-10, 55+10 ) );
 
-} );
+}, defaults$b );
 
+var defaults$a = {
+	$name: 'Scream',
 
+	scale: 2,
+	variety: 1,
 
-scepterHead.defaults = {
-	$name: 'Scepter head',
+	color: new Color( 0xF0F060 ),
+	background: new Color( 0xD09090 ),
 
-	xFactor: 10,
-	yFactor: 22,
-	zFactor: 10,
-
-	colorRim: new Color( 0xFFFFFF ),
-	colorA: new Color( 0x70E0FF ),
-	colorB: new Color( 0x3000FF ),
+	seed: 0,
 };
 
-var scream = Fn( ( params ) => {
 
-	params = prepare( { ...scream.defaults, ...params } );
+
+var scream = TSLFn( ( params ) => {
+
+	params = prepare( params, defaults$a );
 
 	var pos = positionGeometry.mul( exp( params.scale ) ).add( params.seed ).toVar( );
 
@@ -2110,7 +2340,7 @@ var scream = Fn( ( params ) => {
 
 	return hsl( add( HSL.x, params.variety.mul( sin( k.mul( Math.PI ) ) ).mul( 0.5 ) ), HSL.y, HSL.z );
 
-} );
+}, defaults$a );
 
 
 
@@ -2126,9 +2356,24 @@ scream.defaults = {
 	seed: 0,
 };
 
-var simplexNoise = Fn( ( params ) => {
+var defaults$9 = {
+	$name: 'Simplex noise',
 
-	params = prepare( { ...simplexNoise.defaults, ...params } );
+	scale: 2,
+	balance: 0,
+	contrast: 0,
+
+	color: new Color( 0xFFFFFF ),
+	background: new Color( 0x000000 ),
+
+	seed: 0,
+};
+
+
+
+var simplexNoise = TSLFn( ( params ) => {
+
+	params = prepare( params, defaults$9 );
 
 	var pos = positionGeometry.mul( exp( params.scale ) ).add( params.seed );
 
@@ -2136,7 +2381,7 @@ var simplexNoise = Fn( ( params ) => {
 
 	return mix( params.background, params.color, k );
 
-} );
+}, defaults$9 );
 
 
 
@@ -2153,9 +2398,24 @@ simplexNoise.defaults = {
 	seed: 0,
 };
 
-var stars = Fn( ( params ) => {
+var defaults$8 = {
+	$name: 'Stars',
 
-	params = prepare( { ...stars.defaults, ...params } );
+	scale: 2,
+	density: 2,
+	variation: 0,
+
+	color: new Color( 0xfff5f0 ),
+	background: new Color( 0x000060 ),
+
+	seed: 0,
+};
+
+
+
+var stars = TSLFn( ( params ) => {
+
+	params = prepare( params, defaults$8 );
 
 	var pos = positionGeometry.mul( exp( params.scale.div( 2 ).add( 3 ) ) ).add( params.seed ).toVar( );
 
@@ -2169,22 +2429,17 @@ var stars = Fn( ( params ) => {
 
 	return hsl( add( col.x, dS ), col.y, col.z );
 
-} );
+}, defaults$8 );
 
+var defaults$7 = {
+	$name: 'Supersphere',
+	$positionNode: true,
 
+	exponent: 3,
 
-stars.defaults = {
-	$name: 'Stars',
-
-	scale: 2,
-	density: 2,
-	variation: 0,
-
-	color: new Color( 0xfff5f0 ),
-	background: new Color( 0x000060 ),
-
-	seed: 0,
 };
+
+
 
 var surfacePos$2 = Fn( ([ pos, params ])=>{
 
@@ -2202,19 +2457,19 @@ var surfacePos$2 = Fn( ([ pos, params ])=>{
 
 
 
-var supersphere = Fn( ( params )=>{
+var supersphere = TSLFn( ( params )=>{
 
-	params = prepare( { ...supersphere.defaults, ...params } );
+	params = prepare( params, defaults$7 );
 
 	return surfacePos$2( positionGeometry, params );
 
-} );
+}, defaults$7 );
 
 
 
-supersphere.normal = Fn( ( params ) => {
+supersphere.normal = TSLFn( ( params ) => {
 
-	params = prepare( { ...supersphere.defaults, ...params } );
+	params = prepare( params, defaults$7 );
 
 	var eps = 0.01;
 
@@ -2232,21 +2487,28 @@ supersphere.normal = Fn( ( params ) => {
 
 	return transformNormalToView( cross( dU, dV ).normalize() );
 
-} );
+}, defaults$7 );
 
+var defaults$6 = {
+	$name: 'Tiger fur',
 
+	scale: 2,
+	length: 4,
+	blur: 0.3,
+	strength: 0.3,
+	hairs: 0.5,
 
-supersphere.defaults = {
-	$name: 'Supersphere',
-	$positionNode: true,
+	color: new Color( 0xFFAA00 ),
+	bottomColor: new Color( 0xFFFFEE ),
 
-	exponent: 3,
-
+	seed: 0,
 };
 
-var tigerFur = Fn( ( params )=>{
 
-	params = prepare( { ...tigerFur.defaults, ...params } );
+
+var tigerFur = TSLFn( ( params )=>{
+
+	params = prepare( params, defaults$6 );
 
 	var scale = params.scale.div( 2 ).add( 1 ).toVar();
 	var pos = positionGeometry.mul( exp( scale ) ).add( params.seed ).toVar( );
@@ -2261,7 +2523,7 @@ var tigerFur = Fn( ( params )=>{
 
 	return mix( params.bottomColor, params.color, n ).mul( k );
 
-} );
+}, defaults$6 );
 
 
 tigerFur.defaults = {
@@ -2279,6 +2541,21 @@ tigerFur.defaults = {
 	seed: 0,
 };
 
+var defaults$5 = {
+	$name: 'Translator',
+	$positionNode: true,
+	$selectorPlanar: true,
+
+	distance: new Vector3( -0.5, 0, 0.2 ),
+
+	selectorCenter: new Vector3( 0, 0, 0 ),
+	selectorAngles: new Vector2( 0, 0 ),
+	selectorWidth: 0.7,
+
+};
+
+
+
 var surfacePos$1 = Fn( ([ pos, params ])=>{
 
 	var zone = selectPlanar( pos, params.selectorAngles, params.selectorCenter, params.selectorWidth );
@@ -2291,19 +2568,19 @@ var surfacePos$1 = Fn( ([ pos, params ])=>{
 
 
 
-var translator = Fn( ( params )=>{
+var translator = TSLFn( ( params )=>{
 
-	params = prepare( { ...translator.defaults, ...params } );
+	params = prepare( params, defaults$5 );
 
 	return surfacePos$1( positionGeometry, params );
 
-} );
+}, defaults$5 );
 
 
 
-translator.normal = Fn( ( params ) => {
+translator.normal = TSLFn( ( params ) => {
 
-	params = prepare( { ...translator.defaults, ...params } );
+	params = prepare( params, defaults$5 );
 
 	var eps = 0.01;
 
@@ -2321,22 +2598,22 @@ translator.normal = Fn( ( params ) => {
 
 	return transformNormalToView( cross( dU, dV ).normalize() );
 
-} );
+}, defaults$5 );
 
+var defaults$4 = {
+	$name: 'Voronoi cells',
 
+	scale: 2,
+	variation: 0,
+	facet: 0,
 
-translator.defaults = {
-	$name: 'Translator',
-	$positionNode: true,
-	$selectorPlanar: true,
+	color: new Color( 0 ),
+	background: new Color( 0xc0d0ff ),
 
-	distance: new Vector3( -0.5, 0, 0.2 ),
-
-	selectorCenter: new Vector3( 0, 0, 0 ),
-	selectorAngles: new Vector2( 0, 0 ),
-	selectorWidth: 0.7,
-
+	seed: 0,
 };
+
+
 
 var cellCenter = Fn( ([ cell ])=>{
 
@@ -2345,9 +2622,9 @@ var cellCenter = Fn( ([ cell ])=>{
 } );
 
 
-var voronoiCells = Fn( ( params )=>{
+var voronoiCells = TSLFn( ( params )=>{
 
-	params = prepare( { ...voronoiCells.defaults, ...params } );
+	params = prepare( params, defaults$4 );
 
 	var pos = positionGeometry.mul( exp( params.scale.div( 2 ).add( 0.5 ) ) ).add( params.seed ).toVar( );
 
@@ -2388,22 +2665,20 @@ var voronoiCells = Fn( ( params )=>{
 
 	return mix( color, mix( color, randomColor, params.variation ), params.variation );
 
-} );
+}, defaults$4 );
 
+var defaults$3 = {
+	$name: 'Water Drops',
+	$normalNode: true,
 
-
-voronoiCells.defaults = {
-	$name: 'Voronoi cells',
-
-	scale: 2,
-	variation: 0,
-	facet: 0,
-
-	color: new Color( 0 ),
-	background: new Color( 0xc0d0ff ),
+	scale: 1.4,
+	density: 0.5,
+	bump: 0.6,
 
 	seed: 0,
 };
+
+
 
 var surfacePos = Fn( ([ pos, normal, bump, density, seed ]) => {
 
@@ -2415,9 +2690,10 @@ var surfacePos = Fn( ([ pos, normal, bump, density, seed ]) => {
 } );
 
 
-var waterDrops = Fn( ( params ) => {
 
-	params = prepare( { ...waterDrops.defaults, ...params } );
+var waterDrops = TSLFn( ( params ) => {
+
+	params = prepare( params, defaults$3 );
 
 	var eps = 0.001;
 
@@ -2439,24 +2715,29 @@ var waterDrops = Fn( ( params ) => {
 
 	return transformNormalToView( cross( dU, dV ).normalize() );
 
-} );
+}, defaults$3 );
 
+var defaults$2 = {
+	$name: 'Watermelon',
 
+	scale: 2,
+	stripes: 12,
+	variation: 0.5,
+	noise: 0.25,
 
-waterDrops.defaults = {
-	$name: 'Water Drops',
-	$normalNode: true,
+	color: new Color( 'yellowgreen' ),
+	background: new Color( 'darkgreen' ),
 
-	scale: 1.4,
-	density: 0.5,
-	bump: 0.6,
+	flat: 0,
 
 	seed: 0,
 };
 
-var watermelon = Fn( ( params )=>{
 
-	params = prepare( { ...watermelon.defaults, ...params } );
+
+var watermelon = TSLFn( ( params )=>{
+
+	params = prepare( params, defaults$2 );
 
 	var variation = select( params.flat, params.variation.mul( 0.85 ).add( 0.15 ), params.variation );
 
@@ -2482,29 +2763,26 @@ var watermelon = Fn( ( params )=>{
 
 	return color;
 
-} );
+}, defaults$2 );
 
-
-
-watermelon.defaults = {
-	$name: 'Watermelon',
-
-	scale: 2,
-	stripes: 12,
-	variation: 0.5,
-	noise: 0.25,
-
-	color: new Color( 'yellowgreen' ),
-	background: new Color( 'darkgreen' ),
-
-	flat: 0,
-
+var defaults$1 = {
+	$name: 'Wood',
+	scale: 2.5,
+	rings: 4.5,
+	length: 1,
+	angle: 0,
+	fibers: 0.3,
+	fibersDensity: 10,
+	color: new Color( 0.8, 0.4, 0 ),
+	background: new Color( 0.4, 0.1, 0 ),
 	seed: 0,
 };
 
-var wood = Fn( ( params ) => {
 
-	params = prepare( { ...wood.defaults, ...params } );
+
+var wood = TSLFn( ( params ) => {
+
+	params = prepare( params, defaults$1 );
 
 	var angle = radians( params.angle ).toVar();
 	var posLocal = vec3(
@@ -2537,26 +2815,28 @@ var wood = Fn( ( params ) => {
 
 	return mix( params.color, params.background, mix( k, kk, params.fibers ) );
 
-} );
+}, defaults$1 );
 
+var defaults = {
+	$name: 'Zebra lines',
 
+	scale: 2,
+	thinness: 0.5,
+	phi: 0,
+	theta: 0,
 
-wood.defaults = {
-	$name: 'Wood',
-	scale: 2.5,
-	rings: 4.5,
-	length: 1,
-	angle: 0,
-	fibers: 0.3,
-	fibersDensity: 10,
-	color: new Color( 0.8, 0.4, 0 ),
-	background: new Color( 0.4, 0.1, 0 ),
-	seed: 0,
+	color: new Color( 0x0 ),
+	background: new Color( 0xFFFFFF ),
+
+	flat: 0,
+	// no seed for zebra lines
 };
 
-var zebraLines = Fn( ( params ) => {
 
-	params = prepare( { ...zebraLines.defaults, ...params } );
+
+var zebraLines = TSLFn( ( params ) => {
+
+	params = prepare( params, defaults );
 
 	var pos = select( params.flat, positionGeometry, positionGeometry.normalize() ).toVar( );
 
@@ -2572,23 +2852,6 @@ var zebraLines = Fn( ( params ) => {
 
 	return mix( params.background, params.color, k );
 
-} );
+}, defaults );
 
-
-
-zebraLines.defaults = {
-	$name: 'Zebra lines',
-
-	scale: 2,
-	thinness: 0.5,
-	phi: 0,
-	theta: 0,
-
-	color: new Color( 0x0 ),
-	background: new Color( 0xFFFFFF ),
-
-	flat: 0,
-	// no seed for zebra lines
-};
-
-export { applyEuler, camouflage, caveArt, circles, clouds, concrete, cork, dalmatianSpots, dynamic, dysonSphere, entangled, fordite, gasGiant, grid, hideFallbackWarning, hsl, isolines, karstRock, marble, matRotX, matRotY, matRotYXZ, matRotZ, matScale, matTrans, neonLights, noised, normalVector, overlayPlanar, photosphere, planet, polkaDots, prepare, processedWood, protozoa, remapExp, rotator, roughClay, runnyEggs, rust, satin, scaler, scepterHead, scream, selectPlanar, showFallbackWarning, simplexNoise, spherical, stars, supersphere, tigerFur, toHsl, translator, vnoise, voronoiCells, waterDrops, watermelon, wood, zebraLines };
+export { TSLFn, applyEuler, camouflage, caveArt, circles, clouds, concrete, cork, dalmatianSpots, dynamic, dysonSphere, entangled, fordite, gasGiant, grid, hideFallbackWarning, hsl, isolines, karstRock, marble, matRotX, matRotY, matRotYXZ, matRotZ, matScale, matTrans, neonLights, noised, normalVector, overlayPlanar, photosphere, planet, polkaDots, prepare, processedWood, protozoa, remapExp, rotator, roughClay, runnyEggs, rust, satin, scaler, scepterHead, scream, selectPlanar, showFallbackWarning, simplexNoise, spherical, stars, supersphere, tigerFur, toHsl, translator, vnoise, voronoiCells, waterDrops, watermelon, wood, zebraLines };

@@ -4,14 +4,30 @@
 
 
 import { Color } from "three";
-import { abs, add, div, equirectUV, Fn, min, mix, mul, oneMinus, positionGeometry, pow, remapClamp, round, screenSize, screenUV, select, sin, smoothstep, sub } from 'three/tsl';
-import { prepare } from './tsl-utils.js';
+import { abs, add, div, equirectUV, min, mix, mul, oneMinus, positionGeometry, pow, remapClamp, round, screenSize, screenUV, select, sin, smoothstep, sub } from 'three/tsl';
+import { prepare, TSLFn } from './tsl-utils.js';
 
 
 
-var grid = Fn( ( params ) => {
+var defaults = {
+	$name: 'Grid',
 
-	params = prepare( { ...grid.defaults, ...params } );
+	countU: 32,
+	countV: 16,
+
+	thinness: 0.8,
+
+	color: new Color( 0x000000 ),
+	background: new Color( 0xFFFFFF ),
+
+	flat: 0,
+};
+
+
+
+var grid = TSLFn( ( params ) => {
+
+	params = prepare( params, defaults );
 
 	var aspect = select( params.flat, screenSize.x.div( screenSize.y ), 2 );
 
@@ -33,23 +49,7 @@ var grid = Fn( ( params ) => {
 
 	return mix( params.background, params.color, k );
 
-} );
-
-
-
-grid.defaults = {
-	$name: 'Grid',
-
-	countU: 32,
-	countV: 16,
-
-	thinness: 0.8,
-
-	color: new Color( 0x000000 ),
-	background: new Color( 0xFFFFFF ),
-
-	flat: 0,
-};
+}, defaults );
 
 
 
