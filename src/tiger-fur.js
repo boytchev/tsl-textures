@@ -13,7 +13,7 @@ var defaults = {
 	$name: 'Tiger fur',
 
 	scale: 2,
-	length: 4,
+	lengths: 4,
 	blur: 0.3,
 	strength: 0.3,
 	hairs: 0.5,
@@ -33,7 +33,7 @@ var tigerFur = TSLFn( ( params )=>{
 	var scale = params.scale.div( 2 ).add( 1 ).toVar();
 	var pos = positionGeometry.mul( exp( scale ) ).add( params.seed ).toVar( );
 
-	var len = params.length.add( 5 ).reciprocal().toVar();
+	var len = params.lengths.add( 5 ).reciprocal().toVar();
 	var hairs = params.hairs.mul( 0.3 ).toVar();
 	var k = noise( pos.mul( scale, vec3( 1, len, len ) ) );
 	k = k.add( noise( pos.mul( vec3( 25, 1, 1 ) ) ).add( 1 ).mul( hairs ) );
@@ -44,22 +44,6 @@ var tigerFur = TSLFn( ( params )=>{
 	return mix( params.bottomColor, params.color, n ).mul( k );
 
 }, defaults );
-
-
-tigerFur.defaults = {
-	$name: 'Tiger fur',
-
-	scale: 2,
-	length: 4,
-	blur: 0.3,
-	strength: 0.3,
-	hairs: 0.5,
-
-	color: new Color( 0xFFAA00 ),
-	bottomColor: new Color( 0xFFFFEE ),
-
-	seed: 0,
-};
 
 
 

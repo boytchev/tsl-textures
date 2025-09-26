@@ -13,7 +13,7 @@ var defaults = {
 	$name: 'Wood',
 	scale: 2.5,
 	rings: 4.5,
-	length: 1,
+	lengths: 1,
 	angle: 0,
 	fibers: 0.3,
 	fibersDensity: 10,
@@ -37,7 +37,7 @@ var wood = TSLFn( ( params ) => {
 
 
 	// main pattern with rings
-	var pos = posLocal.mul( exp( params.scale.sub( 3 ) ).mul( vec3( reciprocal( params.length ), 4, reciprocal( params.length ) ) ) ).add( params.seed ).toVar( );
+	var pos = posLocal.mul( exp( params.scale.sub( 3 ) ).mul( vec3( reciprocal( params.lengths ), 4, reciprocal( params.lengths ) ) ) ).add( params.seed ).toVar( );
 	var k = noise( pos ).add( 1 ).mul( 10 ).mul( params.rings );
 	k = k.add( k.cos() ).cos().add( 1 ).div( 2 );
 

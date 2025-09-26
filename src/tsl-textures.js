@@ -10,7 +10,7 @@ export { clouds } from './clouds.js';
 export { concrete } from './concrete.js';
 export { cork } from './cork.js';
 export { dalmatianSpots } from './dalmatian-spots.js';
-//export { darthMaul } from './darth-maul.js';
+export { darthMaul } from './darth-maul.js';
 export { dysonSphere } from './dyson-sphere.js';
 export { entangled } from './entangled.js';
 export { fordite } from './fordite.js';

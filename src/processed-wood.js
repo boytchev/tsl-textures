@@ -14,7 +14,7 @@ var defaults = {
 	$width: 260,
 
 	scale: 2,
-	length: 4,
+	lengths: 4,
 	strength: 0.3,
 	angle: 0,
 
@@ -40,7 +40,7 @@ var processedWood = TSLFn( ( params )=>{
 	var scale = params.scale.div( 2 ).add( 1 ).toVar();
 	var pos = posLocal.mul( exp( scale ) ).add( params.seed ).toVar( );
 
-	var len = params.length.add( 5 ).reciprocal().toVar();
+	var len = params.lengths.add( 5 ).reciprocal().toVar();
 	var k = noise( pos.mul( scale, vec3( 1, len, len ) ) );
 	k = k.mul( noise( pos.mul( vec3( 25, 1, 1 ) ) ).add( -1 ).mul( 0.2 ) );
 	k = k.add( params.strength.sub( 0.5 ) ).smoothstep( -0.3, 0.3 ).oneMinus();

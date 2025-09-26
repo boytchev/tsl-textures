@@ -11,15 +11,15 @@ a snapshot to open it online.
 
 <p class="gallery">
 
-	<a class="style-block nocaption" href="../online/wood.html?scale=2.5&rings=4.5&length=1&angle=0&fibers=0.3&fibersDensity=10&color=15182336&background=11163904&seed=0">
+	<a class="style-block nocaption" href="../online/wood.html?scale=2.5&rings=4.5&lengths=1&angle=0&fibers=0.3&fibersDensity=10&color=15182336&background=11163904&seed=0">
 		<img src="images/wood-1.png">
 	</a>
 
-	<a class="style-block nocaption" href="../online/wood.html?scale=1.959&rings=4.689&length=1&angle=0&fibers=0.26&fibersDensity=2.002&color=16573123&background=12165528&seed=5249">
+	<a class="style-block nocaption" href="../online/wood.html?scale=1.959&rings=4.689&lengths=1&angle=0&fibers=0.26&fibersDensity=2.002&color=16573123&background=12165528&seed=5249">
 		<img src="images/wood-2.png">
 	</a>
 
-	<a class="style-block nocaption" href="../online/wood.html?scale=3.519&rings=4.059&length=3.339&angle=-88.2&fibers=0&fibersDensity=2&color=12883080&background=15717796&seed=5412">
+	<a class="style-block nocaption" href="../online/wood.html?scale=3.519&rings=4.059&lengths=3.339&angle=-88.2&fibers=0&fibersDensity=2&color=12883080&background=15717796&seed=5412">
 		<img src="images/wood-3.png">
 	</a>
 
@@ -34,7 +34,7 @@ import { wood } from "tsl-textures";
 model.material.colorNode = wood ( {
 	scale: 2.5,
 	rings: 4.5,
-	length: 1,
+	lengths: 1,
 	angle: 0,
 	fibers: 0.3,
 	fibersDensity: 10,
@@ -49,7 +49,7 @@ model.material.colorNode = wood ( {
 
 * `scale` &ndash; level of details of the pattern, higher value generates finer details, [1, 4]
 * `rings` &ndash; number of nested rings, [1, 10]
-* `length` &ndash; length of the ring pattern, [1, 10]
+* `lengths` &ndash; lengths of the ring patterns, [1, 10]
 * `angle` &ndash; angle of the ring pattern, in degrees, [-90, 90]
 * `fibers` &ndash; visibility of fibers, [0, 1]
 * `fibersDensity` &ndash; density of fibers, [2, 15]

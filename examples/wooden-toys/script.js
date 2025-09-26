@@ -78,7 +78,7 @@ var materialNormal = new THREE.MeshPhysicalNodeMaterial( {
 		background: new THREE.Color( 0x89593f ),
 		angle: 45,
 		fibers: 0.2,
-		length: 3,
+		lengths: 3,
 		fibersDensity: 25,
 		scale: 3,
 	} ),

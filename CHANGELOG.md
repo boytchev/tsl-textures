@@ -1,5 +1,8 @@
 # TSL Textures
 
+## 2.2.1
+* Property `length` changed to `lengths` to avoid Fn shadowing
+
 ## 2.2.0
 * Upgraded to Three.js r180
 
