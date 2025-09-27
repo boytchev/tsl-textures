@@ -4,7 +4,7 @@
 
 
 import { Color, Vector3 } from "three";
-import { atan, exp, Fn, mix, positionGeometry, select, vec3 } from 'three/tsl';
+import { exp, mix, positionGeometry, select, vec3 } from 'three/tsl';
 import { noise, prepare, TSLFn } from './tsl-utils.js';
 
 
@@ -19,7 +19,7 @@ var defaults = {
 	angle: 60,
 	distance: 1.9,
 
-	color: new Color( 0xD02020 ),
+	color: new Color( 0xF04040 ),
 	background: new Color( 0x000000 ),
 	balance: 0,
 
@@ -48,10 +48,6 @@ var darthMaul = TSLFn( ( params ) => {
 	var k = n.sin().mul( n.mul( params.complexity.mul( 2 ).add( 1 ).exp() ).sin() ).remap( 0, 0.2, 1, -1 ).greaterThan( params.balance ).select( 0, 1 );
 
 	var c = select( position.x.greaterThan( noise( position.mul( 2.3 ) ).abs().mul( 0.5 ).add( 0.02 )	), 1, 0 );
-
-	var pos_actual = positionGeometry.normalize();
-	var angle = atan( pos_actual.z, pos_actual.x ).add( Math.PI ).mul( 4/Math.PI ).round().div( 4/Math.PI );
-	var pos_center = vec3( angle.cos(), 0.3, angle.sin() );
 
 	return mix( params.background, params.color, k.mul( s ).mul( c ).clamp( 0, 1 ) );
 

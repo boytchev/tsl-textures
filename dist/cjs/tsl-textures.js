@@ -1,4 +1,4 @@
-// TSL Textures v2.2.0
+// TSL Textures v2.2.1
 
 'use strict';
 
@@ -1130,7 +1130,7 @@ var defaults$w = {
 	angle: 60,
 	distance: 1.9,
 
-	color: new three.Color( 0xD02020 ),
+	color: new three.Color( 0xF04040 ),
 	background: new three.Color( 0x000000 ),
 	balance: 0,
 
@@ -1159,10 +1159,6 @@ var darthMaul = TSLFn( ( params ) => {
 	var k = n.sin().mul( n.mul( params.complexity.mul( 2 ).add( 1 ).exp() ).sin() ).remap( 0, 0.2, 1, -1 ).greaterThan( params.balance ).select( 0, 1 );
 
 	var c = tsl.select( position.x.greaterThan( tsl.mx_noise_float( position.mul( 2.3 ) ).abs().mul( 0.5 ).add( 0.02 )	), 1, 0 );
-
-	var pos_actual = tsl.positionGeometry.normalize();
-	var angle = tsl.atan( pos_actual.z, pos_actual.x ).add( Math.PI ).mul( 4/Math.PI ).round().div( 4/Math.PI );
-	tsl.vec3( angle.cos(), 0.3, angle.sin() );
 
 	return tsl.mix( params.background, params.color, k.mul( s ).mul( c ).clamp( 0, 1 ) );
 

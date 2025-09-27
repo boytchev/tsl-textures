@@ -1,6 +1,6 @@
-// TSL Textures v2.2.0
+// TSL Textures v2.2.1
 
-import { Fn, min, sub, max, vec3, float, add, If, select, sin, cos, vec4, mul, cross, remap, pow, log2, mat4, smoothstep, positionGeometry, dFdx, dFdy, transformNormalToView, mx_noise_float, uniform, exp, round, pow2, abs, or, mix, acos, clamp, normalLocal, tangentLocal, Loop, atan, floor, oneMinus, screenSize, screenUV, equirectUV, div, remapClamp, sqrt, mat2, mod, distance, radians, matcapUV, mx_worley_noise_float, sign, tan, reciprocal, vec2 } from 'three/tsl';
+import { Fn, min, sub, max, vec3, float, add, If, select, sin, cos, vec4, mul, cross, remap, pow, log2, mat4, smoothstep, positionGeometry, dFdx, dFdy, transformNormalToView, mx_noise_float, uniform, exp, round, pow2, abs, or, mix, acos, clamp, normalLocal, tangentLocal, Loop, floor, oneMinus, screenSize, screenUV, equirectUV, div, remapClamp, sqrt, mat2, mod, distance, radians, matcapUV, mx_worley_noise_float, sign, tan, reciprocal, vec2 } from 'three/tsl';
 export { mx_noise_float as noise } from 'three/tsl';
 import { Color, Vector3, Vector2 } from 'three';
 
@@ -1129,7 +1129,7 @@ var defaults$w = {
 	angle: 60,
 	distance: 1.9,
 
-	color: new Color( 0xD02020 ),
+	color: new Color( 0xF04040 ),
 	background: new Color( 0x000000 ),
 	balance: 0,
 
@@ -1158,10 +1158,6 @@ var darthMaul = TSLFn( ( params ) => {
 	var k = n.sin().mul( n.mul( params.complexity.mul( 2 ).add( 1 ).exp() ).sin() ).remap( 0, 0.2, 1, -1 ).greaterThan( params.balance ).select( 0, 1 );
 
 	var c = select( position.x.greaterThan( mx_noise_float( position.mul( 2.3 ) ).abs().mul( 0.5 ).add( 0.02 )	), 1, 0 );
-
-	var pos_actual = positionGeometry.normalize();
-	var angle = atan( pos_actual.z, pos_actual.x ).add( Math.PI ).mul( 4/Math.PI ).round().div( 4/Math.PI );
-	vec3( angle.cos(), 0.3, angle.sin() );
 
 	return mix( params.background, params.color, k.mul( s ).mul( c ).clamp( 0, 1 ) );
 

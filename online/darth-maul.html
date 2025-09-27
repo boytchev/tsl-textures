@@ -38,12 +38,8 @@ gui.add( params, 'scale' )
 	.name( 'Mask <right>scale</right>' )
 	.$input.classList.add( 'top' );
 
-gui.add( params.shift, 'x' )
-	.min( -0.5 ).max( 0.5 )
-	.name( ' <right>horizontal</right>' );
-
 gui.add( params.shift, 'y' )
-	.min( -4 ).max( 4 )
+	.min( -40 ).max( 40 )
 	.name( '<right>vertical</right>' );
 
 gui.add( params.shift, 'z' )

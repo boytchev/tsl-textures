@@ -216,6 +216,7 @@ function install( tslTexture, useGeometry=USE_BALL, addFeature=ADD_NOTHING ) {
 
 					geometry = result.scene.children[ 0 ].geometry;
 					geometry = mergeVertices( geometry );
+					geometry.translate( 0.12, 0, 0 );
 					geometry.computeTangents();
 					scene.remove( model );
 					model = new THREE.Mesh( geometry, model.material );
