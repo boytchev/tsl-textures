@@ -8,7 +8,8 @@
 This texture renders a static noise with possibility to update
 the pattern at time intervals. The texture is supposed to be
 added as additional layer (e.g. AO or light), not as primary
-diffuse color. Click on a snapshot to open it online.
+diffuse color. The static noise is generated in screen space.
+Click on a snapshot to open it online.
 
 <p class="gallery">
 
