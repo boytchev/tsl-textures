@@ -3,6 +3,7 @@
 ## 2.3.0
 * Added "Darth Maul" in *darth-maul.js*
 * Added "Brain" in *brain.js*
+* Added "Static noise" in *static-noise.js*
 
 ## 2.2.1
 * Property `length` changed to `lengths` to avoid Fn shadowing

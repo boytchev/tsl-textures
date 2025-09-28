@@ -38,19 +38,4 @@ var simplexNoise = TSLFn( ( params ) => {
 
 
 
-simplexNoise.defaults = {
-	$name: 'Simplex noise',
-
-	scale: 2,
-	balance: 0,
-	contrast: 0,
-
-	color: new Color( 0xFFFFFF ),
-	background: new Color( 0x000000 ),
-
-	seed: 0,
-};
-
-
-
 export { simplexNoise };

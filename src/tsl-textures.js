@@ -37,6 +37,7 @@ export { scepterHead } from './scepter-head.js';
 export { scream } from './scream.js';
 export { simplexNoise } from './simplex-noise.js';
 export { stars } from './stars.js';
+export { staticNoise } from './static-noise.js';
 export { supersphere } from './supersphere.js';
 export { tigerFur } from './tiger-fur.js';
 export { translator } from './translator.js';
