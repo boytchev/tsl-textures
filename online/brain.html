@@ -17,7 +17,7 @@
 			"three/webgpu": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.webgpu.min.js",
 			"three/tsl": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.tsl.min.js",
 			"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/",
-			"tsl-textures": "../dist/tsl-textures.min.js"
+			"tsl-textures": "../src/tsl-textures.js"
 		}
 	  }
 	</script>
@@ -28,37 +28,32 @@
 
 	<script type="module">
 
-import { install, params, USE_HEAD } from "./online.js";
-import { darthMaul } from "tsl-textures";
+import { scene, model,camera,install, params, light, ambientLight } from "./online.js";
+import { DoubleSide } from "three";
+import { brain } from "tsl-textures";
 
-var gui = install( darthMaul, USE_HEAD );
+
+
+var gui = install( brain );
 
 gui.add( params, 'scale' )
 	.min( 0 ).max( 4 )
-	.name( 'Mask <right>scale</right>' )
+	.name( 'Scale' )
 	.$input.classList.add( 'top' );
 
-gui.add( params.shift, 'y' )
-	.min( -40 ).max( 40 )
-	.name( '<right>vertical</right>' );
-
-gui.add( params.shift, 'z' )
-	.min( -4 ).max( 4 )
-	.name( '<right>variation</right>' );
-
-gui.add( params, 'complexity' )
+gui.add( params, 'smooth' )
 	.min( 0 ).max( 1 )
-	.name( '<right>complexity</right>' )
+	.name( 'Smooth' )
 	.$input.classList.add( 'bottom' );
 
-gui.add( params, 'angle' )
-	.min( 0 ).max( 90 )
-	.name( 'Back <right>angle</right>' )
+gui.add( params, 'wave' )
+	.min( 0 ).max( 1 ).step( 0.01 )
+	.name( 'Pulse<right>wave</speed>' )
 	.$input.classList.add( 'top' );
 
-gui.add( params, 'distance' )
-	.min( -3 ).max( 3 )
-	.name( '<right>distance</right>' )
+gui.add( params, 'speed' )
+	.min( 0 ).max( 10 ).step( 0.01 )
+	.name( '<right>speed</speed>' )
 	.$input.classList.add( 'bottom' );
 
 gui.addColor( params, 'color' )
@@ -66,12 +61,8 @@ gui.addColor( params, 'color' )
 	.$text.classList.add( 'top' );
 
 gui.addColor( params, 'background' )
-	.name( '<right>background</right>' );
-
-gui.add( params, 'balance' )
-	.min( -2 ).max( 2 )
-	.name( '<right>balance</right>' )
-	.$input.classList.add( 'bottom' );
+	.name( '<right>background</right>' )
+	.$text.classList.add( 'bottom' );
 
 	</script>
 </body>

@@ -3,6 +3,7 @@
 export * from './tsl-utils.js';
 
 
+export { brain } from './brain.js';
 export { camouflage } from './camouflage.js';
 export { caveArt } from './cave-art.js';
 export { circles } from './circles.js';

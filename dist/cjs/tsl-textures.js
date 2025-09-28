@@ -757,6 +757,57 @@ function TSLFn( jsFunc, defaults, layout = null ) {
 
 } // TSLFn
 
+var defaults$E = {
+	$name: 'Brain',
+
+	scale: 2,
+	smooth: 0.5,
+
+	wave: 0.5,
+	speed: 2.5,
+
+	color: new three.Color( 0xFFD0D0 ),
+	background: new three.Color( 0x500000 ),
+
+	seed: 0,
+};
+
+
+
+var brain = TSLFn( ( params )=>{
+
+	params = prepare( params, defaults$E );
+
+	var pos = tsl.positionGeometry.mul( tsl.exp( params.scale.div( 3 ) ) ).add( params.seed ).toVar( );
+
+	var octaves = tsl.exp( params.smooth.oneMinus().mul( 2 ) );
+
+	var n = tsl.mx_fractal_noise_float( pos.mul( 5 ), octaves ).add( 1 ).div( 2 ).clamp( 0, 1 ).pow( 2 );
+
+	return tsl.mix( params.color, params.background, n );
+
+}, defaults$E );
+
+
+
+brain.normal = TSLFn( ( params )=>{
+
+	params = prepare( params, defaults$E );
+
+	var pos = tsl.positionGeometry.mul( tsl.exp( params.scale.div( 3 ) ) ).add( params.seed ).toVar( );
+
+	var octaves = tsl.exp( params.smooth.oneMinus().mul( 2 ) );
+
+	var eps = 0.01;
+	var n = tsl.mx_fractal_noise_float( pos.mul( 5 ), octaves );
+	var dx = tsl.mx_fractal_noise_float( pos.add( tsl.vec3( eps, 0, 0 ) ).mul( 5 ), octaves ).sub( n ).div( eps );
+	var dy = tsl.mx_fractal_noise_float( pos.add( tsl.vec3( 0, eps, 0 ) ).mul( 5 ), octaves ).sub( n ).div( eps );
+
+	var dTime = tsl.mx_noise_float( pos.mul( params.wave.mul( 5 ) ) ).add( 1 ).div( 2 ).mul( 6.28 );
+	return tsl.vec3( dx, dy, tsl.time.mul( params.speed ).add( dTime ).sin().add( n, 1 ) ).normalize();
+
+}, defaults$E );
+
 var defaults$D = {
 	$name: 'Camouflage',
 
@@ -1142,8 +1193,6 @@ var defaults$w = {
 var darthMaul = TSLFn( ( params ) => {
 
 	params = prepare( params, defaults$w );
-
-	//var dX = vec3( params.shift.x, 0, 0 );
 
 	var position = tsl.positionGeometry.add( params.shift ).mul( tsl.exp( params.scale.div( 1.5 ).sub( 1 ) ) ).sub( params.shift ).mul( tsl.vec3( 1, 1/2, 1/2 ) ).toVar( );
 
@@ -2889,6 +2938,7 @@ Object.defineProperty(exports, "noise", {
 });
 exports.TSLFn = TSLFn;
 exports.applyEuler = applyEuler;
+exports.brain = brain;
 exports.camouflage = camouflage;
 exports.caveArt = caveArt;
 exports.circles = circles;

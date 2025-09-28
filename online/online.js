@@ -846,4 +846,4 @@ function downloadImage( tslTexture, name, map ) {
 }
 
 
-export { scene, model, install, params, light, ambientLight, USE_BALL, USE_CUBE, USE_HEAD, USE_ANIM, ADD_NOTHING, ADD_GRID, ADD_AUTOROTATION, selectorParams, controls };
+export { camera, scene, model, install, params, light, ambientLight, USE_BALL, USE_CUBE, USE_HEAD, USE_ANIM, ADD_NOTHING, ADD_GRID, ADD_AUTOROTATION, selectorParams, controls };

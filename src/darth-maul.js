@@ -32,8 +32,6 @@ var darthMaul = TSLFn( ( params ) => {
 
 	params = prepare( params, defaults );
 
-	//var dX = vec3( params.shift.x, 0, 0 );
-
 	var position = positionGeometry.add( params.shift ).mul( exp( params.scale.div( 1.5 ).sub( 1 ) ) ).sub( params.shift ).mul( vec3( 1, 1/2, 1/2 ) ).toVar( );
 
 	var s = select( positionGeometry.y.mul( params.angle.radians().cos() ).add( positionGeometry.z.mul( params.angle.radians().sin() ) ).greaterThan( params.distance ), 1, 0 );

@@ -1,6 +1,6 @@
 // TSL Textures v2.2.1
 
-import { Fn, min, sub, max, vec3, float, add, If, select, sin, cos, vec4, mul, cross, remap, pow, log2, mat4, smoothstep, positionGeometry, dFdx, dFdy, transformNormalToView, mx_noise_float, uniform, exp, round, pow2, abs, or, mix, acos, clamp, normalLocal, tangentLocal, Loop, floor, oneMinus, screenSize, screenUV, equirectUV, div, remapClamp, sqrt, mat2, mod, distance, radians, matcapUV, mx_worley_noise_float, sign, tan, reciprocal, vec2 } from 'three/tsl';
+import { Fn, min, sub, max, vec3, float, add, If, select, sin, cos, vec4, mul, cross, remap, pow, log2, mat4, smoothstep, positionGeometry, dFdx, dFdy, transformNormalToView, mx_noise_float, uniform, exp, mx_fractal_noise_float, mix, time, round, pow2, abs, or, acos, clamp, normalLocal, tangentLocal, Loop, floor, oneMinus, screenSize, screenUV, equirectUV, div, remapClamp, sqrt, mat2, mod, distance, radians, matcapUV, mx_worley_noise_float, sign, tan, reciprocal, vec2 } from 'three/tsl';
 export { mx_noise_float as noise } from 'three/tsl';
 import { Color, Vector3, Vector2 } from 'three';
 
@@ -756,6 +756,57 @@ function TSLFn( jsFunc, defaults, layout = null ) {
 
 } // TSLFn
 
+var defaults$E = {
+	$name: 'Brain',
+
+	scale: 2,
+	smooth: 0.5,
+
+	wave: 0.5,
+	speed: 2.5,
+
+	color: new Color( 0xFFD0D0 ),
+	background: new Color( 0x500000 ),
+
+	seed: 0,
+};
+
+
+
+var brain = TSLFn( ( params )=>{
+
+	params = prepare( params, defaults$E );
+
+	var pos = positionGeometry.mul( exp( params.scale.div( 3 ) ) ).add( params.seed ).toVar( );
+
+	var octaves = exp( params.smooth.oneMinus().mul( 2 ) );
+
+	var n = mx_fractal_noise_float( pos.mul( 5 ), octaves ).add( 1 ).div( 2 ).clamp( 0, 1 ).pow( 2 );
+
+	return mix( params.color, params.background, n );
+
+}, defaults$E );
+
+
+
+brain.normal = TSLFn( ( params )=>{
+
+	params = prepare( params, defaults$E );
+
+	var pos = positionGeometry.mul( exp( params.scale.div( 3 ) ) ).add( params.seed ).toVar( );
+
+	var octaves = exp( params.smooth.oneMinus().mul( 2 ) );
+
+	var eps = 0.01;
+	var n = mx_fractal_noise_float( pos.mul( 5 ), octaves );
+	var dx = mx_fractal_noise_float( pos.add( vec3( eps, 0, 0 ) ).mul( 5 ), octaves ).sub( n ).div( eps );
+	var dy = mx_fractal_noise_float( pos.add( vec3( 0, eps, 0 ) ).mul( 5 ), octaves ).sub( n ).div( eps );
+
+	var dTime = mx_noise_float( pos.mul( params.wave.mul( 5 ) ) ).add( 1 ).div( 2 ).mul( 6.28 );
+	return vec3( dx, dy, time.mul( params.speed ).add( dTime ).sin().add( n, 1 ) ).normalize();
+
+}, defaults$E );
+
 var defaults$D = {
 	$name: 'Camouflage',
 
@@ -1141,8 +1192,6 @@ var defaults$w = {
 var darthMaul = TSLFn( ( params ) => {
 
 	params = prepare( params, defaults$w );
-
-	//var dX = vec3( params.shift.x, 0, 0 );
 
 	var position = positionGeometry.add( params.shift ).mul( exp( params.scale.div( 1.5 ).sub( 1 ) ) ).sub( params.shift ).mul( vec3( 1, 1/2, 1/2 ) ).toVar( );
 
@@ -2882,4 +2931,4 @@ var zebraLines = TSLFn( ( params ) => {
 
 }, defaults );
 
-export { TSLFn, applyEuler, camouflage, caveArt, circles, clouds, concrete, cork, dalmatianSpots, darthMaul, dynamic, dysonSphere, entangled, fordite, gasGiant, grid, hideFallbackWarning, hsl, isolines, karstRock, marble, matRotX, matRotY, matRotYXZ, matRotZ, matScale, matTrans, neonLights, noised, normalVector, overlayPlanar, photosphere, planet, polkaDots, prepare, processedWood, protozoa, remapExp, rotator, roughClay, runnyEggs, rust, satin, scaler, scepterHead, scream, selectPlanar, showFallbackWarning, simplexNoise, spherical, stars, supersphere, tigerFur, toHsl, translator, vnoise, voronoiCells, waterDrops, watermelon, wood, zebraLines };
+export { TSLFn, applyEuler, brain, camouflage, caveArt, circles, clouds, concrete, cork, dalmatianSpots, darthMaul, dynamic, dysonSphere, entangled, fordite, gasGiant, grid, hideFallbackWarning, hsl, isolines, karstRock, marble, matRotX, matRotY, matRotYXZ, matRotZ, matScale, matTrans, neonLights, noised, normalVector, overlayPlanar, photosphere, planet, polkaDots, prepare, processedWood, protozoa, remapExp, rotator, roughClay, runnyEggs, rust, satin, scaler, scepterHead, scream, selectPlanar, showFallbackWarning, simplexNoise, spherical, stars, supersphere, tigerFur, toHsl, translator, vnoise, voronoiCells, waterDrops, watermelon, wood, zebraLines };
