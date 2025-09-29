@@ -46,3 +46,6 @@ export { waterDrops } from './water-drops.js';
 export { watermelon } from './watermelon.js';
 export { wood } from './wood.js';
 export { zebraLines } from './zebra-lines.js';
+export { circleDecor } from './circle-decor.js';
+export { reticularVeins } from './reticular-veins.js';
+//export { aaa } from './aaa.js';

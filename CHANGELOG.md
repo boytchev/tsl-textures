@@ -4,6 +4,8 @@
 * Added "Darth Maul" in *darth-maul.js*
 * Added "Brain" in *brain.js*
 * Added "Static noise" in *static-noise.js*
+* Added "Circle decor" in *circle-decor.js*
+* Added "Reticular veins" in *reticular-veins.js*
 
 ## 2.2.1
 * Property `length` changed to `lengths` to avoid Fn shadowing

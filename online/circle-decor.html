@@ -1,0 +1,67 @@
+﻿<!DOCTYPE html>
+
+
+<html>
+
+
+<head>
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+	<link rel="shortcut icon" type="image/png" href="../assets/logo/logo.png"/>
+	<link rel="stylesheet" href="styles.css">
+
+	<script type="importmap">
+	  {
+		"imports": {
+			"three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.webgpu.min.js",
+			"three/webgpu": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.webgpu.min.js",
+			"three/tsl": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.tsl.min.js",
+			"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/",
+			"tsl-textures": "../src/tsl-textures.js"
+		}
+	  }
+	</script>
+</head>
+
+
+<body>
+
+	<script type="module">
+
+import { install, params } from "./online.js";
+import { circleDecor } from "tsl-textures";
+
+
+var gui = install( circleDecor );
+
+gui.add( params, 'scale' )
+	.min( 0 ).max( 4 )
+	.name( 'Scale' )
+	.$input.classList.add( 'top' );
+
+gui.add( params, 'grains' )
+	.min( 0 ).max( 1 )
+	.name( '<right>grains</right>' )
+	.$input.classList.add( 'bottom' );
+
+gui.add( params, 'complexity' )
+	.min( 0 ).max( 2 )
+	.name( 'Complexity' )
+	.$input.classList.add( 'top' );
+
+gui.add( params, 'blur' )
+	.min( 0 ).max( 1 )
+	.name( 'Blur' )
+	.$input.classList.add( 'bottom' );
+
+gui.addColor( params, 'color' )
+	.name( 'Color <right>main</right>' )
+	.$input.classList.add( 'top' );
+
+gui.addColor( params, 'background' )
+	.name( '<right>background</right>' )
+	.$text.classList.add( 'bottom' );
+
+	</script>
+</body>
+</html>
