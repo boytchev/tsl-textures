@@ -4,7 +4,7 @@
 
 
 import { Color } from 'three';
-import { exp, float, Fn, If, Loop, mix, positionGeometry, vec3, mx_worley_noise_float } from 'three/tsl';
+import { exp, mix, mx_worley_noise_float, positionGeometry } from 'three/tsl';
 import { noise, prepare, TSLFn } from './tsl-utils.js';
 
 
@@ -31,13 +31,13 @@ var reticularVeins = TSLFn( ( params )=>{
 
 	var pos = positionGeometry.mul( exp( params.scale.div( 2 ).add( 0.5 ) ) ).add( params.seed ).toVar( );
 
-	var k1 = mx_worley_noise_float(pos.mul(1));
-	var k2 = mx_worley_noise_float(pos.add(100).mul(params.reticulation)).mul(params.strength);
-	var dots = noise(pos.mul(100)).mul(params.strength,params.organelles);
+	var k1 = mx_worley_noise_float( pos.mul( 1 ) );
+	var k2 = mx_worley_noise_float( pos.add( 100 ).mul( params.reticulation ) ).mul( params.strength );
+	var dots = noise( pos.mul( 100 ) ).mul( params.strength, params.organelles );
 
-	var k = k1.add(k2).add(dots);
+	var k = k1.add( k2 ).add( dots );
 
-	return mix( params.background, params.color, k);
+	return mix( params.background, params.color, k );
 
 }, defaults );
 
