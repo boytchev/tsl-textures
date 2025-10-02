@@ -50,4 +50,5 @@ export { circleDecor } from './circle-decor.js';
 export { reticularVeins } from './reticular-veins.js';
 export { romanPaving } from './roman-paving.js';
 export { crumpledFabric } from './crumpled-fabric.js';
+export { isolayers } from './isolayers.js';
 //export { aaa } from './aaa.js';
