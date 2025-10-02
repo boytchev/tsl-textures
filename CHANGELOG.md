@@ -5,6 +5,7 @@
 * Added "Roman paving" in "roman-paving.js"
 * Added "Isolayers" in "isolayers.js"
 * Added "Turbulent smoke" in "turbulent-smoke.js"
+* Added "Caustics" in "caustics.js"
 
 ## 2.3.0
 * Added "Darth Maul" in *darth-maul.js*
