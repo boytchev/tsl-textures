@@ -1,6 +1,7 @@
 # TSL Textures
 
 ## 2.4.0
+* Added "Crumpled fabric"
 * Added "Roman paving"
 
 ## 2.3.0
