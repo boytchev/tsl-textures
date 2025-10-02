@@ -1,0 +1,49 @@
+﻿<!DOCTYPE html>
+
+
+<html>
+
+
+<head>
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+	<link rel="shortcut icon" type="image/png" href="../assets/logo/logo.png"/>
+	<link rel="stylesheet" href="styles.css">
+
+	<script type="importmap">
+	  {
+		"imports": {
+			"three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.webgpu.min.js",
+			"three/webgpu": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.webgpu.min.js",
+			"three/tsl": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.tsl.min.js",
+			"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/",
+			"tsl-textures": "../dist/tsl-textures.min.js"
+		}
+	  }
+	</script>
+</head>
+
+
+<body>
+
+	<script type="module">
+
+import { install, params } from "./online.js";
+import { romanPaving } from "tsl-textures";
+
+
+var gui = install( romanPaving );
+
+gui.add( params, 'scale' )
+	.min( 0 ).max( 4 )
+	.name( 'Scale' )
+	.$input.classList.add( 'top' );
+
+gui.add( params, 'depth' )
+	.min( 0 ).max( 1 )
+	.name( 'Depth' )
+	.$input.classList.add( 'bottom' );
+
+	</script>
+</body>
+</html>

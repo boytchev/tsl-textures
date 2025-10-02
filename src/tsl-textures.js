@@ -48,4 +48,5 @@ export { wood } from './wood.js';
 export { zebraLines } from './zebra-lines.js';
 export { circleDecor } from './circle-decor.js';
 export { reticularVeins } from './reticular-veins.js';
+export { romanPaving } from './roman-paving.js';
 //export { aaa } from './aaa.js';

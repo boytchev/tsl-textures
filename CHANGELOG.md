@@ -1,5 +1,8 @@
 # TSL Textures
 
+## 2.4.0
+* Added "Roman paving"
+
 ## 2.3.0
 * Added "Darth Maul" in *darth-maul.js*
 * Added "Brain" in *brain.js*
