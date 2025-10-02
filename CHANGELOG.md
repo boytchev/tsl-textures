@@ -3,7 +3,8 @@
 ## 2.4.0
 * Added "Crumpled fabric" in *crumpled-fabric.js"
 * Added "Roman paving" in "roman-paving.js"
-* Added "Isolayers" in "isolayers"
+* Added "Isolayers" in "isolayers.js"
+* Added "Turbulent smoke" in "turbulent-smoke.js"
 
 ## 2.3.0
 * Added "Darth Maul" in *darth-maul.js*
