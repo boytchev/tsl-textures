@@ -53,4 +53,5 @@ export { crumpledFabric } from './crumpled-fabric.js';
 export { isolayers } from './isolayers.js';
 export { turbulentSmoke } from './turbulent-smoke.js';
 export { caustics } from './caustics.js';
+export { bricks } from './bricks.js';
 //export { aaa } from './aaa.js';

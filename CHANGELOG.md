@@ -1,11 +1,15 @@
 # TSL Textures
 
+## 2.5.0
+* Added "Bricks" in *bricks.js*
+* Added "Cubix flux" example
+
 ## 2.4.0
-* Added "Crumpled fabric" in *crumpled-fabric.js"
-* Added "Roman paving" in "roman-paving.js"
-* Added "Isolayers" in "isolayers.js"
-* Added "Turbulent smoke" in "turbulent-smoke.js"
-* Added "Caustics" in "caustics.js"
+* Added "Crumpled fabric" in *crumpled-fabric.js*
+* Added "Roman paving" in *roman-paving.js*
+* Added "Isolayers" in *isolayers.js*
+* Added "Turbulent smoke" in *turbulent-smoke.js*
+* Added "Caustics" in *caustics.js*
 
 ## 2.3.0
 * Added "Darth Maul" in *darth-maul.js*

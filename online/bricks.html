@@ -1,0 +1,114 @@
+﻿<!DOCTYPE html>
+
+
+<html>
+
+
+<head>
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+	<link rel="shortcut icon" type="image/png" href="../assets/logo/logo.png"/>
+	<link rel="stylesheet" href="styles.css">
+
+	<script type="importmap">
+	  {
+		"imports": {
+			"three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.webgpu.min.js",
+			"three/webgpu": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.webgpu.min.js",
+			"three/tsl": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.tsl.min.js",
+			"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/",
+			"tsl-textures": "../dist/tsl-textures.min.js"
+		}
+	  }
+	</script>
+</head>
+
+
+<body>
+
+	<script type="module">
+
+import { install, params, USE_CUBE, USE_HEAD } from "./online.js";
+import { bricks } from "tsl-textures";
+
+
+var gui = install( bricks, USE_CUBE );
+
+gui.add( params, 'scale' )
+	.min( 0 ).max( 4 )
+	.name( 'Scale' );
+
+// brick
+
+gui.add( params.brickSize, 'x' )
+	.min( 0.1 ).max( 10 )
+	.name( 'Brick size <right>x</right>' )
+	.$input.classList.add( 'top' );
+
+gui.add( params.brickSize, 'y' )
+	.min( 0.1 ).max( 10 )
+	.name( '<right>y</right>' );
+
+gui.add( params.brickSize, 'z' )
+	.min( 0.1 ).max( 10 )
+	.name( '<right>z</right>' );
+
+gui.add( params, 'brickShift' )
+	.min( 1 ).max( 4 )
+	.name( '<right>shift</right>' )
+	.$input.classList.add( 'bottom' );
+
+// joint
+
+gui.add( params, 'jointSize' )
+	.min( 0 ).max( 0.2 )
+	.name( 'Joint<right>size</right>' )
+	.$input.classList.add( 'top' );
+
+gui.add( params, 'jointSpan' )
+	.min( 0 ).max( 1 )
+	.name( '<right>span</right>' );
+
+gui.add( params, 'jointJitter' )
+	.min( 0 ).max( 1 )
+	.name( '<right>jitter</right>' );
+
+gui.add( params, 'jointBlur' )
+	.min( 0 ).max( 1 )
+	.name( '<right>blur</right>' )
+	.$input.classList.add( 'bottom' );
+
+// noise
+
+
+gui.add( params, 'noiseSize' )
+	.min( 0 ).max( 1 )
+	.name( 'Noise<right>size</right>' )
+	.$input.classList.add( 'top' );
+
+gui.add( params, 'noiseStrength' )
+	.min( 0 ).max( 1 )
+	.name( '<right>strength</right>' )
+	.$input.classList.add( 'bottom' );
+
+// colors
+
+gui.addColor( params, 'color' )
+	.name( 'Color <right>main</right>' )
+	.$text.classList.add( 'top' );
+
+gui.addColor( params, 'additional' )
+	.name( '<right>additional</right>' )
+	.$text.classList.add( 'top' );
+
+gui.add( params, 'colorShade' )
+	.min( 0 ).max( 1 )
+	.name( '<right>shade</right>' );
+
+gui.addColor( params, 'background' )
+	.name( '<right>background</right>' )
+	.$text.classList.add( 'bottom' );
+
+	</script>
+</body>
+</html>
