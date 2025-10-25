@@ -267,10 +267,25 @@ var styleId = 0;
 
 function nextShape() {
 
+	var moreDelay = 1;
+	if ( shapeCount==15 ) moreDelay = 2;
+	if ( shapeCount==16 ) moreDelay = 20;
+
+	if ( shapeCount==16 ) {
+
+		new TWEEN.Tween( data )
+			.to( { strength: 0 }, 2000 )
+			.easing( TWEEN.Easing.Cubic.Out )
+			.delay( 1600 )
+			.start();
+		return;
+
+	}
+
 	new TWEEN.Tween( data )
 		.to( { time: data.time+0.6, strength: 0.8+0.8*Math.random() }, 600 )
 		.easing( TWEEN.Easing.Elastic.Out )
-		.delay( 2010-600 )
+		.delay( moreDelay*2010-600 )
 		.start()
 		.onComplete( nextShape );
 
@@ -288,7 +303,7 @@ function nextShape() {
 
 	}
 
-	if ( shapeCount%6==3 ) {
+	if ( shapeCount%6==3 && shapeCount<15 ) {
 
 		new TWEEN.Tween( data )
 			.to( { rotation: data.rotation+Math.PI }, 8000 )
@@ -301,7 +316,12 @@ function nextShape() {
 }
 
 
-nextShape( );
+// initiate animation, then it reactivates itself
+
+new TWEEN.Tween( data )
+	.to( data, 12340 )
+	.start()
+	.onComplete( nextShape );
 
 
 
