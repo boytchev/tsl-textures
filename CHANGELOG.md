@@ -1,5 +1,8 @@
 # TSL Textures
 
+## 2.5.1
+* Upgraded to Three.js r181
+
 ## 2.5.0
 * Added "Bricks" in *bricks.js*
 * Added "Cubix flux" example

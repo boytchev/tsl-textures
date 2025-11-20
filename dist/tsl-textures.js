@@ -1,4 +1,4 @@
-// TSL Textures v2.4.0
+// TSL Textures v2.5.0
 
 import { Fn, min, sub, max, vec3, float, add, If, select, sin, cos, vec4, mul, cross, remap, pow, log2, mat4, smoothstep, positionGeometry, dFdx, dFdy, transformNormalToView, mx_noise_float, uniform, exp, mx_fractal_noise_float, mix, time, round, pow2, abs, or, acos, clamp, normalLocal, tangentLocal, Loop, floor, oneMinus, screenSize, screenUV, equirectUV, div, remapClamp, sqrt, mat2, mod, distance, radians, matcapUV, mx_worley_noise_float, sign, tan, screenCoordinate, reciprocal, vec2, mx_worley_noise_vec2, mx_fractal_noise_vec3, mx_worley_noise_vec3 } from 'three/tsl';
 export { mx_noise_float as noise } from 'three/tsl';

@@ -86,12 +86,12 @@ var blobParams = {
 var blob = new THREE.Mesh(
 	new THREE.IcosahedronGeometry( 1, 20 ),
 	new THREE.MeshPhysicalNodeMaterial( {
-		colorNode: protozoa( blobParams ).mul( 2 ),
+		colorNode: protozoa( blobParams ).mul( 2 ).clamp( -10, 1.3 ),
 
-		roughness: 0.6,
+		roughness: 0.4,
 		metalness: 3,
 
-		transmission: 1,
+		transmission: 2,
 		thickness: 5,
 	} )
 );
