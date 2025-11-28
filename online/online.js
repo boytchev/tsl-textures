@@ -56,6 +56,8 @@ renderer.setAnimationLoop( animationLoop );
 renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
 document.body.appendChild( renderer.domElement );
 
+await renderer.init();
+
 var scene = new THREE.Scene();
 scene.background = new THREE.Color( 'white' );
 
@@ -120,7 +122,7 @@ function animationLoop( /*t*/ ) {
 
 	controls.update( );
 	light.position.copy( camera.position );
-	renderer.renderAsync( scene, camera );
+	renderer.render( scene, camera );
 
 }
 

@@ -5,7 +5,7 @@
 
 import { Color } from 'three';
 import { exp, mix, mx_worley_noise_float, positionGeometry } from 'three/tsl';
-import { noise, prepare, TSLFn } from './tsl-utils.js';
+import { convertToNodes, noise, TSLFn } from './tsl-utils.js';
 
 
 
@@ -28,7 +28,7 @@ var defaults = {
 
 var circleDecor = TSLFn( ( params )=>{
 
-	params = prepare( params, defaults );
+	params = convertToNodes( params, defaults );
 
 	var pos = positionGeometry.mul( exp( params.scale.div( 4 ) ) ).add( params.seed ).toVar( );
 	var subpos = pos.mul( 2 ).toVar( );

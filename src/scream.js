@@ -5,7 +5,7 @@
 
 import { Color } from "three";
 import { add, cos, exp, mix, positionGeometry, sin } from 'three/tsl';
-import { hsl, noise, prepare, toHsl, TSLFn } from './tsl-utils.js';
+import { convertToNodes, hsl, noise, toHsl, TSLFn } from './tsl-utils.js';
 
 
 
@@ -25,7 +25,7 @@ var defaults = {
 
 var scream = TSLFn( ( params ) => {
 
-	params = prepare( params, defaults );
+	params = convertToNodes( params, defaults );
 
 	var pos = positionGeometry.mul( exp( params.scale ) ).add( params.seed ).toVar( );
 

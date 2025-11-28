@@ -5,7 +5,7 @@
 
 import { Color, Vector3 } from "three";
 import { exp, mix, positionGeometry, select, vec3 } from 'three/tsl';
-import { noise, prepare, TSLFn } from './tsl-utils.js';
+import { convertToNodes, noise, TSLFn } from './tsl-utils.js';
 
 
 
@@ -30,7 +30,7 @@ var defaults = {
 
 var darthMaul = TSLFn( ( params ) => {
 
-	params = prepare( params, defaults );
+	params = convertToNodes( params, defaults );
 
 	var position = positionGeometry.add( params.shift ).mul( exp( params.scale.div( 1.5 ).sub( 1 ) ) ).sub( params.shift ).mul( vec3( 1, 1/2, 1/2 ) ).toVar( );
 

@@ -5,7 +5,7 @@
 
 import { Color } from "three";
 import { abs, exp, float, floor, Loop, max, mix, mul, oneMinus, positionGeometry, pow, sin } from 'three/tsl';
-import { noise, prepare, TSLFn } from './tsl-utils.js';
+import { convertToNodes, noise, TSLFn } from './tsl-utils.js';
 
 
 
@@ -25,7 +25,7 @@ var defaults = {
 
 var entangled = TSLFn( ( params ) => {
 
-	params = prepare( params, defaults );
+	params = convertToNodes( params, defaults );
 
 	var scale = exp( params.scale.div( 2 ) ).toVar( );
 	var pos = positionGeometry.add( params.seed ).toVar( );

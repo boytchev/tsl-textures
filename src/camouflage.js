@@ -5,7 +5,7 @@
 
 import { Color } from 'three';
 import { exp, If, positionGeometry, round, vec3 } from 'three/tsl';
-import { noise, prepare, TSLFn } from './tsl-utils.js';
+import { convertToNodes, noise, TSLFn } from './tsl-utils.js';
 
 
 
@@ -26,7 +26,7 @@ var defaults = {
 
 var camouflage = TSLFn( ( params )=>{
 
-	params = prepare( params, defaults );
+	params = convertToNodes( params, camouflage.defaults );
 
 	var pos = positionGeometry.mul( exp( params.scale ) ).add( params.seed ).toVar( );
 

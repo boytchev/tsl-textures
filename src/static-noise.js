@@ -4,7 +4,7 @@
 
 
 import { clamp, exp, screenCoordinate, time, vec3 } from 'three/tsl';
-import { noise, prepare, TSLFn, vnoise } from './tsl-utils.js';
+import { convertToNodes, noise, TSLFn, vnoise } from './tsl-utils.js';
 
 
 
@@ -24,7 +24,7 @@ var defaults = {
 
 var staticNoise = TSLFn( ( params ) => {
 
-	params = prepare( params, defaults );
+	params = convertToNodes( params, defaults );
 
 	var pos = screenCoordinate.div( exp( params.scale ) ).add( params.seed );
 

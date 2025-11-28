@@ -5,7 +5,7 @@
 
 import { Color } from 'three';
 import { exp, float, If, Loop, mix, mul, positionGeometry, remap, smoothstep, vec3 } from 'three/tsl';
-import { noise, prepare, TSLFn } from './tsl-utils.js';
+import { convertToNodes, noise, TSLFn } from './tsl-utils.js';
 
 
 
@@ -38,7 +38,7 @@ var defaults = {
 
 var planet = TSLFn( ( params )=>{
 
-	params = prepare( params, defaults );
+	params = convertToNodes( params, defaults );
 
 	var k = float( 0 ).toVar(),
 		sum = float( 0 ).toVar(),

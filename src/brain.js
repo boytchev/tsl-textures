@@ -5,7 +5,7 @@
 
 import { Color } from "three";
 import { exp, mix, mx_fractal_noise_float, positionGeometry, time, vec3 } from 'three/tsl';
-import { noise, prepare, TSLFn } from './tsl-utils.js';
+import { convertToNodes, noise, TSLFn } from './tsl-utils.js';
 
 
 
@@ -28,7 +28,7 @@ var defaults = {
 
 var brain = TSLFn( ( params )=>{
 
-	params = prepare( params, defaults );
+	params = convertToNodes( params, brain.defaults );
 
 	var pos = positionGeometry.mul( exp( params.scale.div( 3 ) ) ).add( params.seed ).toVar( );
 
@@ -44,7 +44,7 @@ var brain = TSLFn( ( params )=>{
 
 brain.normal = TSLFn( ( params )=>{
 
-	params = prepare( params, defaults );
+	params = convertToNodes( params, brain.defaults );
 
 	var pos = positionGeometry.mul( exp( params.scale.div( 3 ) ) ).add( params.seed ).toVar( );
 
@@ -58,7 +58,7 @@ brain.normal = TSLFn( ( params )=>{
 	var dTime = noise( pos.mul( params.wave.mul( 5 ) ) ).add( 1 ).div( 2 ).mul( 6.28 );
 	return vec3( dx, dy, time.mul( params.speed ).add( dTime ).sin().add( n, 1 ) ).normalize();
 
-}, defaults );
+} );
 
 
 

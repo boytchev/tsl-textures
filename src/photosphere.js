@@ -5,7 +5,7 @@
 
 import { Color } from "three";
 import { exp, Loop, mix, positionGeometry, vec3 } from 'three/tsl';
-import { applyEuler, noise, prepare, TSLFn } from './tsl-utils.js';
+import { applyEuler, convertToNodes, noise, TSLFn } from './tsl-utils.js';
 
 
 
@@ -24,7 +24,7 @@ var defaults = {
 
 var photosphere = TSLFn( ( params ) => {
 
-	params = prepare( params, defaults );
+	params = convertToNodes( params, defaults );
 
 	var scale = exp( params.scale.add( 1 ) ).toVar( );
 	var pos = positionGeometry.toVar( );

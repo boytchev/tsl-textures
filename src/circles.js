@@ -5,7 +5,7 @@
 
 import { Color } from "three";
 import { acos, clamp, exp, float, positionGeometry, select, sin } from 'three/tsl';
-import { hsl, prepare, toHsl, TSLFn } from './tsl-utils.js';
+import { convertToNodes, hsl, toHsl, TSLFn } from './tsl-utils.js';
 
 
 
@@ -26,7 +26,7 @@ var defaults = {
 
 var circles = TSLFn( ( params ) => {
 
-	params = prepare( params, defaults );
+	params = convertToNodes( params, defaults );
 
 	var pos = select( params.flat, positionGeometry, positionGeometry.normalize() );
 

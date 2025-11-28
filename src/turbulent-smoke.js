@@ -4,7 +4,7 @@
 
 
 import { exp, mx_fractal_noise_float, mx_fractal_noise_vec3, mx_worley_noise_float, positionGeometry, time, vec3 } from 'three/tsl';
-import { prepare, TSLFn } from './tsl-utils.js';
+import { convertToNodes, TSLFn } from './tsl-utils.js';
 
 
 
@@ -23,7 +23,7 @@ var defaults = {
 
 var turbulentSmoke = TSLFn( ( params )=>{
 
-	params = prepare( params, defaults );
+	params = convertToNodes( params, defaults );
 
 	var pos = positionGeometry.mul( exp( params.scale.sub( 1 ) ) ).add( params.seed ).toVar( );
 

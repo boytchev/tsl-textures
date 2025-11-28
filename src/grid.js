@@ -5,7 +5,7 @@
 
 import { Color } from "three";
 import { abs, add, div, equirectUV, min, mix, mul, oneMinus, positionGeometry, pow, remapClamp, round, screenSize, screenUV, select, sin, smoothstep, sub } from 'three/tsl';
-import { prepare, TSLFn } from './tsl-utils.js';
+import { convertToNodes, TSLFn } from './tsl-utils.js';
 
 
 
@@ -27,7 +27,7 @@ var defaults = {
 
 var grid = TSLFn( ( params ) => {
 
-	params = prepare( params, defaults );
+	params = convertToNodes( params, defaults );
 
 	var aspect = select( params.flat, screenSize.x.div( screenSize.y ), 2 );
 

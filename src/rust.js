@@ -5,7 +5,7 @@
 
 import { Color } from 'three';
 import { exp, Fn, Loop, mix, positionGeometry } from 'three/tsl';
-import { noise, prepare, TSLFn } from './tsl-utils.js';
+import { convertToNodes, noise, TSLFn } from './tsl-utils.js';
 
 
 
@@ -53,7 +53,7 @@ var _rust = Fn( ( params )=>{
 
 var rust = TSLFn( ( params )=>{
 
-	params = prepare( params, defaults );
+	params = convertToNodes( params, defaults );
 
 	var k = _rust( params ).mul( 1.25 ).pow( 0.5 );
 
@@ -69,7 +69,7 @@ var rust = TSLFn( ( params )=>{
 
 rust.opacity = TSLFn( ( params )=>{
 
-	params = prepare( params, defaults );
+	params = convertToNodes( params, defaults );
 
 	var k = _rust( params ).mul( params.opacity.add( 0.2 ) );
 

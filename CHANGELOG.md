@@ -1,5 +1,10 @@
 # TSL Textures
 
+## 2.5.2
+* Experimental implementation of simplified TSLFn wrapper
+* Refactor prepare -> convertToNodes
+* Fixed "Texture in motion" demo
+
 ## 2.5.1
 * Upgraded to Three.js r181
 

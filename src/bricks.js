@@ -5,7 +5,7 @@
 
 import { Color, Vector3 } from 'three';
 import { exp, float, mix, mul, mx_fractal_noise_vec3, positionGeometry, vec3 } from 'three/tsl';
-import { noise, prepare, remapExp, TSLFn } from './tsl-utils.js';
+import { convertToNodes, noise, remapExp, TSLFn } from './tsl-utils.js';
 
 
 
@@ -41,7 +41,7 @@ var defaults = {
 
 var bricks = TSLFn( ( params )=>{
 
-	params = prepare( params, defaults );
+	params = convertToNodes( params, defaults );
 
 
 	var pos = positionGeometry.mul( exp( params.scale ) ).add( params.seed ).toVar( );

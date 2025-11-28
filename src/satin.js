@@ -5,7 +5,7 @@
 
 import { Color } from "three";
 import { abs, exp, mix, positionGeometry, pow, vec3 } from 'three/tsl';
-import { noise, prepare, TSLFn } from './tsl-utils.js';
+import { convertToNodes, noise, TSLFn } from './tsl-utils.js';
 
 
 
@@ -24,7 +24,7 @@ var defaults = {
 
 var satin = TSLFn( ( params ) => {
 
-	params = prepare( params, defaults );
+	params = convertToNodes( params, defaults );
 
 	var pos = positionGeometry.toVar( );
 

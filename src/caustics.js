@@ -5,7 +5,7 @@
 
 import { Color } from 'three';
 import { exp, mx_worley_noise_float, mx_worley_noise_vec3, positionGeometry, time, vec3 } from 'three/tsl';
-import { prepare, TSLFn } from './tsl-utils.js';
+import { convertToNodes, TSLFn } from './tsl-utils.js';
 
 
 
@@ -24,7 +24,7 @@ var defaults = {
 
 var caustics = TSLFn( ( params )=>{
 
-	params = prepare( params, defaults );
+	params = convertToNodes( params, defaults );
 
 	var pos = positionGeometry.mul( exp( params.scale.sub( 1 ) ) ).add( params.seed ).toVar( );
 

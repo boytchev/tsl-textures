@@ -5,7 +5,7 @@
 
 import { Color } from 'three';
 import { equirectUV, exp, mix, positionGeometry, screenUV, select, vec3 } from 'three/tsl';
-import { noise, prepare, TSLFn } from './tsl-utils.js';
+import { convertToNodes, noise, TSLFn } from './tsl-utils.js';
 
 
 
@@ -29,7 +29,7 @@ var defaults = {
 
 var watermelon = TSLFn( ( params )=>{
 
-	params = prepare( params, defaults );
+	params = convertToNodes( params, defaults );
 
 	var variation = select( params.flat, params.variation.mul( 0.85 ).add( 0.15 ), params.variation );
 

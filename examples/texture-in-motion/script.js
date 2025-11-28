@@ -177,26 +177,30 @@ var blendTSL = Fn( ( params )=>{
 
 	k.addAssign( k.mul( -2*Math.PI ).sin() );
 
-	var result = vec3().toVar();
+	var result = vec3().toVar(),
+		x = params.x.toVar(),
+		y = params.y.toVar(),
+		z = params.z.toVar(),
+		t = params.t.toVar();
 
 	If( params.phase.equal( 0 ), ()=>{
 
-		result.assign( mix( params.x, params.y, k ) );
+		result.assign( mix( x, y, k ) );
 
 	} )
 		.ElseIf( params.phase.equal( 1 ), ()=>{
 
-			result.assign( mix( params.y, params.z, k ) );
+			result.assign( mix( y, z, k ) );
 
 		} )
 		.ElseIf( params.phase.equal( 2 ), ()=>{
 
-			result.assign( mix( params.z, params.t, k ) );
+			result.assign( mix( z, t, k ) );
 
 		} )
 		.Else( ()=>{
 
-			result.assign( mix( params.t, params.x, k ) );
+			result.assign( mix( t, x, k ) );
 
 		} );
 

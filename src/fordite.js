@@ -5,7 +5,7 @@
 
 import { Color } from 'three';
 import { exp, mul, positionGeometry, sin, vec3 } from 'three/tsl';
-import { hsl, noise, prepare, TSLFn } from './tsl-utils.js';
+import { convertToNodes, hsl, noise, TSLFn } from './tsl-utils.js';
 
 
 
@@ -20,7 +20,7 @@ var defaults = {
 
 var fordite = TSLFn( ( params ) => {
 
-	params = prepare( params, defaults );
+	params = convertToNodes( params, defaults );
 
 	var pos = positionGeometry.mul( exp( params.scale ) ).add( params.seed ).toVar( );
 

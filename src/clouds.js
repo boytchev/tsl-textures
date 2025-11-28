@@ -5,7 +5,7 @@
 
 import { Color } from "three";
 import { add, clamp, exp, Fn, mix, mul, positionGeometry, vec4 } from 'three/tsl';
-import { noised, prepare, TSLFn } from './tsl-utils.js';
+import { convertToNodes, noised, TSLFn } from './tsl-utils.js';
 
 
 
@@ -51,7 +51,7 @@ var _clouds = Fn( ( params ) => {
 var clouds = TSLFn( ( params ) => {
 
 	// prepare parameters
-	params = prepare( params, defaults );
+	params = convertToNodes( params, defaults );
 
 	return _clouds( params ).rgb;
 
@@ -62,7 +62,7 @@ var clouds = TSLFn( ( params ) => {
 clouds.opacity = TSLFn( ( params ) => {
 
 	// prepare parameters
-	params = prepare( params, defaults );
+	params = convertToNodes( params, defaults );
 
 	return _clouds( params ).a;
 

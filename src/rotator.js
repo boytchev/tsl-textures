@@ -5,7 +5,7 @@
 
 import { Vector2, Vector3 } from "three";
 import { cross, Fn, normalLocal, positionGeometry, sub, tangentLocal, transformNormalToView, vec4 } from 'three/tsl';
-import { matRotYXZ, matTrans, prepare, selectPlanar, TSLFn } from './tsl-utils.js';
+import { convertToNodes, matRotYXZ, matTrans, selectPlanar, TSLFn } from './tsl-utils.js';
 
 
 
@@ -41,7 +41,7 @@ var surfacePos = Fn( ([ pos, params ])=>{
 
 var rotator = TSLFn( ( params )=>{
 
-	params = prepare( params, defaults );
+	params = convertToNodes( params, defaults );
 
 	return surfacePos( positionGeometry, params );
 
@@ -51,7 +51,7 @@ var rotator = TSLFn( ( params )=>{
 
 rotator.normal = TSLFn( ( params ) => {
 
-	params = prepare( params, defaults );
+	params = convertToNodes( params, defaults );
 
 	var eps = 0.01;
 

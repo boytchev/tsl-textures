@@ -5,7 +5,7 @@
 
 import { Color } from "three";
 import { abs, exp, oneMinus, positionGeometry, select, sqrt, vec3 } from 'three/tsl';
-import { hsl, noise, prepare, toHsl, TSLFn } from './tsl-utils.js';
+import { convertToNodes, hsl, noise, toHsl, TSLFn } from './tsl-utils.js';
 
 
 
@@ -28,7 +28,7 @@ var defaults = {
 
 var neonLights = TSLFn( ( params ) => {
 
-	params = prepare( params, defaults );
+	params = convertToNodes( params, defaults );
 
 	var pos = positionGeometry;//.mul( exp( params.scale ) ).add( params.seed ).toVar( );
 

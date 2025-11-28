@@ -5,7 +5,7 @@
 
 import { Color } from 'three';
 import { exp, mix, mx_worley_noise_float, positionGeometry } from 'three/tsl';
-import { noise, prepare, TSLFn } from './tsl-utils.js';
+import { convertToNodes, noise, TSLFn } from './tsl-utils.js';
 
 
 
@@ -27,7 +27,7 @@ var defaults = {
 
 var reticularVeins = TSLFn( ( params )=>{
 
-	params = prepare( params, defaults );
+	params = convertToNodes( params, defaults );
 
 	var pos = positionGeometry.mul( exp( params.scale.div( 2 ).add( 0.5 ) ) ).add( params.seed ).toVar( );
 

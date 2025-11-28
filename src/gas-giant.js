@@ -5,7 +5,7 @@
 
 import { Color } from "three";
 import { exp, mix, positionGeometry, vec3 } from 'three/tsl';
-import { hsl, noise, prepare, toHsl, TSLFn } from './tsl-utils.js';
+import { convertToNodes, hsl, noise, toHsl, TSLFn } from './tsl-utils.js';
 
 
 
@@ -27,7 +27,7 @@ var defaults = {
 
 var gasGiant = TSLFn( ( params )=>{
 
-	params = prepare( params, defaults );
+	params = convertToNodes( params, defaults );
 
 	var scale = params.scale.div( 2 ).add( 1 ).toVar();
 	var pos = positionGeometry.mul( exp( scale ) ).add( params.seed ).toVar( );

@@ -5,7 +5,7 @@
 
 import { Color } from 'three';
 import { exp, float, Fn, Loop, mix, positionGeometry, vec3 } from 'three/tsl';
-import { prepare, TSLFn } from './tsl-utils.js';
+import { convertToNodes, TSLFn } from './tsl-utils.js';
 
 
 
@@ -78,7 +78,7 @@ var noiseg = Fn( ([ pos ])=>{
 
 var dysonSphere = TSLFn( ( params )=>{
 
-	params = prepare( params, defaults );
+	params = convertToNodes( params, defaults );
 
 	var pos = positionGeometry.mul( exp( params.scale.div( 2 ).add( 0.5 ) ) ).add( params.seed ).toVar( );
 

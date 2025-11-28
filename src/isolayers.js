@@ -5,7 +5,7 @@
 
 import { Color } from 'three';
 import { exp, float, mix, positionGeometry } from 'three/tsl';
-import { hsl, noise, prepare, toHsl, TSLFn } from './tsl-utils.js';
+import { convertToNodes, hsl, noise, toHsl, TSLFn } from './tsl-utils.js';
 
 
 
@@ -27,7 +27,7 @@ var defaults = {
 
 var isolayers = TSLFn( ( params )=>{
 
-	params = prepare( params, defaults );
+	params = convertToNodes( params, defaults );
 
 	var pos = positionGeometry.mul( exp( params.scale.sub( 1 ) ) ).add( params.seed ).toVar( );
 

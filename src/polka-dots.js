@@ -5,7 +5,7 @@
 
 import { Color } from "three";
 import { acos, add, distance, exp, float, If, Loop, mat2, max, min, mix, mod, mul, oneMinus, positionGeometry, pow, smoothstep, } from 'three/tsl';
-import { prepare, spherical, TSLFn } from './tsl-utils.js';
+import { convertToNodes, spherical, TSLFn } from './tsl-utils.js';
 
 
 
@@ -30,7 +30,7 @@ var goldenRatio = ( 1+5**0.5 )/2;
 
 var polkaDots = TSLFn( ( params ) => {
 
-	params = prepare( params, defaults );
+	params = convertToNodes( params, defaults );
 
 	var dist = float( 1 ).toVar();
 

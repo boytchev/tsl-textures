@@ -1,4 +1,4 @@
-// TSL Textures v2.5.0
+// TSL Textures v2.5.1
 
 'use strict';
 
@@ -538,7 +538,7 @@ function hideFallbackWarning( ) {
 
 
 // converts all numeric, color and vector properties to nodes
-function prepare( userParams, defaults ) {
+function convertToNodes( userParams, defaults ) {
 
 	var propertyNames = [];
 	for ( var item of userParams ) {
@@ -589,173 +589,13 @@ function noised( pos, scale=1, octave=1, seed=0 ) {
 
 
 
-// a shim (proposed by Grok) to recover from a change of how Fn
-// is proxied since Three.js v0.180.0
+const TSLFn = ( fn, defaults, layout=null ) => {
 
-// explanation from Grok:
-/*
-In 0.179.0, TSL.Fn likely returned a plain function, allowing a.defaults
-to work without Proxy interference. In 0.180.0, the Proxy wrapping an FnNode
-instance blocks defaults access (returns undefined) and requires specific FnNode
-behavior, making the wrapper incompatible.
+	var wrapper = ( ...args ) => tsl.Fn( fn, layout )( ...args );
+	wrapper.defaults = defaults;
+	return wrapper;
 
-Solutions to Fix the Error and Access a.defaultsWe need a solution that:
-
-* Makes a.defaults directly accessible.
-* Preserves TSL compatibility by ensuring the object passed to TSL behaves
-like a TSL.Fn Proxy.
-* Avoids separate defaults variables.
-* Mimics the 0.179.0 API where a.defaults worked.
-
-Given the error, direct property access on the TSL.Fn Proxy (e.g., Object.defineProperty(a, 'defaults', {...})) fails because the get trap
-returns undefined for unknown properties on FnNode. The non-Proxy wrapper
-breaks TSL, so let’s try a refined approach that balances compatibility and
-accessibility.1. Proxy Wrapper with FnNode PrototypeInstead of a non-Proxy
-wrapper, create a Proxy that mimics TSL.Fn but stores defaults separately to
-bypass FnNode’s get behavior. To avoid breaking TSL, ensure the Proxy’s target
-has the FnNode prototype.
-
-Why This Might Work:
-
-* The Proxy’s target inherits the FnNode prototype (via fn.call), making it
-appear more like the original TSL.Fn Proxy to TSL’s checks.
-* defaults is stored in a Map, bypassing FnNode’s get trap that returns
-undefined.
-* a.fn exposes the original TSL.Fn Proxy for TSL operations.
-* Function calls (a(...)) are forwarded to the original Proxy.
-* Matches Object.getOwnPropertyDescriptor behavior.
-
-*/
-
-function TSLFn( jsFunc, defaults, layout = null ) {
-
-	var opacity = null;
-	var roughness = null;
-	var normal = null;
-
-	const fn = tsl.Fn( jsFunc, layout );
-	const customProps = new Map();
-	customProps.set( 'defaults', defaults );
-	customProps.set( 'opacity', opacity );
-	customProps.set( 'roughness', roughness );
-	customProps.set( 'normal', normal );
-
-	// Create a target with FnNode prototype to mimic TSL.Fn
-	const target = function () {};
-
-	Object.setPrototypeOf( target, Object.getPrototypeOf( fn.call ) ); // Inherit FnNode prototype
-
-	return new Proxy( target, {
-		get( target, prop, receiver ) {
-
-			if ( prop === 'defaults' ) {
-
-				return customProps.get( 'defaults' );
-
-			}
-
-			if ( prop === 'opacity' ) {
-
-				return customProps.get( 'opacity' );
-
-			}
-
-			if ( prop === 'roughness' ) {
-
-				return customProps.get( 'roughness' );
-
-			}
-
-			if ( prop === 'normal' ) {
-
-				return customProps.get( 'normal' );
-
-			}
-
-			if ( prop === 'fn' ) {
-
-				return fn; // Expose original TSL.Fn Proxy
-
-			}
-
-			return Reflect.get( fn, prop, receiver ); // Forward to original Proxy
-
-		},
-		set( target, prop, value, receiver ) {
-
-			if ( prop === 'defaults' ) {
-
-				customProps.set( 'defaults', value );
-				return true;
-
-			}
-
-			if ( prop === 'opacity' ) {
-
-				customProps.set( 'opacity', value );
-				return true;
-
-			}
-
-			if ( prop === 'roughness' ) {
-
-				customProps.set( 'roughness', value );
-				return true;
-
-			}
-
-			if ( prop === 'normal' ) {
-
-				customProps.set( 'normal', value );
-				return true;
-
-			}
-
-			return Reflect.set( fn, prop, value, receiver );
-
-		},
-		apply( target, thisArg, args ) {
-
-			return Reflect.apply( fn, thisArg, args ); // Delegate calls to original Proxy
-
-		},
-		getOwnPropertyDescriptor( target, prop ) {
-
-			if ( prop === 'defaults' ) {
-
-				return {
-					value: customProps.get( 'defaults' ),
-					writable: true,
-					enumerable: true,
-					configurable: true,
-				};
-
-			}
-
-			if ( prop === 'opacity' ) {
-
-				Reflect.getOwnPropertyDescriptor( opacity, prop );
-
-			}
-
-			if ( prop === 'roughness' ) {
-
-				Reflect.getOwnPropertyDescriptor( roughness, prop );
-
-			}
-
-			if ( prop === 'normal' ) {
-
-				Reflect.getOwnPropertyDescriptor( normal, prop );
-
-			}
-
-			return Reflect.getOwnPropertyDescriptor( fn, prop );
-
-		}
-	} );
-
-} // TSLFn
+};
 
 var defaults$N = {
 	$name: 'Brain',
@@ -776,7 +616,7 @@ var defaults$N = {
 
 var brain = TSLFn( ( params )=>{
 
-	params = prepare( params, defaults$N );
+	params = convertToNodes( params, brain.defaults );
 
 	var pos = tsl.positionGeometry.mul( tsl.exp( params.scale.div( 3 ) ) ).add( params.seed ).toVar( );
 
@@ -792,7 +632,7 @@ var brain = TSLFn( ( params )=>{
 
 brain.normal = TSLFn( ( params )=>{
 
-	params = prepare( params, defaults$N );
+	params = convertToNodes( params, brain.defaults );
 
 	var pos = tsl.positionGeometry.mul( tsl.exp( params.scale.div( 3 ) ) ).add( params.seed ).toVar( );
 
@@ -806,7 +646,7 @@ brain.normal = TSLFn( ( params )=>{
 	var dTime = tsl.mx_noise_float( pos.mul( params.wave.mul( 5 ) ) ).add( 1 ).div( 2 ).mul( 6.28 );
 	return tsl.vec3( dx, dy, tsl.time.mul( params.speed ).add( dTime ).sin().add( n, 1 ) ).normalize();
 
-}, defaults$N );
+} );
 
 var defaults$M = {
 	$name: 'Camouflage',
@@ -825,7 +665,7 @@ var defaults$M = {
 
 var camouflage = TSLFn( ( params )=>{
 
-	params = prepare( params, defaults$M );
+	params = convertToNodes( params, camouflage.defaults );
 
 	var pos = tsl.positionGeometry.mul( tsl.exp( params.scale ) ).add( params.seed ).toVar( );
 
@@ -877,7 +717,7 @@ var defaults$L = {
 
 var caveArt = TSLFn( ( params ) => {
 
-	params = prepare( params, defaults$L );
+	params = convertToNodes( params, defaults$L );
 
 	var pos = tsl.positionGeometry.mul( tsl.exp( params.scale ) ).add( params.seed ).toVar( );
 
@@ -920,7 +760,7 @@ var defaults$K = {
 
 var circles = TSLFn( ( params ) => {
 
-	params = prepare( params, defaults$K );
+	params = convertToNodes( params, defaults$K );
 
 	var pos = tsl.select( params.flat, tsl.positionGeometry, tsl.positionGeometry.normalize() );
 
@@ -994,7 +834,7 @@ var _clouds = tsl.Fn( ( params ) => {
 var clouds = TSLFn( ( params ) => {
 
 	// prepare parameters
-	params = prepare( params, defaults$J );
+	params = convertToNodes( params, defaults$J );
 
 	return _clouds( params ).rgb;
 
@@ -1005,7 +845,7 @@ var clouds = TSLFn( ( params ) => {
 clouds.opacity = TSLFn( ( params ) => {
 
 	// prepare parameters
-	params = prepare( params, defaults$J );
+	params = convertToNodes( params, defaults$J );
 
 	return _clouds( params ).a;
 
@@ -1036,7 +876,7 @@ var surfacePos$7 = tsl.Fn( ([ pos, normal, bump, density, seed ]) => {
 
 var concrete = TSLFn( ( params ) => {
 
-	params = prepare( params, defaults$I );
+	params = convertToNodes( params, defaults$I );
 
 	var eps = 0.001;
 
@@ -1083,7 +923,7 @@ var cellCenter$1 = tsl.Fn( ([ cell ])=>{
 
 var cork = TSLFn( ( params )=>{
 
-	params = prepare( params, defaults$H );
+	params = convertToNodes( params, defaults$H );
 
 	var pos = tsl.positionGeometry.mul( tsl.exp( params.scale.div( 1.5 ).add( 1 ) ) ).add( params.seed ).toVar( );
 
@@ -1147,7 +987,7 @@ var defaults$G = {
 
 var dalmatianSpots = TSLFn( ( params )=>{
 
-	params = prepare( params, defaults$G );
+	params = convertToNodes( params, defaults$G );
 
 	var pos = tsl.positionGeometry.mul( tsl.exp( params.scale ) ).add( params.seed ).sub( 1000 ).toVar( );
 
@@ -1192,7 +1032,7 @@ var defaults$F = {
 
 var darthMaul = TSLFn( ( params ) => {
 
-	params = prepare( params, defaults$F );
+	params = convertToNodes( params, defaults$F );
 
 	var position = tsl.positionGeometry.add( params.shift ).mul( tsl.exp( params.scale.div( 1.5 ).sub( 1 ) ) ).sub( params.shift ).mul( tsl.vec3( 1, 1/2, 1/2 ) ).toVar( );
 
@@ -1282,7 +1122,7 @@ var noiseg = tsl.Fn( ([ pos ])=>{
 
 var dysonSphere = TSLFn( ( params )=>{
 
-	params = prepare( params, defaults$E );
+	params = convertToNodes( params, defaults$E );
 
 	var pos = tsl.positionGeometry.mul( tsl.exp( params.scale.div( 2 ).add( 0.5 ) ) ).add( params.seed ).toVar( );
 
@@ -1316,7 +1156,7 @@ var defaults$D = {
 
 var entangled = TSLFn( ( params ) => {
 
-	params = prepare( params, defaults$D );
+	params = convertToNodes( params, defaults$D );
 
 	var scale = tsl.exp( params.scale.div( 2 ) ).toVar( );
 	var pos = tsl.positionGeometry.add( params.seed ).toVar( );
@@ -1348,7 +1188,7 @@ var defaults$C = {
 
 var fordite = TSLFn( ( params ) => {
 
-	params = prepare( params, defaults$C );
+	params = convertToNodes( params, defaults$C );
 
 	var pos = tsl.positionGeometry.mul( tsl.exp( params.scale ) ).add( params.seed ).toVar( );
 
@@ -1386,7 +1226,7 @@ var defaults$B = {
 
 var gasGiant = TSLFn( ( params )=>{
 
-	params = prepare( params, defaults$B );
+	params = convertToNodes( params, defaults$B );
 
 	var scale = params.scale.div( 2 ).add( 1 ).toVar();
 	var pos = tsl.positionGeometry.mul( tsl.exp( scale ) ).add( params.seed ).toVar( );
@@ -1440,7 +1280,7 @@ var defaults$A = {
 
 var grid = TSLFn( ( params ) => {
 
-	params = prepare( params, defaults$A );
+	params = convertToNodes( params, defaults$A );
 
 	var aspect = tsl.select( params.flat, tsl.screenSize.x.div( tsl.screenSize.y ), 2 );
 
@@ -1482,7 +1322,7 @@ var defaults$z = {
 
 var isolines = TSLFn( ( params )=>{
 
-	params = prepare( params, defaults$z );
+	params = convertToNodes( params, defaults$z );
 
 	var pos = tsl.positionGeometry.mul( tsl.exp( params.scale ) ).add( params.seed ).toVar( );
 
@@ -1511,7 +1351,7 @@ var defaults$y = {
 
 var karstRock = TSLFn( ( params )=>{
 
-	params = prepare( params, defaults$y );
+	params = convertToNodes( params, defaults$y );
 
 	var pos = tsl.positionGeometry.mul( tsl.exp( params.scale ) ).add( params.seed.sin().mul( 5 ) ).toVar( );
 
@@ -1543,7 +1383,7 @@ var defaults$x = {
 
 var marble = TSLFn( ( params ) => {
 
-	params = prepare( params, defaults$x );
+	params = convertToNodes( params, defaults$x );
 
 	var pos = tsl.positionGeometry.mul( tsl.exp( params.scale ) ).add( params.seed ).toVar( );
 
@@ -1602,7 +1442,7 @@ var defaults$w = {
 
 var neonLights = TSLFn( ( params ) => {
 
-	params = prepare( params, defaults$w );
+	params = convertToNodes( params, defaults$w );
 
 	var pos = tsl.positionGeometry;//.mul( exp( params.scale ) ).add( params.seed ).toVar( );
 
@@ -1663,7 +1503,7 @@ var defaults$v = {
 
 var photosphere = TSLFn( ( params ) => {
 
-	params = prepare( params, defaults$v );
+	params = convertToNodes( params, defaults$v );
 
 	var scale = tsl.exp( params.scale.add( 1 ) ).toVar( );
 	var pos = tsl.positionGeometry.toVar( );
@@ -1712,7 +1552,7 @@ var defaults$u = {
 
 var planet = TSLFn( ( params )=>{
 
-	params = prepare( params, defaults$u );
+	params = convertToNodes( params, defaults$u );
 
 	var k = tsl.float( 0 ).toVar(),
 		sum = tsl.float( 0 ).toVar(),
@@ -1822,7 +1662,7 @@ var goldenRatio = ( 1+5**0.5 )/2;
 
 var polkaDots = TSLFn( ( params ) => {
 
-	params = prepare( params, defaults$t );
+	params = convertToNodes( params, defaults$t );
 
 	var dist = tsl.float( 1 ).toVar();
 
@@ -1887,7 +1727,7 @@ var defaults$s = {
 
 var processedWood = TSLFn( ( params )=>{
 
-	params = prepare( params, defaults$s );
+	params = convertToNodes( params, defaults$s );
 
 	var angle = tsl.radians( params.angle ).toVar();
 	var posLocal = tsl.vec3(
@@ -1934,7 +1774,7 @@ var pnoise = tsl.Fn( ([ pos, fat ])=>{
 
 var protozoa = TSLFn( ( params )=>{
 
-	params = prepare( params, defaults$r );
+	params = convertToNodes( params, defaults$r );
 
 	var pos = tsl.positionGeometry.mul( tsl.exp( params.scale.sub( 1 ) ) ).add( params.seed ).toVar( );
 
@@ -2001,7 +1841,7 @@ var surfacePos$6 = tsl.Fn( ([ pos, params ])=>{
 
 var rotator = TSLFn( ( params )=>{
 
-	params = prepare( params, defaults$q );
+	params = convertToNodes( params, defaults$q );
 
 	return surfacePos$6( tsl.positionGeometry, params );
 
@@ -2011,7 +1851,7 @@ var rotator = TSLFn( ( params )=>{
 
 rotator.normal = TSLFn( ( params ) => {
 
-	params = prepare( params, defaults$q );
+	params = convertToNodes( params, defaults$q );
 
 	var eps = 0.01;
 
@@ -2057,7 +1897,7 @@ var surfacePos$5 = tsl.Fn( ([ pos, normal, bump, curvature ]) => {
 
 var roughClay = TSLFn( ( params ) => {
 
-	params = prepare( params, defaults$p );
+	params = convertToNodes( params, defaults$p );
 
 	var eps = 0.001;
 
@@ -2099,7 +1939,7 @@ var defaults$o = {
 
 var runnyEggs = TSLFn( ( params ) => {
 
-	params = prepare( params, defaults$o );
+	params = convertToNodes( params, defaults$o );
 
 	var pos = tsl.positionGeometry.mul( tsl.exp( params.scale.div( 1 ) ) ).add( params.seed.sin().mul( 10 ) ).toVar( );
 
@@ -2130,7 +1970,7 @@ var surfacePos$4 = tsl.Fn( ([ pos, normal, bump, sizeYolk, sizeWhite ]) => {
 
 runnyEggs.normal = TSLFn( ( params ) => {
 
-	params = prepare( params, defaults$o );
+	params = convertToNodes( params, defaults$o );
 
 	var eps = 0.001;
 	var bump = 0.05;
@@ -2157,7 +1997,7 @@ runnyEggs.normal = TSLFn( ( params ) => {
 
 runnyEggs.roughness = TSLFn( ( params ) => {
 
-	params = prepare( params, defaults$o );
+	params = convertToNodes( params, defaults$o );
 
 	var pos = tsl.positionGeometry.mul( tsl.exp( params.scale.div( 1 ) ) ).add( params.seed.sin().mul( 10 ) ).toVar( );
 
@@ -2214,7 +2054,7 @@ var _rust = tsl.Fn( ( params )=>{
 
 var rust = TSLFn( ( params )=>{
 
-	params = prepare( params, defaults$n );
+	params = convertToNodes( params, defaults$n );
 
 	var k = _rust( params ).mul( 1.25 ).pow( 0.5 );
 
@@ -2230,7 +2070,7 @@ var rust = TSLFn( ( params )=>{
 
 rust.opacity = TSLFn( ( params )=>{
 
-	params = prepare( params, defaults$n );
+	params = convertToNodes( params, defaults$n );
 
 	var k = _rust( params ).mul( params.opacity.add( 0.2 ) );
 
@@ -2253,7 +2093,7 @@ var defaults$m = {
 
 var satin = TSLFn( ( params ) => {
 
-	params = prepare( params, defaults$m );
+	params = convertToNodes( params, defaults$m );
 
 	var pos = tsl.positionGeometry.toVar( );
 
@@ -2318,7 +2158,7 @@ var surfacePos$3 = tsl.Fn( ([ pos, params ])=>{
 
 var scaler = TSLFn( ( params )=>{
 
-	params = prepare( params, defaults$l );
+	params = convertToNodes( params, defaults$l );
 
 	return surfacePos$3( tsl.positionGeometry, params );
 
@@ -2328,7 +2168,7 @@ var scaler = TSLFn( ( params )=>{
 
 scaler.normal = TSLFn( ( params ) => {
 
-	params = prepare( params, defaults$l );
+	params = convertToNodes( params, defaults$l );
 
 	var eps = 0.01;
 
@@ -2364,7 +2204,7 @@ var defaults$k = {
 
 var scepterHead = TSLFn( ( params ) => {
 
-	params = prepare( params, defaults$k );
+	params = convertToNodes( params, defaults$k );
 
 	var pos = tsl.positionGeometry;
 
@@ -2418,7 +2258,7 @@ var defaults$j = {
 
 var scream = TSLFn( ( params ) => {
 
-	params = prepare( params, defaults$j );
+	params = convertToNodes( params, defaults$j );
 
 	var pos = tsl.positionGeometry.mul( tsl.exp( params.scale ) ).add( params.seed ).toVar( );
 
@@ -2467,7 +2307,7 @@ var defaults$i = {
 
 var simplexNoise = TSLFn( ( params ) => {
 
-	params = prepare( params, defaults$i );
+	params = convertToNodes( params, defaults$i );
 
 	var pos = tsl.positionGeometry.mul( tsl.exp( params.scale ) ).add( params.seed );
 
@@ -2494,7 +2334,7 @@ var defaults$h = {
 
 var stars = TSLFn( ( params ) => {
 
-	params = prepare( params, defaults$h );
+	params = convertToNodes( params, defaults$h );
 
 	var pos = tsl.positionGeometry.mul( tsl.exp( params.scale.div( 2 ).add( 3 ) ) ).add( params.seed ).toVar( );
 
@@ -2526,7 +2366,7 @@ var defaults$g = {
 
 var staticNoise = TSLFn( ( params ) => {
 
-	params = prepare( params, defaults$g );
+	params = convertToNodes( params, defaults$g );
 
 	var pos = tsl.screenCoordinate.div( tsl.exp( params.scale ) ).add( params.seed );
 
@@ -2571,7 +2411,7 @@ var surfacePos$2 = tsl.Fn( ([ pos, params ])=>{
 
 var supersphere = TSLFn( ( params )=>{
 
-	params = prepare( params, defaults$f );
+	params = convertToNodes( params, defaults$f );
 
 	return surfacePos$2( tsl.positionGeometry, params );
 
@@ -2581,7 +2421,7 @@ var supersphere = TSLFn( ( params )=>{
 
 supersphere.normal = TSLFn( ( params ) => {
 
-	params = prepare( params, defaults$f );
+	params = convertToNodes( params, defaults$f );
 
 	var eps = 0.01;
 
@@ -2620,7 +2460,7 @@ var defaults$e = {
 
 var tigerFur = TSLFn( ( params )=>{
 
-	params = prepare( params, defaults$e );
+	params = convertToNodes( params, defaults$e );
 
 	var scale = params.scale.div( 2 ).add( 1 ).toVar();
 	var pos = tsl.positionGeometry.mul( tsl.exp( scale ) ).add( params.seed ).toVar( );
@@ -2666,7 +2506,7 @@ var surfacePos$1 = tsl.Fn( ([ pos, params ])=>{
 
 var translator = TSLFn( ( params )=>{
 
-	params = prepare( params, defaults$d );
+	params = convertToNodes( params, defaults$d );
 
 	return surfacePos$1( tsl.positionGeometry, params );
 
@@ -2676,7 +2516,7 @@ var translator = TSLFn( ( params )=>{
 
 translator.normal = TSLFn( ( params ) => {
 
-	params = prepare( params, defaults$d );
+	params = convertToNodes( params, defaults$d );
 
 	var eps = 0.01;
 
@@ -2720,7 +2560,7 @@ var cellCenter = tsl.Fn( ([ cell ])=>{
 
 var voronoiCells = TSLFn( ( params )=>{
 
-	params = prepare( params, defaults$c );
+	params = convertToNodes( params, defaults$c );
 
 	var pos = tsl.positionGeometry.mul( tsl.exp( params.scale.div( 2 ).add( 0.5 ) ) ).add( params.seed ).toVar( );
 
@@ -2789,7 +2629,7 @@ var surfacePos = tsl.Fn( ([ pos, normal, bump, density, seed ]) => {
 
 var waterDrops = TSLFn( ( params ) => {
 
-	params = prepare( params, defaults$b );
+	params = convertToNodes( params, defaults$b );
 
 	var eps = 0.001;
 
@@ -2833,7 +2673,7 @@ var defaults$a = {
 
 var watermelon = TSLFn( ( params )=>{
 
-	params = prepare( params, defaults$a );
+	params = convertToNodes( params, defaults$a );
 
 	var variation = tsl.select( params.flat, params.variation.mul( 0.85 ).add( 0.15 ), params.variation );
 
@@ -2878,7 +2718,7 @@ var defaults$9 = {
 
 var wood = TSLFn( ( params ) => {
 
-	params = prepare( params, defaults$9 );
+	params = convertToNodes( params, defaults$9 );
 
 	var angle = tsl.radians( params.angle ).toVar();
 	var posLocal = tsl.vec3(
@@ -2932,7 +2772,7 @@ var defaults$8 = {
 
 var zebraLines = TSLFn( ( params ) => {
 
-	params = prepare( params, defaults$8 );
+	params = convertToNodes( params, defaults$8 );
 
 	var pos = tsl.select( params.flat, tsl.positionGeometry, tsl.positionGeometry.normalize() ).toVar( );
 
@@ -2969,7 +2809,7 @@ var defaults$7 = {
 
 var circleDecor = TSLFn( ( params )=>{
 
-	params = prepare( params, defaults$7 );
+	params = convertToNodes( params, defaults$7 );
 
 	var pos = tsl.positionGeometry.mul( tsl.exp( params.scale.div( 4 ) ) ).add( params.seed ).toVar( );
 	var subpos = pos.mul( 2 ).toVar( );
@@ -3004,7 +2844,7 @@ var defaults$6 = {
 
 var reticularVeins = TSLFn( ( params )=>{
 
-	params = prepare( params, defaults$6 );
+	params = convertToNodes( params, defaults$6 );
 
 	var pos = tsl.positionGeometry.mul( tsl.exp( params.scale.div( 2 ).add( 0.5 ) ) ).add( params.seed ).toVar( );
 
@@ -3031,7 +2871,7 @@ var defaults$5 = {
 
 var romanPaving = TSLFn( ( params )=>{
 
-	params = prepare( params, defaults$5 );
+	params = convertToNodes( params, defaults$5 );
 
 	var pos = tsl.positionGeometry.mul( tsl.exp( params.scale ) ).add( params.seed ).toVar( );
 
@@ -3059,7 +2899,7 @@ var defaults$4 = {
 
 var crumpledFabric = TSLFn( ( params )=>{
 
-	params = prepare( params, defaults$4 );
+	params = convertToNodes( params, defaults$4 );
 
 	var pos = tsl.positionGeometry.mul( tsl.exp( params.scale.sub( 0.5 ) ) ).add( params.seed ).toVar( );
 
@@ -3101,7 +2941,7 @@ var defaults$3 = {
 
 var isolayers = TSLFn( ( params )=>{
 
-	params = prepare( params, defaults$3 );
+	params = convertToNodes( params, defaults$3 );
 
 	var pos = tsl.positionGeometry.mul( tsl.exp( params.scale.sub( 1 ) ) ).add( params.seed ).toVar( );
 
@@ -3137,7 +2977,7 @@ var defaults$2 = {
 
 var turbulentSmoke = TSLFn( ( params )=>{
 
-	params = prepare( params, defaults$2 );
+	params = convertToNodes( params, defaults$2 );
 
 	var pos = tsl.positionGeometry.mul( tsl.exp( params.scale.sub( 1 ) ) ).add( params.seed ).toVar( );
 
@@ -3172,7 +3012,7 @@ var defaults$1 = {
 
 var caustics = TSLFn( ( params )=>{
 
-	params = prepare( params, defaults$1 );
+	params = convertToNodes( params, defaults$1 );
 
 	var pos = tsl.positionGeometry.mul( tsl.exp( params.scale.sub( 1 ) ) ).add( params.seed ).toVar( );
 
@@ -3225,7 +3065,7 @@ var defaults = {
 
 var bricks = TSLFn( ( params )=>{
 
-	params = prepare( params, defaults );
+	params = convertToNodes( params, defaults );
 
 
 	var pos = tsl.positionGeometry.mul( tsl.exp( params.scale ) ).add( params.seed ).toVar( );
@@ -3277,6 +3117,7 @@ exports.circleDecor = circleDecor;
 exports.circles = circles;
 exports.clouds = clouds;
 exports.concrete = concrete;
+exports.convertToNodes = convertToNodes;
 exports.cork = cork;
 exports.crumpledFabric = crumpledFabric;
 exports.dalmatianSpots = dalmatianSpots;
@@ -3306,7 +3147,6 @@ exports.overlayPlanar = overlayPlanar;
 exports.photosphere = photosphere;
 exports.planet = planet;
 exports.polkaDots = polkaDots;
-exports.prepare = prepare;
 exports.processedWood = processedWood;
 exports.protozoa = protozoa;
 exports.remapExp = remapExp;

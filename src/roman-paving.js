@@ -4,7 +4,7 @@
 
 
 import { exp, mx_worley_noise_vec2, positionGeometry } from 'three/tsl';
-import { prepare, TSLFn } from './tsl-utils.js';
+import { convertToNodes, TSLFn } from './tsl-utils.js';
 
 
 
@@ -21,7 +21,7 @@ var defaults = {
 
 var romanPaving = TSLFn( ( params )=>{
 
-	params = prepare( params, defaults );
+	params = convertToNodes( params, defaults );
 
 	var pos = positionGeometry.mul( exp( params.scale ) ).add( params.seed ).toVar( );
 

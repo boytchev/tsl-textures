@@ -5,7 +5,7 @@
 
 import { Color } from "three";
 import { add, cos, exp, mix, positionGeometry, radians, sin, sub, vec3 } from 'three/tsl';
-import { noise, prepare, TSLFn } from './tsl-utils.js';
+import { convertToNodes, noise, TSLFn } from './tsl-utils.js';
 
 
 
@@ -28,7 +28,7 @@ var defaults = {
 
 var processedWood = TSLFn( ( params )=>{
 
-	params = prepare( params, defaults );
+	params = convertToNodes( params, defaults );
 
 	var angle = radians( params.angle ).toVar();
 	var posLocal = vec3(

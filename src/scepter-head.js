@@ -5,7 +5,7 @@
 
 import { Color } from "three";
 import { abs, add, cos, floor, max, mix, mod, mul, positionGeometry, remapClamp, sign, tan, vec3 } from 'three/tsl';
-import { hsl, noise, prepare, remapExp, toHsl, TSLFn } from './tsl-utils.js';
+import { convertToNodes, hsl, noise, remapExp, toHsl, TSLFn } from './tsl-utils.js';
 
 
 
@@ -25,7 +25,7 @@ var defaults = {
 
 var scepterHead = TSLFn( ( params ) => {
 
-	params = prepare( params, defaults );
+	params = convertToNodes( params, defaults );
 
 	var pos = positionGeometry;
 

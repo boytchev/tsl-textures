@@ -543,7 +543,7 @@ function hideFallbackWarning( ) {
 
 
 // converts all numeric, color and vector properties to nodes
-function prepare( userParams, defaults ) {
+function convertToNodes( userParams, defaults ) {
 
 	var propertyNames = [];
 	for ( var item of userParams ) {
@@ -632,7 +632,7 @@ undefined.
 
 */
 
-function TSLFn( jsFunc, defaults, layout = null ) {
+function TSLFn__old( jsFunc, defaults, layout = null ) {
 
 	var opacity = null;
 	var roughness = null;
@@ -763,6 +763,17 @@ function TSLFn( jsFunc, defaults, layout = null ) {
 } // TSLFn
 
 
+
+const TSLFn = ( fn, defaults, layout=null ) => {
+
+	var wrapper = ( ...args ) => Fn( fn, layout )( ...args );
+	wrapper.defaults = defaults;
+	return wrapper;
+
+};
+
+
+
 export
 {
 	mx_noise_float as noise
@@ -789,6 +800,6 @@ export
 	showFallbackWarning,
 	hideFallbackWarning,
 	normalVector,
-	prepare,
-	TSLFn
+	TSLFn,
+	convertToNodes,
 };

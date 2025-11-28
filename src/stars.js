@@ -5,7 +5,7 @@
 
 import { Color } from "three";
 import { abs, add, exp, mix, positionGeometry, select } from 'three/tsl';
-import { hsl, noise, prepare, toHsl, TSLFn } from './tsl-utils.js';
+import { convertToNodes, hsl, noise, toHsl, TSLFn } from './tsl-utils.js';
 
 
 
@@ -26,7 +26,7 @@ var defaults = {
 
 var stars = TSLFn( ( params ) => {
 
-	params = prepare( params, defaults );
+	params = convertToNodes( params, defaults );
 
 	var pos = positionGeometry.mul( exp( params.scale.div( 2 ).add( 3 ) ) ).add( params.seed ).toVar( );
 

@@ -5,7 +5,7 @@
 
 import { Color } from "three";
 import { acos, clamp, cos, exp, mix, positionGeometry, select, sin, vec2 } from 'three/tsl';
-import { prepare, spherical, TSLFn } from './tsl-utils.js';
+import { convertToNodes, spherical, TSLFn } from './tsl-utils.js';
 
 
 
@@ -28,7 +28,7 @@ var defaults = {
 
 var zebraLines = TSLFn( ( params ) => {
 
-	params = prepare( params, defaults );
+	params = convertToNodes( params, defaults );
 
 	var pos = select( params.flat, positionGeometry, positionGeometry.normalize() ).toVar( );
 
