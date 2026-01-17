@@ -817,8 +817,8 @@ function downloadImage( tslTexture, name, map ) {
 	exportRenderer.setAnimationLoop( ()=>{
 
 		frame++;
-		exportRenderer.renderAsync( exportScene, exportCamera );
-		if ( frame>5 ) {
+		exportRenderer.render( exportScene, exportCamera );
+//		if ( frame>5 ) {
 
 			exportRenderer.setAnimationLoop( null );
 
@@ -840,7 +840,7 @@ function downloadImage( tslTexture, name, map ) {
 
 			}
 
-		}
+	//	}
 
 	} );
 
