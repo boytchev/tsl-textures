@@ -21,7 +21,7 @@ showFallbackWarning();
 
 // resources - a model and a font
 
-const SOLDIER_GLB = '../../../assets/models/Soldier/Soldier.glb';
+const SOLDIER_GLB = '../../assets/models/Soldier/Soldier.glb';
 const FONT_JSON = 'https://cdn.jsdelivr.net/npm/three@0.181.0/examples/fonts/helvetiker_regular.typeface.json';
 
 
