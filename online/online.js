@@ -818,29 +818,29 @@ function downloadImage( tslTexture, name, map ) {
 
 		frame++;
 		exportRenderer.render( exportScene, exportCamera );
-//		if ( frame>5 ) {
+		//		if ( frame>5 ) {
 
-			exportRenderer.setAnimationLoop( null );
+		exportRenderer.setAnimationLoop( null );
 
-			var dataURL = exportCanvas.toDataURL( 'image/jpeg', 1 ); // 0.9 is quality (0 to 1)
+		var dataURL = exportCanvas.toDataURL( 'image/jpeg', 1 ); // 0.9 is quality (0 to 1)
 
-			var link = document.createElement( 'a' );
-			link.download = name+suffix;
-			link.href = dataURL;
+		var link = document.createElement( 'a' );
+		link.download = name+suffix;
+		link.href = dataURL;
 
-			document.body.appendChild( link );
-			link.click();
-			document.body.removeChild( link );
+		document.body.appendChild( link );
+		link.click();
+		document.body.removeChild( link );
 
-			exportScene.remove( exportModel );
+		exportScene.remove( exportModel );
 
-			if ( exportOptions.type==EXPORT_MAP && 'flat' in params ) {
+		if ( exportOptions.type==EXPORT_MAP && 'flat' in params ) {
 
-				params.flat = 0;
+			params.flat = 0;
 
-			}
+		}
 
-	//	}
+		//	}
 
 	} );
 

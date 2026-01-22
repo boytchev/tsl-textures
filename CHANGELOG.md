@@ -1,5 +1,9 @@
 # TSL Textures
 
+## 2.5.3
+* Fixed issue in exporting texture in Firefox
+* Added example "Texture binding"
+
 ## 2.5.2
 * Experimental implementation of simplified TSLFn wrapper
 * Refactor prepare -> convertToNodes

@@ -5,6 +5,7 @@
 //	toHsl( rgb:vec3 ):vec3			- convert from rgb to hsl
 //	spherical( phi, theta ):vec3	- from angles to point on unit sphere
 //	applyEuler( vec:vec3, eu:vec3 ):vec3 - apply Euler rotation to a vector
+//	noise(pos,mul,add) 				- perlin*mul+add
 
 
 
@@ -16,7 +17,7 @@ import { Color, Vector3 } from 'three';
 // helper function - convert hsl to rgb, ported to TSL from:
 // https://en.wikipedia.org/wiki/HSL_and_HSV#HSL_to_RGB_alternative
 
-const hslHelper = Fn( ([ h, s, l, n ])=>{
+/*??*/const hslHelper = Fn( ([ h, s, l, n ])=>{
 
 	var k = n.add( h.mul( 12 ) ).mod( 12 );
 	var a = s.mul( min( l, sub( 1, l ) ) );
@@ -38,7 +39,7 @@ hslHelper.setLayout( {
 
 
 // convert from hsl to rgb
-const hsl = Fn( ([ h, s, l ]) => {
+/*??*/const hsl = Fn( ([ h, s, l ]) => {
 
 	h = h.fract().add( 1 ).fract();
 	s = s.clamp( 0, 1 );
@@ -64,7 +65,7 @@ hsl.setLayout( {
 
 
 // convert from rgb to hsl
-const toHsl = Fn( ([ rgb ]) => {
+/*??*/const toHsl = Fn( ([ rgb ]) => {
 
 	var R = float( rgb.x ).toVar(),
 		G = float( rgb.y ).toVar(),
@@ -116,7 +117,7 @@ toHsl.setLayout( {
 
 
 // make all elements dynamic (i.e. uniform)
-function dynamic( params ) {
+/*??*/function dynamic( params ) {
 
 	var result = {};
 
@@ -140,7 +141,7 @@ function dynamic( params ) {
 
 
 // convert phi-theta angles to position on unit sphere
-const spherical = Fn( ([ phi, theta ]) => {
+/*??*/const spherical = Fn( ([ phi, theta ]) => {
 
 	return vec3(
 		sin( theta ).mul( sin( phi ) ),
@@ -162,7 +163,7 @@ spherical.setLayout( {
 
 
 // apply Euler rotation to a vector
-const applyEuler = Fn( ([ vec, eu ]) => {
+/*??*/const applyEuler = Fn( ([ vec, eu ]) => {
 
 	var quat = quaternionFromEuler( eu );
 	return applyQuaternion( vec, quat );
@@ -180,7 +181,7 @@ applyEuler.setLayout( {
 
 
 // convert Euler XYZ angles to quaternion
-const quaternionFromEuler = Fn( ([ eu ]) => {
+/*??*/const quaternionFromEuler = Fn( ([ eu ]) => {
 
 	var c1 = cos( eu.x.div( 2 ) );
 	var c2 = cos( eu.y.div( 2 ) );
@@ -209,7 +210,7 @@ quaternionFromEuler.setLayout( {
 
 
 // apply quaternion rotation to a vector
-const applyQuaternion = Fn( ([ vec, quat ]) => {
+/*??*/const applyQuaternion = Fn( ([ vec, quat ]) => {
 
 	var t = cross( quat.xyz, vec ).mul( 2 ).toVar( );
 
@@ -228,7 +229,7 @@ applyQuaternion.setLayout( {
 
 
 // exponential version of remap
-const remapExp = Fn( ([ x, fromMin, fromMax, toMin, toMax ]) => {
+/*??*/const remapExp = Fn( ([ x, fromMin, fromMax, toMin, toMax ]) => {
 
 	x = remap( x, fromMin, fromMax, 0, 1 );
 	x = pow( 2, mul( x, log2( toMax.div( toMin ) ) ).add( log2( toMin ) ) );
@@ -251,7 +252,7 @@ remapExp.setLayout( {
 
 
 // simple vector noise, vec3->float[-1,1]
-const vnoise = Fn( ([ v ])=>{
+/*??*/const vnoise = Fn( ([ v ])=>{
 
 	return v.dot( vec3( 12.9898, 78.233, -97.5123 ) ).sin().mul( 43758.5453 ).fract().mul( 2 ).sub( 1 );
 
@@ -268,7 +269,7 @@ vnoise.setLayout( {
 
 
 // generate X-rotation matrix
-const matRotX = Fn( ([ angle ])=>{
+/*??*/const matRotX = Fn( ([ angle ])=>{
 
 	var	cos = angle.cos().toVar(),
 		sin = angle.sin().toVar();
@@ -292,7 +293,7 @@ matRotX.setLayout( {
 
 
 // generate Y-rotation matrix
-const matRotY = Fn( ([ angle ])=>{
+/*??*/const matRotY = Fn( ([ angle ])=>{
 
 	var	cos = angle.cos().toVar(),
 		sin = angle.sin().toVar();
@@ -316,7 +317,7 @@ matRotY.setLayout( {
 
 
 // generate Z-rotation matrix
-const matRotZ = Fn( ([ angle ])=>{
+/*??*/const matRotZ = Fn( ([ angle ])=>{
 
 	var	cos = angle.cos().toVar(),
 		sin = angle.sin().toVar();
@@ -340,7 +341,7 @@ matRotZ.setLayout( {
 
 
 // generate YXZ rotation matrix
-const matRotYXZ = Fn( ([ angles ])=>{
+/*??*/const matRotYXZ = Fn( ([ angles ])=>{
 
 	var RX = matRotX( angles.x ),
 		RY = matRotY( angles.y ),
@@ -361,7 +362,7 @@ matRotYXZ.setLayout( {
 
 
 // generate scaling matrix
-const matScale = Fn( ([ scales ])=>{
+/*??*/const matScale = Fn( ([ scales ])=>{
 
 	return mat4(
 		scales.x, 0, 0, 0,
@@ -382,7 +383,7 @@ matScale.setLayout( {
 
 
 // generate translation matrix
-const matTrans = Fn( ([ vector ])=>{
+/*??*/const matTrans = Fn( ([ vector ])=>{
 
 	return mat4(
 		1, 0, 0, 0,
@@ -401,7 +402,7 @@ matTrans.setLayout( {
 } );
 
 
-const selectPlanar = Fn( ([ pos, selAngles, selCenter, selWidth ])=>{
+/*??*/const selectPlanar = Fn( ([ pos, selAngles, selCenter, selWidth ])=>{
 
 	// select zone in a plane through point selCenter,
 	// rotated according to selAngles and selWidth thick
@@ -445,7 +446,7 @@ selectPlanar.setLayout( {
 } );
 
 
-const overlayPlanar = Fn( ( params )=>{
+/*??*/const overlayPlanar = Fn( ( params )=>{
 
 	var zone = selectPlanar(
 		positionGeometry,
@@ -462,7 +463,7 @@ const overlayPlanar = Fn( ( params )=>{
 
 
 
-const normalVector = Fn( ([ pos ])=>{
+/*??*/const normalVector = Fn( ([ pos ])=>{
 
 	var dU = dFdx( pos ),
 		dV = dFdy( pos );
@@ -543,7 +544,7 @@ function hideFallbackWarning( ) {
 
 
 // converts all numeric, color and vector properties to nodes
-function convertToNodes( userParams, defaults ) {
+/*??*/function convertToNodes( userParams, defaults ) {
 
 	var propertyNames = [];
 	for ( var item of userParams ) {
@@ -586,7 +587,7 @@ function convertToNodes( userParams, defaults ) {
 
 
 // generate scaled noise
-function noised( pos, scale=1, octave=1, seed=0 ) {
+/*??*/function noised( pos, scale=1, octave=1, seed=0 ) {
 
 	return mx_noise_float( pos.mul( scale, octave ).add( seed ) );
 
@@ -594,177 +595,9 @@ function noised( pos, scale=1, octave=1, seed=0 ) {
 
 
 
-// a shim (proposed by Grok) to recover from a change of how Fn
+// a shim to recover from a change of how Fn
 // is proxied since Three.js v0.180.0
-
-// explanation from Grok:
-/*
-In 0.179.0, TSL.Fn likely returned a plain function, allowing a.defaults
-to work without Proxy interference. In 0.180.0, the Proxy wrapping an FnNode
-instance blocks defaults access (returns undefined) and requires specific FnNode
-behavior, making the wrapper incompatible.
-
-Solutions to Fix the Error and Access a.defaultsWe need a solution that:
-
-* Makes a.defaults directly accessible.
-* Preserves TSL compatibility by ensuring the object passed to TSL behaves
-like a TSL.Fn Proxy.
-* Avoids separate defaults variables.
-* Mimics the 0.179.0 API where a.defaults worked.
-
-Given the error, direct property access on the TSL.Fn Proxy (e.g., Object.defineProperty(a, 'defaults', {...})) fails because the get trap
-returns undefined for unknown properties on FnNode. The non-Proxy wrapper
-breaks TSL, so let’s try a refined approach that balances compatibility and
-accessibility.1. Proxy Wrapper with FnNode PrototypeInstead of a non-Proxy
-wrapper, create a Proxy that mimics TSL.Fn but stores defaults separately to
-bypass FnNode’s get behavior. To avoid breaking TSL, ensure the Proxy’s target
-has the FnNode prototype.
-
-Why This Might Work:
-
-* The Proxy’s target inherits the FnNode prototype (via fn.call), making it
-appear more like the original TSL.Fn Proxy to TSL’s checks.
-* defaults is stored in a Map, bypassing FnNode’s get trap that returns
-undefined.
-* a.fn exposes the original TSL.Fn Proxy for TSL operations.
-* Function calls (a(...)) are forwarded to the original Proxy.
-* Matches Object.getOwnPropertyDescriptor behavior.
-
-*/
-
-function TSLFn__old( jsFunc, defaults, layout = null ) {
-
-	var opacity = null;
-	var roughness = null;
-	var normal = null;
-
-	const fn = Fn( jsFunc, layout );
-	const customProps = new Map();
-	customProps.set( 'defaults', defaults );
-	customProps.set( 'opacity', opacity );
-	customProps.set( 'roughness', roughness );
-	customProps.set( 'normal', normal );
-
-	// Create a target with FnNode prototype to mimic TSL.Fn
-	const target = function () {};
-
-	Object.setPrototypeOf( target, Object.getPrototypeOf( fn.call ) ); // Inherit FnNode prototype
-
-	return new Proxy( target, {
-		get( target, prop, receiver ) {
-
-			if ( prop === 'defaults' ) {
-
-				return customProps.get( 'defaults' );
-
-			}
-
-			if ( prop === 'opacity' ) {
-
-				return customProps.get( 'opacity' );
-
-			}
-
-			if ( prop === 'roughness' ) {
-
-				return customProps.get( 'roughness' );
-
-			}
-
-			if ( prop === 'normal' ) {
-
-				return customProps.get( 'normal' );
-
-			}
-
-			if ( prop === 'fn' ) {
-
-				return fn; // Expose original TSL.Fn Proxy
-
-			}
-
-			return Reflect.get( fn, prop, receiver ); // Forward to original Proxy
-
-		},
-		set( target, prop, value, receiver ) {
-
-			if ( prop === 'defaults' ) {
-
-				customProps.set( 'defaults', value );
-				return true;
-
-			}
-
-			if ( prop === 'opacity' ) {
-
-				customProps.set( 'opacity', value );
-				return true;
-
-			}
-
-			if ( prop === 'roughness' ) {
-
-				customProps.set( 'roughness', value );
-				return true;
-
-			}
-
-			if ( prop === 'normal' ) {
-
-				customProps.set( 'normal', value );
-				return true;
-
-			}
-
-			return Reflect.set( fn, prop, value, receiver );
-
-		},
-		apply( target, thisArg, args ) {
-
-			return Reflect.apply( fn, thisArg, args ); // Delegate calls to original Proxy
-
-		},
-		getOwnPropertyDescriptor( target, prop ) {
-
-			if ( prop === 'defaults' ) {
-
-				return {
-					value: customProps.get( 'defaults' ),
-					writable: true,
-					enumerable: true,
-					configurable: true,
-				};
-
-			}
-
-			if ( prop === 'opacity' ) {
-
-				Reflect.getOwnPropertyDescriptor( opacity, prop );
-
-			}
-
-			if ( prop === 'roughness' ) {
-
-				Reflect.getOwnPropertyDescriptor( roughness, prop );
-
-			}
-
-			if ( prop === 'normal' ) {
-
-				Reflect.getOwnPropertyDescriptor( normal, prop );
-
-			}
-
-			return Reflect.getOwnPropertyDescriptor( fn, prop );
-
-		}
-	} );
-
-} // TSLFn
-
-
-
-const TSLFn = ( fn, defaults, layout=null ) => {
+/*??*/const TSLFn = ( fn, defaults, layout=null ) => {
 
 	var wrapper = ( ...args ) => Fn( fn, layout )( ...args );
 	wrapper.defaults = defaults;
