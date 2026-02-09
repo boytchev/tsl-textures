@@ -42,6 +42,7 @@ model.material.colorNode = romanPaving ( {
 
 ### Parameters
 
+* `position` &ndash; coordinates used to map texture, default is TSL `positionGeometry` node
 * `scale` &ndash; level of details of the pattern, higher value generates finer details, [0, 4]
 * `depth` &ndash; depth of stone pavement and size of gaps between stones, [0, 1]
 * `seed` &ndash; number for the random generator, each value generates specific pattern

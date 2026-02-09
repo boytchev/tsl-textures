@@ -4,14 +4,15 @@
 
 
 import { Color } from "three";
-import { abs, exp, float, floor, Loop, max, mix, mul, oneMinus, positionGeometry, pow, sin } from 'three/tsl';
-import { convertToNodes, noise, TSLFn } from './tsl-utils.js';
+import { abs, exp, float, Fn, Loop, max, mix, mul, oneMinus, positionGeometry, pow, sin } from 'three/tsl';
+import { noise } from './tsl-utils.js';
 
 
 
 var defaults = {
 	$name: 'Entangled',
 
+	position: positionGeometry,
 	scale: 2,
 	density: 10,
 
@@ -23,28 +24,51 @@ var defaults = {
 
 
 
-var entangled = TSLFn( ( params ) => {
+var entangledRaw = Fn( ([ position, scale, density, color, background, seed ]) => {
 
-	params = convertToNodes( params, defaults );
-
-	var scale = exp( params.scale.div( 2 ) ).toVar( );
-	var pos = positionGeometry.add( params.seed ).toVar( );
+	var xscale = exp( scale.div( 2 ) ).toVar( );
+	var pos = position.add( seed ).toVar( );
 	var k = float( -10000 ).toVar( );
 	var k1 = float( 0 ).toVar( );
 
-	Loop( floor( float( params.density ) ), ()=> {
+	Loop( density, ()=> {
 
-		k1.assign( sin( noise( mul( pos, scale ) ).mul( 3*Math.PI ) ) );
+		k1.assign( sin( noise( mul( pos, xscale ) ).mul( 3*Math.PI ) ) );
 		k.assign( max( k, k1 ) );
-		scale.mulAssign( 1.2 );
+		xscale.mulAssign( 1.2 );
 
 	} );
 
 	k.assign( oneMinus( pow( abs( k ), 5 ) ).mul( 6 ) );
 
-	return mix( params.color, params.background, k );
+	return mix( color, background, k );
 
-}, defaults );
+} ).setLayout( {
+	name: 'entangled',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'density', type: 'int' },
+		{ name: 'color', type: 'vec3' },
+		{ name: 'background', type: 'vec3' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
+
+
+
+function entangled( params={} ) {
+
+	var { position, scale, density, color, background, seed } = { ...defaults, ...params };
+
+	return entangledRaw( position, scale, density, color, background, seed );
+
+}
+
+
+
+entangled.defaults = defaults;
 
 
 

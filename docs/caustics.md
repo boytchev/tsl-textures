@@ -43,8 +43,10 @@ model.material.colorNode = caustics ( {
 
 ### Parameters
 
+* `position` &ndash; coordinates used to map texture, default is TSL `positionGeometry` node
 * `scale` &ndash; level of details of the pattern, higher value generates finer details, [0, 4]
 * `speed` &ndash; caustics motion speed, negative values are slow, positive values are fast, [-2,2]
+* `time` &ndash; current time for brain wave animation, defaut is TSL's `time` node
 * `color` &ndash; color of the water
 * `seed` &ndash; number for the random generator, each value generates specific pattern
 

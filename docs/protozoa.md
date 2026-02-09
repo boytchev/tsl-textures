@@ -47,6 +47,8 @@ model.material.colorNode = protozoa ( {
 
 ### Parameters
 
+* `position` &ndash; coordinates used to map texture, default is TSL `positionGeometry` node
+* `matcap` &ndash; material capture coordinates, default is TSL `matcapUV` node
 * `scale` &ndash; level of details of the pattern, higher value generates finer details, [0, 4]
 * `fat` &ndash; the size of the largest protozoa, [0, 1]
 * `amount` &ndash; amount of protozoa organisms, [0, 1]

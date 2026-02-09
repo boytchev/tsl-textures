@@ -215,3 +215,8 @@ span.figure img {
 	margin-top: 0.5em;
 	width: 100%;
 }
+
+.warning {
+	color: crimson !important;
+	background: pink;
+}

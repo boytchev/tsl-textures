@@ -4,8 +4,8 @@
 
 
 import { Vector2, Vector3 } from "three";
-import { cross, Fn, normalLocal, positionGeometry, sub, tangentLocal, transformNormalToView, vec4 } from 'three/tsl';
-import { convertToNodes, matRotYXZ, matTrans, selectPlanar, TSLFn } from './tsl-utils.js';
+import { cross, Fn, normalLocal, positionGeometry, tangentLocal } from 'three/tsl';
+import { approximateNormal, rotatePivot, selectPlanar, } from './tsl-utils.js';
 
 
 
@@ -14,7 +14,7 @@ var defaults = {
 	$positionNode: true,
 	$selectorPlanar: true,
 
-	angles: new Vector3( 0.4, -0.6, 0 ),
+	angles: new Vector3( -0.2, 0.7, 0 ),
 	center: new Vector3( 0, 0, 0 ),
 
 	selectorCenter: new Vector3( 0, 0, 0 ),
@@ -25,51 +25,95 @@ var defaults = {
 
 
 
-var surfacePos = Fn( ([ pos, params ])=>{
+var surfacePos = Fn( ([ pos, angles, center, selectorAngles, selectorCenter, selectorWidth ])=>{
 
-	var zone = selectPlanar( pos, params.selectorAngles, params.selectorCenter, params.selectorWidth );
+	var zone = selectPlanar( pos, selectorAngles, selectorCenter, selectorWidth );
 
-	var R = matRotYXZ( params.angles.mul( zone ) ),
-		T = matTrans( params.center ),
-		TN = matTrans( params.center.negate() );
+	return rotatePivot( pos, center, angles.mul( zone ) );
 
-	return T.mul( R ).mul( TN ).mul( vec4( pos, 1 ) ).xyz;
-
+} ).setLayout( {
+	name: 'surfacePos',
+	type: 'vec3',
+	inputs: [
+		{ name: 'pos', type: 'vec3' },
+		{ name: 'angles', type: 'vec3' },
+		{ name: 'center', type: 'vec3' },
+		{ name: 'selectorAngles', type: 'vec2' },
+		{ name: 'selectorCenter', type: 'vec3' },
+		{ name: 'selectorWidth', type: 'float' },
+	]
 } );
 
 
 
-var rotator = TSLFn( ( params )=>{
+var rotatorRaw = Fn( ([ angles, center, selectorAngles, selectorCenter, selectorWidth ])=>{
 
-	params = convertToNodes( params, defaults );
+	return surfacePos( positionGeometry, angles, center, selectorAngles, selectorCenter, selectorWidth );
 
-	return surfacePos( positionGeometry, params );
+} ).setLayout( {
+	name: 'rotatorRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'angles', type: 'vec3' },
+		{ name: 'center', type: 'vec3' },
+		{ name: 'selectorAngles', type: 'vec2' },
+		{ name: 'selectorCenter', type: 'vec3' },
+		{ name: 'selectorWidth', type: 'float' },
+	]
+} );
 
-}, defaults );
 
 
+var rotatorNormalRaw = Fn( ([ angles, center, selectorAngles, selectorCenter, selectorWidth ]) => {
 
-rotator.normal = TSLFn( ( params ) => {
-
-	params = convertToNodes( params, defaults );
-
-	var eps = 0.01;
+	const EPS = 0.01;
 
 	var position = positionGeometry,
 		normal = normalLocal.normalize().toVar(),
-		tangent = tangentLocal.normalize().mul( eps ).toVar(),
-		bitangent = cross( normal, tangent ).normalize().mul( eps ).toVar();
+		tangent = tangentLocal.normalize().mul( EPS ).toVar(),
+		bitangent = cross( normal, tangent ).normalize().mul( EPS ).toVar();
 
-	var pos = surfacePos( position, params );
-	var posU = surfacePos( position.add( tangent ), params );
-	var posV = surfacePos( position.add( bitangent ), params );
+	var pos = surfacePos( position, angles, center, selectorAngles, selectorCenter, selectorWidth );
+	var posU = surfacePos( position.add( tangent ), angles, center, selectorAngles, selectorCenter, selectorWidth );
+	var posV = surfacePos( position.add( bitangent ), angles, center, selectorAngles, selectorCenter, selectorWidth );
 
-	var dU = sub( posU, pos ),
-		dV = sub( posV, pos );
+	return approximateNormal( pos, posU, posV );
 
-	return transformNormalToView( cross( dU, dV ).normalize() );
+} ).setLayout( {
+	name: 'rotatorNormalRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'angles', type: 'vec3' },
+		{ name: 'center', type: 'vec3' },
+		{ name: 'selectorAngles', type: 'vec2' },
+		{ name: 'selectorCenter', type: 'vec3' },
+		{ name: 'selectorWidth', type: 'float' },
+	]
+} );
 
-}, defaults );
+
+
+function rotator( params={} ) {
+
+	var { angles, center, selectorAngles, selectorCenter, selectorWidth } = { ...defaults, ...params };
+
+	return rotatorRaw( angles, center, selectorAngles, selectorCenter, selectorWidth );
+
+}
+
+
+
+rotator.normal = function ( params={} ) {
+
+	var { angles, center, selectorAngles, selectorCenter, selectorWidth } = { ...defaults, ...params };
+
+	return rotatorNormalRaw( angles, center, selectorAngles, selectorCenter, selectorWidth );
+
+};
+
+
+
+rotator.defaults = defaults;
 
 
 

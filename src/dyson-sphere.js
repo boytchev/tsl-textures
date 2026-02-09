@@ -5,13 +5,13 @@
 
 import { Color } from 'three';
 import { exp, float, Fn, Loop, mix, positionGeometry, vec3 } from 'three/tsl';
-import { convertToNodes, TSLFn } from './tsl-utils.js';
 
 
 
 var defaults = {
 	$name: 'Dyson sphere',
 
+	position: positionGeometry,
 	scale: 2,
 	complexity: 2,
 
@@ -31,15 +31,29 @@ var noisea = Fn( ([ pos ])=>{
 	p.addAssign( p.dot( p.add( vec3( 31.4159, 27.1828, 14.142 ) ) ) );
 	return p.z.mul( p.x.add( p.y ) ).fract().mul( 2 ).sub( 1 );
 
-} );
+} ).setLayout( {
+	name: 'noisea',
+	type: 'float',
+	inputs: [
+		{ name: 'pos', type: 'vec3' },
+	] }
+);
 
 
-var smooth = Fn( ([ x ])=>{
+
+var smoother = Fn( ([ x ])=>{
 
 	var t = x.oneMinus().clamp( 0, 1 ).toVar();
 	return t.mul( t ).mul( float( 3 ).sub( t.mul( 2 ) ) );
 
-} );
+} ).setLayout( {
+	name: 'smoother',
+	type: 'float',
+	inputs: [
+		{ name: 'x', type: 'float' },
+	] }
+);
+
 
 
 var noiseg = Fn( ([ pos ])=>{
@@ -53,13 +67,13 @@ var noiseg = Fn( ([ pos ])=>{
 	var minz = pos.z.floor().toVar();
 	var maxz = minz.add( 1 ).toVar();
 
-	var dx = smooth( pos.x.fract() ).toVar();
-	var dy = smooth( pos.y.fract() ).toVar();
-	var dz = smooth( pos.z.fract() ).toVar();
+	var dx = smoother( pos.x.fract() ).toVar();
+	var dy = smoother( pos.y.fract() ).toVar();
+	var dz = smoother( pos.z.fract() ).toVar();
 
-	var mx = smooth( dx.oneMinus() ).toVar();
-	var my = smooth( dy.oneMinus() ).toVar();
-	var mz = smooth( dz.oneMinus() ).toVar();
+	var mx = smoother( dx.oneMinus() ).toVar();
+	var my = smoother( dy.oneMinus() ).toVar();
+	var mz = smoother( dz.oneMinus() ).toVar();
 
 	var n000 = noisea( vec3( minx, miny, minz ) ).mul( mx ).mul( my ).mul( mz ).toVar();
 	var n001 = noisea( vec3( minx, miny, maxz ) ).mul( mx ).mul( my ).mul( dz ).toVar();
@@ -72,29 +86,58 @@ var noiseg = Fn( ([ pos ])=>{
 
 	return n000.add( n001 ).add( n010 ).add( n011 ).add( n100 ).add( n101 ).add( n110 ).add( n111 );
 
-} );
+} ).setLayout( {
+	name: 'noiseg',
+	type: 'float',
+	inputs: [
+		{ name: 'pos', type: 'vec3' },
+	] }
+);
 
 
 
-var dysonSphere = TSLFn( ( params )=>{
+var dysonSphereRaw = Fn( ([ position, scale, complexity, color, background, seed ])=>{
 
-	params = convertToNodes( params, defaults );
-
-	var pos = positionGeometry.mul( exp( params.scale.div( 2 ).add( 0.5 ) ) ).add( params.seed ).toVar( );
+	var pos = position.mul( exp( scale.div( 2 ).add( 0.5 ) ) ).add( seed ).toVar( );
 
 	var res = vec3().toVar();
 	var factor = float( 1 ).toVar();
 
-	Loop( params.complexity.add( 4 ), ()=>{
+	Loop( complexity.add( 4 ), ()=>{
 
 		res.addAssign( noiseg( pos.mul( factor ) ) );
 		factor.addAssign( factor );
 
 	} );
 
-	return mix( params.background, params.color, res.x.add( 1 ).div( 5 ) );
+	return mix( background, color, res.x.add( 1 ).div( 5 ) );
 
-}, defaults );
+} ).setLayout( {
+	name: 'dysonSphereRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'complexity', type: 'float' },
+		{ name: 'color', type: 'vec3' },
+		{ name: 'background', type: 'vec3' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
+
+
+
+function dysonSphere( params={} ) {
+
+	var { position, scale, complexity, color, background, seed } = { ...defaults, ...params };
+
+	return dysonSphereRaw( position, scale, complexity, color, background, seed );
+
+}
+
+
+
+dysonSphere.defaults = defaults;
 
 
 

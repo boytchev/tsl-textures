@@ -11,7 +11,6 @@ import { matTrans, noise, prepare } from './tsl-utils.js';
 
 var surfacePos = Fn( ([ pos, params ])=>{
 
-	//var zone = selectPlanar( pos, params.selectorAngles, params.selectorCenter, params.selectorWidth );
 	var zone = float( 1 ).toVar();
 	var n = noise( pos.mul( 2 ) ).add( 1 ).div( 2 ); // noise factor
 	var k = params.distance.normalize().dot( normalLocal.normalize() ).max( 0 ).pow( 10 );

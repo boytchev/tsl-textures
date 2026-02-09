@@ -44,6 +44,7 @@ model.material.colorNode = dalmatianSpots ( {
 
 ### Parameters
 
+* `position` &ndash; coordinates used to map texture, default is TSL `positionGeometry` node
 * `scale` &ndash; level of details of the pattern, higher value generates finer details, [0, 4]
 * `density` &ndash; density of spots, [0,1]
 * `color` &ndash; color of spots

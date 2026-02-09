@@ -4,14 +4,15 @@
 
 
 import { Color } from 'three';
-import { exp, mix, mx_worley_noise_float, positionGeometry } from 'three/tsl';
-import { convertToNodes, noise, TSLFn } from './tsl-utils.js';
+import { exp, Fn, mix, positionGeometry } from 'three/tsl';
+import { noise, voronoi } from './tsl-utils.js';
 
 
 
 var defaults = {
 	$name: 'Circle decor',
 
+	position: positionGeometry,
 	scale: 2,
 	grains: 0.2,
 
@@ -26,24 +27,49 @@ var defaults = {
 
 
 
-var circleDecor = TSLFn( ( params )=>{
+var circleDecorRaw = Fn( ([ position, scale, grains, complexity, blur, color, background, seed ])=>{
 
-	params = convertToNodes( params, defaults );
+	var pos = position.mul( exp( scale.div( 4 ) ) ).add( seed ).toVar( 'pos' );
+	var subpos = pos.mul( 2 ).toVar( 'subpos' );
 
-	var pos = positionGeometry.mul( exp( params.scale.div( 4 ) ) ).add( params.seed ).toVar( );
-	var subpos = pos.mul( 2 ).toVar( );
-
-	var k1 = mx_worley_noise_float( pos );
-	var k2 = mx_worley_noise_float( subpos );
-	var k3 = mx_worley_noise_float( pos.mul( params.grains.mul( 4 ).add( 2 ) ) ).mul( 2 );
+	var k1 = voronoi( pos );
+	var k2 = voronoi( subpos );
+	var k3 = voronoi( pos.mul( grains.mul( 4 ).add( 2 ) ) ).mul( 2 );
 
 	var compScale = noise( pos ).div( 2 ).add( 1 );
 
-	var k = k1.min( k2, k3 ).clamp( 0, 1 ).mul( params.complexity.add( 2 ).exp(), compScale, Math.PI ).sin().smoothstep( params.blur.negate(), params.blur );
+	var k = k1.min( k2, k3 ).clamp( 0, 1 ).mul( complexity.add( 2 ).exp(), compScale, Math.PI ).sin().smoothstep( blur.negate(), blur );
 
-	return mix( params.color, params.background, k.oneMinus() );
+	return mix( color, background, k.oneMinus() );
 
-}, defaults );
+} ).setLayout( {
+	name: 'camouflageRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'grains', type: 'float' },
+		{ name: 'complexity', type: 'float' },
+		{ name: 'blur', type: 'float' },
+		{ name: 'color', type: 'vec3' },
+		{ name: 'background', type: 'vec3' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
+
+
+
+function circleDecor( params={} ) {
+
+	var { position, scale, grains, complexity, blur, color, background, seed } = { ...defaults, ...params };
+
+	return circleDecorRaw( position, scale, grains, complexity, blur, color, background, seed );
+
+}
+
+
+
+circleDecor.defaults = defaults;
 
 
 

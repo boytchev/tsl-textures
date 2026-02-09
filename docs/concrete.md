@@ -43,6 +43,7 @@ model.material.normalNode = concrete ( {
 
 ### Parameters
 
+* `position` &ndash; coordinates used to map texture, default is TSL `positionGeometry` node
 * `scale` &ndash; level of details of the pattern, higher value generates finer details, [0, 4]
 * `density` &ndash; pattern density [0,1]
 * `bump` &ndash; bumpiness (height) of grains, negative bumps make dents [-2,2]

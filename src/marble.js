@@ -4,14 +4,15 @@
 
 
 import { Color } from "three";
-import { add, div, exp, If, mix, mul, oneMinus, positionGeometry, pow } from 'three/tsl';
-import { convertToNodes, noise, TSLFn } from './tsl-utils.js';
+import { add, div, exp, Fn, If, mix, mul, oneMinus, positionGeometry, pow } from 'three/tsl';
+import { noise } from './tsl-utils.js';
 
 
 
 var defaults = {
 	$name: 'Marble',
 
+	position: positionGeometry,
 	scale: 1.2,
 	thinness: 5,
 	noise: 0.3,
@@ -24,11 +25,9 @@ var defaults = {
 
 
 
-var marble = TSLFn( ( params ) => {
+var marbleRaw = Fn( ([ position, scale, thinness, xnoise, color, background, seed ]) => {
 
-	params = convertToNodes( params, defaults );
-
-	var pos = positionGeometry.mul( exp( params.scale ) ).add( params.seed ).toVar( );
+	var pos = position.mul( exp( scale ) ).add( seed ).toVar( );
 
 	var k = add(
 		noise( pos ),
@@ -38,8 +37,8 @@ var marble = TSLFn( ( params ) => {
 
 	var k = oneMinus( k.abs().pow( 2.5 ) ).toVar();
 
-	var	maxSmooth = oneMinus( pow( 0.5, params.thinness.add( 7 ) ) ).toVar(),
-		minSmooth = oneMinus( pow( 0.5, params.thinness.add( 7 ).mul( 0.5 ) ) ).toVar();
+	var	maxSmooth = oneMinus( pow( 0.5, thinness.add( 7 ) ) ).toVar(),
+		minSmooth = oneMinus( pow( 0.5, thinness.add( 7 ).mul( 0.5 ) ) ).toVar();
 
 	If( k.greaterThan( maxSmooth ), ()=>{
 
@@ -60,11 +59,37 @@ var marble = TSLFn( ( params ) => {
 
 		} );
 
-	k.assign( k.add( mul( params.noise, noise( pos.mul( 150 ) ).abs().pow3() ) ) );
+	k.assign( k.add( mul( xnoise, noise( pos.mul( 150 ) ).abs().pow3() ) ) );
 
-	return mix( params.background, params.color, k );
+	return mix( background, color, k );
 
-}, defaults );
+} ).setLayout( {
+	name: 'marbleRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'thinness', type: 'float' },
+		{ name: 'xnoise', type: 'float' },
+		{ name: 'color', type: 'vec3' },
+		{ name: 'background', type: 'vec3' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
+
+
+
+function marble( params={} ) {
+
+	var { position, scale, thinness, noise, color, background, seed } = { ...defaults, ...params };
+
+	return marbleRaw( position, scale, thinness, noise, color, background, seed );
+
+}
+
+
+
+marble.defaults = defaults;
 
 
 

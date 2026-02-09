@@ -1,243 +1,71 @@
 ﻿
-//	Equirectangular Texture Generator - TSL Utility Functions
-//
-//	hsl( h, s, l ):vec3 			- convert from hsl to rgb
-//	toHsl( rgb:vec3 ):vec3			- convert from rgb to hsl
+//	TSL Utility Functions
+
+//	noise(pos,mul,add) 				- perlin noise (x*mul+add), x->[-1,1]
+//	fractal(pos,octaves,...)		- fractal noise
+//	voronoi(pos,jitter,...)			- voronoi cells (worley noise)
+//	voronoi2(pos,jitter,...)		- voronoi cells but returns vec2
+//	voronoi3(pos,jitter,...)		- voronoi cells but returns vec3
+//	vnoise(pos)						- simple noise -> [-1,1]
+//	approximateNormal(pos,posU,posV) - approximate normal vector
+//  toHsl(vec3)						- convert rgb to hsl
+//  hsl(vec3)						- convert hsl to rgb
+//	remapExp(x,fromMin,fromMax,toMin,toMax) - exponential version of remap
+//	showFallbackWarning( )
+//	hideFallbackWarning( )
 //	spherical( phi, theta ):vec3	- from angles to point on unit sphere
-//	applyEuler( vec:vec3, eu:vec3 ):vec3 - apply Euler rotation to a vector
-//	noise(pos,mul,add) 				- perlin*mul+add
+//	rotatePivot( vector, pivot, angle ) - rotate around pivot point
 
 
 
-import { add, cos, cross, dFdx, dFdy, float, Fn, If, log2, mat4, max, min, mul, mx_noise_float, positionGeometry, pow, remap, select, sin, smoothstep, sub, transformNormalToView, uniform, vec3, vec4 } from 'three/tsl';
-import { Color, Vector3 } from 'three';
-//import { mx_perlin_noise_float as noise } from 'https://cdn.jsdelivr.net/npm/three@0.167.0/src/nodes/materialx/lib/mx_noise.js';
+import { add, cos, cross, float, Fn, If, log2, max, min, mul, pow, remap, rotate, select, sin, smoothstep, sub, transformNormalToView, vec3 } from 'three/tsl';
 
 
-// helper function - convert hsl to rgb, ported to TSL from:
-// https://en.wikipedia.org/wiki/HSL_and_HSV#HSL_to_RGB_alternative
 
-/*??*/const hslHelper = Fn( ([ h, s, l, n ])=>{
+// simple vector noise, vec3->float[-1,1]
+const vnoise = Fn( ([ v ])=>{
 
-	var k = n.add( h.mul( 12 ) ).mod( 12 );
-	var a = s.mul( min( l, sub( 1, l ) ) );
-	return l.sub( a.mul( max( -1, min( min( k.sub( 3 ), sub( 9, k ) ), 1 ) ) ) );
+	return v.dot( vec3( 12.9898, 78.233, -97.5123 ) ).sin().mul( 43758.5453 ).fract().mul( 2 ).sub( 1 );
 
-} );
-
-hslHelper.setLayout( {
-	name: 'hslHelper',
+} ).setLayout( {
+	name: 'vnoise',
 	type: 'float',
 	inputs: [
-		{ name: 'h', type: 'float' },
-		{ name: 's', type: 'float' },
-		{ name: 'l', type: 'float' },
-		{ name: 'n', type: 'float' },
+		{ name: 'v', type: 'vec3' },
 	]
 } );
 
 
 
-// convert from hsl to rgb
-/*??*/const hsl = Fn( ([ h, s, l ]) => {
+// approximate normal vector given point and two neighbout points
+const approximateNormal = Fn( ([ pos, posU, posV ])=>{
 
-	h = h.fract().add( 1 ).fract();
-	s = s.clamp( 0, 1 );
-	l = l.clamp( 0, 1 );
+	var dU = sub( posU, pos ),
+		dV = sub( posV, pos );
 
-	var r = hslHelper( h, s, l, 0 );
-	var g = hslHelper( h, s, l, 8 );
-	var b = hslHelper( h, s, l, 4 );
+	return transformNormalToView( cross( dU, dV ).normalize() );
 
-	return vec3( r, g, b );
-
-} );
-
-hsl.setLayout( {
-	name: 'hsl',
+} ).setLayout( {
+	name: 'approximateNormal',
 	type: 'vec3',
 	inputs: [
-		{ name: 'h', type: 'float' },
-		{ name: 's', type: 'float' },
-		{ name: 'l', type: 'float' },
+		{ name: 'pos', type: 'vec3' },
+		{ name: 'posU', type: 'vec3' },
+		{ name: 'posV', type: 'vec3' },
 	]
 } );
 
 
-// convert from rgb to hsl
-/*??*/const toHsl = Fn( ([ rgb ]) => {
-
-	var R = float( rgb.x ).toVar(),
-		G = float( rgb.y ).toVar(),
-		B = float( rgb.z ).toVar();
-
-	var mx = max( R, max( G, B ) ).toVar();
-	var mn = min( R, min( G, B ) ).toVar();
-
-	var H = float( 0 ).toVar(),
-		S = float( 0 ).toVar(),
-		L = add( mx, mn ).div( 2 );
-
-	If( mn.notEqual( mx ), ()=>{
-
-		const delta = sub( mx, mn ).toVar();
-
-		S.assign( select( L.lessThanEqual( 0.5 ), delta.div( add( mn, mx ) ), delta.div( sub( 2, add( mn, mx ) ) ) ) );
-		If( mx.equal( R ), ()=>{
-
-			H.assign( sub( G, B ).div( delta ).add( select( G.lessThanEqual( B ), 6, 0 ) ) );
-
-		} )
-			.ElseIf( mx.equal( G ), ()=>{
-
-				H.assign( sub( B, R ).div( delta ).add( 2 ) );
-
-			} )
-			.Else( ()=>{
-
-				H.assign( sub( R, G ).div( delta ).add( 4 ) );
-
-			} );
-		H.divAssign( 6 );
-
-	} );
-	return vec3( H, S, L );
-
-} );
-
-toHsl.setLayout( {
-	name: 'toHsl',
-	type: 'vec3',
-	inputs: [
-		{ name: 'rgb', type: 'vec3' },
-	]
-} );
-
-
-
-
-// make all elements dynamic (i.e. uniform)
-/*??*/function dynamic( params ) {
-
-	var result = {};
-
-	for ( var [ key, value ] of Object.entries( params ) ) {
-
-		if ( key[ 0 ]!='$' ) {
-
-			if ( value instanceof Vector3 )
-				result[ key ] = uniform( value, 'vec3' );
-			else
-				result[ key ] = uniform( value );
-
-		}
-
-	}
-
-	return result;
-
-}
-
-
-
-// convert phi-theta angles to position on unit sphere
-/*??*/const spherical = Fn( ([ phi, theta ]) => {
-
-	return vec3(
-		sin( theta ).mul( sin( phi ) ),
-		cos( phi ),
-		cos( theta ).mul( sin( phi ) )
-	);
-
-} );
-
-spherical.setLayout( {
-	name: 'spherical',
-	type: 'vec3',
-	inputs: [
-		{ name: 'phi', type: 'float' },
-		{ name: 'theta', type: 'float' },
-	]
-} );
-
-
-
-// apply Euler rotation to a vector
-/*??*/const applyEuler = Fn( ([ vec, eu ]) => {
-
-	var quat = quaternionFromEuler( eu );
-	return applyQuaternion( vec, quat );
-
-} );
-
-applyEuler.setLayout( {
-	name: 'applyEuler',
-	type: 'vec4',
-	inputs: [
-		{ name: 'vec', type: 'vec3' },
-		{ name: 'eu', type: 'vec3' },
-	]
-} );
-
-
-// convert Euler XYZ angles to quaternion
-/*??*/const quaternionFromEuler = Fn( ([ eu ]) => {
-
-	var c1 = cos( eu.x.div( 2 ) );
-	var c2 = cos( eu.y.div( 2 ) );
-	var c3 = cos( eu.z.div( 2 ) );
-
-	var s1 = sin( eu.x.div( 2 ) );
-	var s2 = sin( eu.y.div( 2 ) );
-	var s3 = sin( eu.z.div( 2 ) );
-
-	return vec4(
-		add( mul( s1, c2, c3 ), mul( c1, s2, s3 ) ),
-		sub( mul( c1, s2, c3 ), mul( s1, c2, s3 ) ),
-		add( mul( c1, c2, s3 ), mul( s1, s2, c3 ) ),
-		sub( mul( c1, c2, c3 ), mul( s1, s2, s3 ) ),
-	);
-
-} );
-
-quaternionFromEuler.setLayout( {
-	name: 'quaternionFromEuler',
-	type: 'vec4',
-	inputs: [
-		{ name: 'eu', type: 'vec3' },
-	]
-} );
-
-
-// apply quaternion rotation to a vector
-/*??*/const applyQuaternion = Fn( ([ vec, quat ]) => {
-
-	var t = cross( quat.xyz, vec ).mul( 2 ).toVar( );
-
-	return add( vec, t.mul( quat.w ), cross( quat.xyz, t ) );
-
-} );
-
-applyQuaternion.setLayout( {
-	name: 'applyQuaternion',
-	type: 'vec3',
-	inputs: [
-		{ name: 'vec', type: 'vec3' },
-		{ name: 'quat', type: 'vec4' },
-	]
-} );
 
 
 // exponential version of remap
-/*??*/const remapExp = Fn( ([ x, fromMin, fromMax, toMin, toMax ]) => {
+const remapExp = Fn( ([ x, fromMin, fromMax, toMin, toMax ]) => {
 
 	x = remap( x, fromMin, fromMax, 0, 1 );
 	x = pow( 2, mul( x, log2( toMax.div( toMin ) ) ).add( log2( toMin ) ) );
 	return x;
 
-} );
-
-remapExp.setLayout( {
+} ).setLayout( {
 	name: 'remapExp',
 	type: 'float',
 	inputs: [
@@ -251,236 +79,7 @@ remapExp.setLayout( {
 
 
 
-// simple vector noise, vec3->float[-1,1]
-/*??*/const vnoise = Fn( ([ v ])=>{
-
-	return v.dot( vec3( 12.9898, 78.233, -97.5123 ) ).sin().mul( 43758.5453 ).fract().mul( 2 ).sub( 1 );
-
-} );
-
-vnoise.setLayout( {
-	name: 'vnoise',
-	type: 'float',
-	inputs: [
-		{ name: 'v', type: 'vec3' },
-	]
-} );
-
-
-
-// generate X-rotation matrix
-/*??*/const matRotX = Fn( ([ angle ])=>{
-
-	var	cos = angle.cos().toVar(),
-		sin = angle.sin().toVar();
-
-	return mat4(
-		1, 0, 0, 0,
-		0, cos, sin, 0,
-		0, sin.negate(), cos, 0,
-		0, 0, 0, 1 );
-
-} );
-
-matRotX.setLayout( {
-	name: 'matRotX',
-	type: 'mat4',
-	inputs: [
-		{ name: 'angle', type: 'float' },
-	]
-} );
-
-
-
-// generate Y-rotation matrix
-/*??*/const matRotY = Fn( ([ angle ])=>{
-
-	var	cos = angle.cos().toVar(),
-		sin = angle.sin().toVar();
-
-	return mat4(
-		cos, 0, sin.negate(), 0,
-		0, 1, 0, 0,
-		sin, 0, cos, 0,
-		0, 0, 0, 1 );
-
-} );
-
-matRotY.setLayout( {
-	name: 'matRotY',
-	type: 'mat4',
-	inputs: [
-		{ name: 'angle', type: 'float' },
-	]
-} );
-
-
-
-// generate Z-rotation matrix
-/*??*/const matRotZ = Fn( ([ angle ])=>{
-
-	var	cos = angle.cos().toVar(),
-		sin = angle.sin().toVar();
-
-	return mat4(
-		cos, sin, 0, 0,
-		sin.negate(), cos, 0, 0,
-		0, 0, 1, 0,
-		0, 0, 0, 1 );
-
-} );
-
-matRotZ.setLayout( {
-	name: 'matRotZ',
-	type: 'mat4',
-	inputs: [
-		{ name: 'angle', type: 'float' },
-	]
-} );
-
-
-
-// generate YXZ rotation matrix
-/*??*/const matRotYXZ = Fn( ([ angles ])=>{
-
-	var RX = matRotX( angles.x ),
-		RY = matRotY( angles.y ),
-		RZ = matRotZ( angles.z );
-
-	return RY.mul( RX ).mul( RZ );
-
-} );
-
-matRotYXZ.setLayout( {
-	name: 'matRotYXZ',
-	type: 'mat4',
-	inputs: [
-		{ name: 'angles', type: 'vec3' },
-	]
-} );
-
-
-
-// generate scaling matrix
-/*??*/const matScale = Fn( ([ scales ])=>{
-
-	return mat4(
-		scales.x, 0, 0, 0,
-		0, scales.y, 0, 0,
-		0, 0, scales.z, 0,
-		0, 0, 0, 1 );
-
-} );
-
-matScale.setLayout( {
-	name: 'matScale',
-	type: 'mat4',
-	inputs: [
-		{ name: 'scales', type: 'vec3' },
-	]
-} );
-
-
-
-// generate translation matrix
-/*??*/const matTrans = Fn( ([ vector ])=>{
-
-	return mat4(
-		1, 0, 0, 0,
-		0, 1, 0, 0,
-		0, 0, 1, 0,
-		vector.x, vector.y, vector.z, 1 );
-
-} );
-
-matTrans.setLayout( {
-	name: 'matTrans',
-	type: 'mat4',
-	inputs: [
-		{ name: 'vector', type: 'vec3' },
-	]
-} );
-
-
-/*??*/const selectPlanar = Fn( ([ pos, selAngles, selCenter, selWidth ])=>{
-
-	// select zone in a plane through point selCenter,
-	// rotated according to selAngles and selWidth thick
-	// result is [0,1] inside plane, 0 below plane, 1 above plane
-
-	// C is projected on segment AB
-	// result is [0,1] inside AB, 0 before A, 1 after B
-
-	/* non-optimized version
-	var s = spherical(selAngles.x,selAngles.y).mul(selWidth).toVar(),
-		c = pos,
-		a = selCenter.sub(s.div(2)),
-		b = selCenter.add(s.div(2));
-
-	var ca = a.sub(c),
-		ab = b.sub(a).toVar();
-
-	var caab = ca.dot(s),
-		abab = ab.dot(ab);
-
-	var k = caab.div(abab).negate();
-	*/
-
-	var s = spherical( selAngles.x, selAngles.y ).mul( selWidth ).toVar();
-
-	var k = selCenter.sub( s.div( 2 ) ).sub( pos ).dot( s ).div( s.dot( s ) ).negate();
-
-	return smoothstep( 0, 1, k );
-
-} );
-
-selectPlanar.setLayout( {
-	name: 'selectPlanar',
-	type: 'float',
-	inputs: [
-		{ name: 'pos', type: 'vec3' },
-		{ name: 'selAngles', type: 'vec2' },
-		{ name: 'selCenter', type: 'vec3' },
-		{ name: 'selWidth', type: 'float' },
-	]
-} );
-
-
-/*??*/const overlayPlanar = Fn( ( params )=>{
-
-	var zone = selectPlanar(
-		positionGeometry,
-		params.selectorAngles,
-		params.selectorCenter,
-		params.selectorWidth
-	).sub( 0.5 ).mul( 2 ).abs().oneMinus().pow( 0.25 ).negate().mul(
-		params.selectorShow
-	);
-
-	return vec3( 0, zone, zone );
-
-} );
-
-
-
-/*??*/const normalVector = Fn( ([ pos ])=>{
-
-	var dU = dFdx( pos ),
-		dV = dFdy( pos );
-
-	return transformNormalToView( cross( dU, dV ).normalize() );
-
-} );
-
-normalVector.setLayout( {
-	name: 'normalVector',
-	type: 'vec3',
-	inputs: [
-		{ name: 'pos', type: 'vec3' },
-	]
-} );
-
-
+// show notification that
 var banner = null;
 var bannerCounter = 10;
 async function showFallbackWarning( ) {
@@ -532,7 +131,6 @@ function hideFallbackWarning( ) {
 		else {
 
 			banner.style.display = 'none';
-			//		document.removeChild( banner );
 			banner = null;
 
 		}
@@ -543,96 +141,203 @@ function hideFallbackWarning( ) {
 
 
 
-// converts all numeric, color and vector properties to nodes
-/*??*/function convertToNodes( userParams, defaults ) {
+// helper function - convert hsl to rgb, ported to TSL from:
+// https://en.wikipedia.org/wiki/HSL_and_HSV#HSL_to_RGB_alternative
 
-	var propertyNames = [];
-	for ( var item of userParams ) {
+const hslHelper = Fn( ([ h, s, l, n ])=>{
 
-	  if ( item && typeof item === 'object' ) {
+	var k = n.add( h.mul( 12 ) ).mod( 12 );
+	var a = s.mul( min( l, sub( 1, l ) ) );
+	return l.sub( a.mul( max( -1, min( min( k.sub( 3 ), sub( 9, k ) ), 1 ) ) ) );
 
-			propertyNames = Object.keys( item );
-			break;
-
-		}
-
-	}
-
-	var params = { ...defaults };
-
-	for ( var key of propertyNames ) {
-
-		if ( typeof userParams[ key ] !== 'undefined' )
-			params[ key ] = userParams[ key ];
-
-	}
-
-	for ( var name of Object.keys( params ) ) {
-
-		if ( typeof params[ name ] === 'number' )
-			params[ name ] = float( params[ name ]);
-		else
-			if ( params[ name ] instanceof Color )
-				params[ name ] = vec3( params[ name ].r, params[ name ].g, params[ name ].b );
-			else
-				if ( params[ name ] instanceof Vector3 )
-					params[ name ] = vec3( params[ name ].x, params[ name ].y, params[ name ].z );
-
-	}
-
-	return params;
-
-}
+} ).setLayout( {
+	name: 'hslHelper',
+	type: 'float',
+	inputs: [
+		{ name: 'h', type: 'float' },
+		{ name: 's', type: 'float' },
+		{ name: 'l', type: 'float' },
+		{ name: 'n', type: 'float' },
+	]
+} );
 
 
 
-// generate scaled noise
-/*??*/function noised( pos, scale=1, octave=1, seed=0 ) {
+// convert from hsl to rgb
+const hsl = Fn( ([ col ]) => {
 
-	return mx_noise_float( pos.mul( scale, octave ).add( seed ) );
+	var h = col.x.fract().add( 1 ).fract();
+	var s = col.y.clamp( 0, 1 );
+	var l = col.z.clamp( 0, 1 );
 
-}
+	var r = hslHelper( h, s, l, 0 );
+	var g = hslHelper( h, s, l, 8 );
+	var b = hslHelper( h, s, l, 4 );
+
+	return vec3( r, g, b );
+
+} ).setLayout( {
+	name: 'hsl',
+	type: 'vec3',
+	inputs: [
+		{ name: 'col', type: 'vec3' },
+	]
+} );
 
 
 
-// a shim to recover from a change of how Fn
-// is proxied since Three.js v0.180.0
-/*??*/const TSLFn = ( fn, defaults, layout=null ) => {
+// convert from rgb to hsl
+const toHsl = Fn( ([ rgb ]) => {
 
-	var wrapper = ( ...args ) => Fn( fn, layout )( ...args );
-	wrapper.defaults = defaults;
-	return wrapper;
+	var R = float( rgb.x ).toVar(),
+		G = float( rgb.y ).toVar(),
+		B = float( rgb.z ).toVar();
 
-};
+	var mx = max( R, max( G, B ) ).toVar();
+	var mn = min( R, min( G, B ) ).toVar();
+
+	var H = float( 0 ).toVar(),
+		S = float( 0 ).toVar(),
+		L = add( mx, mn ).div( 2 );
+
+	If( mn.notEqual( mx ), ()=>{
+
+		const delta = sub( mx, mn ).toVar();
+
+		S.assign( select( L.lessThanEqual( 0.5 ), delta.div( add( mn, mx ) ), delta.div( sub( 2, add( mn, mx ) ) ) ) );
+		If( mx.equal( R ), ()=>{
+
+			H.assign( sub( G, B ).div( delta ).add( select( G.lessThanEqual( B ), 6, 0 ) ) );
+
+		} )
+			.ElseIf( mx.equal( G ), ()=>{
+
+				H.assign( sub( B, R ).div( delta ).add( 2 ) );
+
+			} )
+			.Else( ()=>{
+
+				H.assign( sub( R, G ).div( delta ).add( 4 ) );
+
+			} );
+		H.divAssign( 6 );
+
+	} );
+	return vec3( H, S, L );
+
+} );
+
+toHsl.setLayout( {
+	name: 'toHsl',
+	type: 'vec3',
+	inputs: [
+		{ name: 'rgb', type: 'vec3' },
+	]
+} );
+
+
+
+const spherical = Fn( ([ phi, theta ]) => {
+
+	return vec3(
+		sin( theta ).mul( sin( phi ) ),
+		cos( phi ),
+		cos( theta ).mul( sin( phi ) )
+	);
+
+} ).setLayout( {
+	name: 'spherical',
+	type: 'vec3',
+	inputs: [
+		{ name: 'phi', type: 'float' },
+		{ name: 'theta', type: 'float' },
+	]
+} );
+
+
+
+const rotatePivot = Fn( ([ vector, pivot, angle ])=>{
+
+	return rotate( vector.sub( pivot ), angle ).add( pivot );
+
+} ).setLayout( {
+	name: 'rotatePivot',
+	type: 'vec3',
+	inputs: [
+		{ name: 'vector', type: 'vec3' },
+		{ name: 'pivot', type: 'vec3' },
+		{ name: 'angle', type: 'vec3' },
+	]
+} );
+
+
+
+const selectPlanar = Fn( ([ pos, selAngles, selCenter, selWidth ])=>{
+
+	// select zone in a plane through point selCenter,
+	// rotated according to selAngles and selWidth thick
+	// result is [0,1] inside plane, 0 below plane, 1 above plane
+
+	// C is projected on segment AB
+	// result is [0,1] inside AB, 0 before A, 1 after B
+
+	/* non-optimized version
+	var s = spherical(selAngles.x,selAngles.y).mul(selWidth).toVar(),
+		c = pos,
+		a = selCenter.sub(s.div(2)),
+		b = selCenter.add(s.div(2));
+
+	var ca = a.sub(c),
+		ab = b.sub(a).toVar();
+
+	var caab = ca.dot(s),
+		abab = ab.dot(ab);
+
+	var k = caab.div(abab).negate();
+	*/
+
+	var s = spherical( selAngles.x, selAngles.y ).mul( selWidth ).toVar();
+
+	var k = selCenter.sub( s.div( 2 ) ).sub( pos ).dot( s ).div( s.dot( s ) ).negate();
+
+	return smoothstep( 0, 1, k );
+
+} ).setLayout( {
+	name: 'selectPlanar',
+	type: 'float',
+	inputs: [
+		{ name: 'pos', type: 'vec3' },
+		{ name: 'selAngles', type: 'vec2' },
+		{ name: 'selCenter', type: 'vec3' },
+		{ name: 'selWidth', type: 'float' },
+	]
+} );
 
 
 
 export
 {
-	mx_noise_float as noise
-} from 'three/tsl';
-
-export
-{
-	noised,
-	vnoise,
-	hsl,
-	toHsl,
-	dynamic,
-	spherical,
-	applyEuler,
-	remapExp,
-	matRotX,
-	matRotY,
-	matRotZ,
-	matRotYXZ,
-	matTrans,
-	matScale,
-	selectPlanar,
-	overlayPlanar,
+	approximateNormal,
 	showFallbackWarning,
 	hideFallbackWarning,
-	normalVector,
-	TSLFn,
-	convertToNodes,
+	remapExp,
+	hsl,
+	toHsl,
+	rotatePivot,
+	vnoise,
+	spherical,
+	selectPlanar,
 };
+
+
+
+export
+{
+	mx_noise_float as noise,
+	mx_fractal_noise_float as fractal,
+	mx_fractal_noise_vec3 as fractal3,
+	mx_worley_noise_float as voronoi,
+	mx_worley_noise_vec2 as voronoi2,
+	mx_worley_noise_vec3 as voronoi3,
+
+} from 'three/tsl';

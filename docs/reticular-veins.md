@@ -46,6 +46,7 @@ model.material.colorNode = reticularVeins ( {
 
 ### Parameters
 
+* `position` &ndash; coordinates used to map texture, default is TSL `positionGeometry` node
 * `scale` &ndash; level of details of the pattern, higher value generates finer details, [0, 4]
 * `reticulation` &ndash; the density of the net of veins, [2,10]
 * `strength` &ndash; strength of reticular veins, [0,1]

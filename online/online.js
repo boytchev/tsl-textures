@@ -1,16 +1,16 @@
 ﻿
-// TO DO:	polka-dots
+
 
 
 import * as THREE from "three";
-import { uniform } from "three/tsl";
+import { cameraViewMatrix, Fn, positionGeometry, uniform, vec3 } from "three/tsl";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import * as lil from "three/addons/libs/lil-gui.module.min.js";
 import { mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js';
-import { dynamic, hideFallbackWarning, overlayPlanar, showFallbackWarning } from "tsl-textures";
+import { hideFallbackWarning, selectPlanar, showFallbackWarning } from "tsl-textures";
 
-const THREEJS = '0.174.0';
+const THREEJS = '0.181.0';
 
 const HOME_URL = '../';
 const USE_BALL = 0;
@@ -110,6 +110,23 @@ onResize( );
 
 
 
+const overlayPlanar = Fn( ( params )=>{
+
+	var zone = selectPlanar(
+		positionGeometry,
+		params.selectorAngles,
+		params.selectorCenter,
+		params.selectorWidth
+	).sub( 0.5 ).mul( 2 ).abs().oneMinus().pow( 0.25 ).negate().mul(
+		params.selectorShow
+	);
+
+	return vec3( 0, zone, zone );
+
+} );
+
+
+
 function animationLoop( /*t*/ ) {
 
 	hideFallbackWarning( );
@@ -123,6 +140,31 @@ function animationLoop( /*t*/ ) {
 	controls.update( );
 	light.position.copy( camera.position );
 	renderer.render( scene, camera );
+
+}
+
+
+
+// make all elements dynamic (i.e. uniform)
+function dynamic( params ) {
+
+	var result = {};
+
+	for ( var [ key, value ] of Object.entries( params ) )
+		if ( !Object.hasOwn( value, 'isNode' ) ) {
+
+			if ( key[ 0 ]!='$' ) {
+
+				if ( value instanceof THREE.Vector3 )
+					result[ key ] = uniform( value, 'vec3' );
+				else
+					result[ key ] = uniform( value );
+
+			}
+
+		}
+
+	return result;
 
 }
 
@@ -557,16 +599,20 @@ async function shareURL( event, name ) {
 	var url = [];
 
 	for ( const [ key, value ] of Object.entries( params ) )
-		if ( value instanceof THREE.Color )
-			url.push( `${key}=${value.getHex()}` );
-		else
-			if ( value instanceof THREE.Vector3 )
-				url.push( `${key}=${value.x},${value.y},${value.z}` );
+		if ( !Object.hasOwn( value, 'isNode' ) ) {
+
+			if ( value instanceof THREE.Color )
+				url.push( `${key}=${value.getHex()}` );
 			else
-				if ( value instanceof THREE.Vector2 )
-					url.push( `${key}=${value.x},${value.y}` );
+				if ( value instanceof THREE.Vector3 )
+					url.push( `${key}=${value.x},${value.y},${value.z}` );
 				else
-					url.push( `${key}=${value}` );
+					if ( value instanceof THREE.Vector2 )
+						url.push( `${key}=${value.x},${value.y}` );
+					else
+						url.push( `${key}=${value}` );
+
+		}
 
 	url = url.join( '&' );
 
@@ -587,16 +633,20 @@ async function getCode( event, name, filename, tslTexture ) {
 	var paramsStr = [];
 
 	for ( const [ key, value ] of Object.entries( params ) )
-		if ( value instanceof THREE.Color )
-			paramsStr.push( `${key}: new THREE.Color(${value.getHex()})` );
-		else
-			if ( value instanceof THREE.Vector3 )
-				paramsStr.push( `${key}: new THREE.Vector3(${value.x},${value.y},${value.z})` );
+		if ( !Object.hasOwn( value, 'isNode' ) ) {
+
+			if ( value instanceof THREE.Color )
+				paramsStr.push( `${key}: new THREE.Color(${value.getHex()})` );
 			else
-				if ( value instanceof THREE.Vector2 )
-					paramsStr.push( `${key}: new THREE.Vector2(${value.x},${value.y})` );
+				if ( value instanceof THREE.Vector3 )
+					paramsStr.push( `${key}: new THREE.Vector3(${value.x},${value.y},${value.z})` );
 				else
-					paramsStr.push( `${key}: ${value}` );
+					if ( value instanceof THREE.Vector2 )
+						paramsStr.push( `${key}: new THREE.Vector2(${value.x},${value.y})` );
+					else
+						paramsStr.push( `${key}: ${value}` );
+
+		}
 
 	paramsStr = paramsStr.join( `,\n	` );
 
@@ -617,6 +667,7 @@ async function getCode( event, name, filename, tslTexture ) {
 import * as THREE from "three";
 import { ${name} } from "tsl-textures";
 `;
+
 	if ( tslTexture.defaults.$normalNode )
 		js += `
 model.material.normalNode = ${name} ( {
@@ -624,32 +675,30 @@ model.material.normalNode = ${name} ( {
 } );
 `;
 	else
-		if ( tslTexture.defaults.$positionNode ) {
+		if ( tslTexture.defaults.$positionNode )
 
 			js += `
 model.material.positionNode = ${name} ( {
 	${paramsStr}
 } );
 `;
-			if ( tslTexture.normal ) {
+		else {
 
+			js += `model.material.colorNode = ${name} ( {
+	${paramsStr}
+} );
+`;
+
+			if ( tslTexture.normal )
 				js += `
 model.material.normalNode = ${name}.normal ( {
 	${paramsStr}
 } );
 `;
 
-			}
+			if ( tslTexture.opacity ) {
 
-		} else
-			js += `model.material.colorNode = ${name} ( {
-	${paramsStr}
-} );
-`;
-
-	if ( tslTexture.opacity ) {
-
-		js += `
+				js += `
 model.material.transparent = true;
 model.material.opacity = 1;
 model.material.side = THREE.DoubleSide;
@@ -658,8 +707,9 @@ model.material.opacityNode = ${name}.opacity ( {
 } );
 `;
 
-	}
+			}
 
+		}
 
 	await navigator.clipboard.writeText( js );
 
@@ -733,6 +783,7 @@ function initExport( left ) {
 }
 
 
+
 function downloadImage( tslTexture, name, map ) {
 
 	var width = exportOptions.width,
@@ -757,22 +808,33 @@ function downloadImage( tslTexture, name, map ) {
 	exportCamera.bottom = -height/2;
 	exportCamera.updateProjectionMatrix();
 
+
 	exportModel = new THREE.Mesh(
 		new THREE.PlaneGeometry( width/2, height/2 ).translate( 0, 0, -1 ),
 		new THREE.MeshBasicNodeMaterial( { color: 'yellow' } )
 	);
 	exportScene.add( exportModel );
 
-	if ( exportOptions.type==EXPORT_MAP && 'flat' in params ) {
 
-		params.flat = 1;
-
-	}
 
 	exportDynamics = dynamic( params );
 
 	if ( 'seed' in params )
 		exportDynamics.seed.value = params.seed;
+
+	if ( exportOptions.type==EXPORT_MAP && tslTexture.defaults.$replaceExportUVS ) {
+
+		exportDynamics.uvs = tslTexture.defaults.$replaceExportUVS;
+
+	}
+
+	if ( exportOptions.type==EXPORT_MAP && tslTexture.defaults.$replaceExportASP ) {
+
+		exportDynamics.aspect = tslTexture.defaults.$replaceExportASP;
+
+	}
+
+
 
 
 	processExportParameters( ); // causes recalculation of dynamics
@@ -782,23 +844,24 @@ function downloadImage( tslTexture, name, map ) {
 	if ( tslTexture.defaults.$normalNode ) {
 
 		suffix = '-normal';
-		exportModel.material.colorNode = tslTexture( exportDynamics ).div( 2 ).add( 0.5 );
+
+		exportModel.material.colorNode = tslTexture( exportDynamics ).div( 2 ).add( 0.5, cameraViewMatrix[ 0 ][ 0 ].mul( 0 ) );
 
 	} else {
 
-		if ( map==2 ) {
+		if ( map==2 ) { // normal
 
 			suffix = '-normal';
-			exportModel.material.colorNode = tslTexture.normal( exportDynamics ).div( 2 ).add( 0.5 );
+			exportModel.material.colorNode = tslTexture.normal( exportDynamics ).div( 2 ).add( 0.5, cameraViewMatrix[ 0 ][ 0 ].mul( 0 ) );
 
 		} else
-			if ( map==3 ) {
+			if ( map==3 ) { // alpha
 
 				suffix = '-alpha';
 				exportModel.material.colorNode = tslTexture.opacity( exportDynamics );
 
 			} else
-				if ( map==4 ) {
+				if ( map==4 ) { // roughness
 
 					suffix = '-roughness';
 					exportModel.material.colorNode = tslTexture.roughness( exportDynamics );
@@ -813,12 +876,9 @@ function downloadImage( tslTexture, name, map ) {
 	} // if-else
 
 
-	var frame = 0;
 	exportRenderer.setAnimationLoop( ()=>{
 
-		frame++;
 		exportRenderer.render( exportScene, exportCamera );
-		//		if ( frame>5 ) {
 
 		exportRenderer.setAnimationLoop( null );
 
@@ -839,8 +899,6 @@ function downloadImage( tslTexture, name, map ) {
 			params.flat = 0;
 
 		}
-
-		//	}
 
 	} );
 

@@ -4,14 +4,15 @@
 
 
 import { Color } from 'three';
-import { exp, float, mix, positionGeometry } from 'three/tsl';
-import { convertToNodes, hsl, noise, toHsl, TSLFn } from './tsl-utils.js';
+import { exp, float, Fn, mix, positionGeometry } from 'three/tsl';
+import { hsl, noise, toHsl } from './tsl-utils.js';
 
 
 
 var defaults = {
 	$name: 'Isolayers',
 
+	position: positionGeometry,
 	scale: 2,
 	layers: 10,
 	edge: 0.5,
@@ -25,28 +26,53 @@ var defaults = {
 
 
 
-var isolayers = TSLFn( ( params )=>{
+var isolayersRaw = Fn( ([ position, scale, layers, edge, darkness, color, background, seed ])=>{
 
-	params = convertToNodes( params, defaults );
+	var pos = position.mul( exp( scale.sub( 1 ) ) ).add( seed ).toVar( );
 
-	var pos = positionGeometry.mul( exp( params.scale.sub( 1 ) ) ).add( params.seed ).toVar( );
+	var depth = edge.remap( 0, 1, 40, 10 );
 
-	var depth = params.edge.remap( 0, 1, 40, 10 );
+	var k = noise( pos, 1.2, 1 ).div( 2 );
 
-	var k = noise( pos ).mul( 1.2 ).add( 1 ).div( 2 );
-
-	var i = k.mul( params.layers ).round().div( params.layers ).clamp( 0, 1 );
-	var f = k.sub( float( 0.5+0.03 ).div( params.layers ) )
-		.mul( params.layers ).fract()
+	var i = k.mul( layers ).round().div( layers ).clamp( 0, 1 );
+	var f = k.sub( float( 0.5+0.03 ).div( layers ) )
+		.mul( layers ).fract()
 		.mul( float( 2 ).pow( depth.reciprocal() ) )
 		.pow( depth ).sub( 1 ).abs().oneMinus();
 
-	var hslColor = mix( toHsl( params.background ), toHsl( params.color ), i ).toVar();
-	hslColor.z.mulAssign( mix( 1, i.mul( 1.5 ), params.darkness ).clamp( 0, 1 ) );
+	var hslColor = mix( toHsl( background ), toHsl( color ), i ).toVar();
+	hslColor.z.mulAssign( mix( 1, i.mul( 1.5 ), darkness ).clamp( 0, 1 ) );
 
-	return hsl( hslColor.x, hslColor.y, hslColor.z ).sub( f );
+	return hsl( hslColor ).sub( f );
 
-}, defaults );
+} ).setLayout( {
+	name: 'isolayersRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'layers', type: 'int' },
+		{ name: 'edge', type: 'float' },
+		{ name: 'darkness', type: 'float' },
+		{ name: 'color', type: 'vec3' },
+		{ name: 'background', type: 'vec3' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
+
+
+
+function isolayers( params={} ) {
+
+	var { position, scale, layers, edge, darkness, color, background, seed } = { ...defaults, ...params };
+
+	return isolayersRaw( position, scale, layers, edge, darkness, color, background, seed );
+
+}
+
+
+
+isolayers.defaults = defaults;
 
 
 

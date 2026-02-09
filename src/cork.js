@@ -4,14 +4,15 @@
 
 
 import { Color } from 'three';
-import { exp, float, Fn, If, Loop, mix, positionGeometry, vec3 } from 'three/tsl';
-import { convertToNodes, noise, TSLFn, vnoise } from './tsl-utils.js';
+import { exp, float, Fn, If, int, Loop, mix, positionGeometry, vec3 } from 'three/tsl';
+import { noise, vnoise } from './tsl-utils.js';
 
 
 
 var defaults = {
 	$name: 'Cork',
 
+	position: positionGeometry,
 	scale: 1,
 	straight: 1,
 	noise: 0.3,
@@ -24,39 +25,32 @@ var defaults = {
 
 
 
-var cellCenter = Fn( ([ cell ])=>{
+var corkRaw = Fn( ([ position, scale, straight, xnoise, color, background, seed ])=>{
 
-	return cell.add( vnoise( cell ) );
+	var pos = position.mul( exp( scale.div( 1.5 ).add( 1 ) ) ).add( seed ).toVar( 'pos' );
 
-} );
+	var midCell = pos.round().toConst( 'midCell' );
 
+	var minCell = midCell.toVar( 'minCell' ),
+		minDist = float( 1 ).toVar( 'minDist' );
 
-var cork = TSLFn( ( params )=>{
+	var cell = vec3().toVar( 'cell' ),
+		dist = float().toVar( 'dist' );
 
-	params = convertToNodes( params, defaults );
+	var strtaightness = straight.exp().reciprocal().toVar( 'strtaightness' );
 
-	var pos = positionGeometry.mul( exp( params.scale.div( 1.5 ).add( 1 ) ) ).add( params.seed ).toVar( );
+	var i=int( 0 ).toVar( 'i' ),
+		j=int( 0 ).toVar( 'j' ),
+		k=int( 0 ).toVar( 'k' );
 
-	var midCell = pos.round().toVar();
+	// Loop uses hard-coded i, j, k as indices
+	Loop( 3, 3, 3, () => {
 
-	var minCell = midCell.toVar();
-	var minDist = float( 1 ).toVar();
+		cell.assign( midCell.add( vec3( i, j, k ).sub( 1 ) ) );
+		var cellCenter = cell.add( vnoise( cell ) );
+		dist.assign( pos.distance( cellCenter ) );
 
-	var cell = vec3().toVar();
-	var dist = float().toVar();
-
-	var i = float( 0 ).toVar();
-
-
-	Loop( 27, () => {
-
-		var ix = i.mod( 3 ).sub( 1 );
-		var iy = i.div( 3 ).floor().mod( 3 ).sub( 1 );
-		var iz = i.div( 9 ).floor().sub( 1 );
-		cell.assign( midCell.add( vec3( ix, iy, iz ) ) );
-		dist.assign( pos.distance( cellCenter( cell ) ) );
-
-		dist.addAssign( noise( pos.add( cell ) ).div( params.straight.exp() ) );
+		dist.addAssign( noise( pos.add( cell ), strtaightness ) );
 
 		If( dist.lessThan( minDist ), ()=>{
 
@@ -64,21 +58,46 @@ var cork = TSLFn( ( params )=>{
 			minCell.assign( cell );
 
 		} );
-		i.addAssign( 1 );
 
 	} );
 
-	var n = noise( minCell.mul( Math.PI ) ).toVar();
-	var r = noise( pos.mul( 12 ) ).toVar();
-	r.assign( r.sign().mul( r.abs().pow3() ) );
-	r.addAssign( noise( pos.mul( 40 ) ).div( 3 ) );
-	var k = n.add( 1 ).div( 2 );
+	var n = noise( minCell.mul( Math.PI ), 0.5, 0.5 ).toVar( 'n' );
 
-	var color = mix( params.color, params.background, k.add( r.mul( params.noise ) ) ).toVar();
+	var r = noise( pos.mul( 12 ) ).toVar( 'r' );
+	r.mulAssign( r, r );
+	r.addAssign( noise( pos.mul( 40 ), 1/3 ) );
 
-	return color;
+	var result = mix( color, background, n.add( r.mul( xnoise ) ) );
 
-}, defaults );
+	return result;
+
+} ).setLayout( {
+	name: 'camouflageRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'straight', type: 'float' },
+		{ name: 'xnoise', type: 'float' },
+		{ name: 'color', type: 'vec3' },
+		{ name: 'background', type: 'vec3' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
+
+
+
+function cork( params={} ) {
+
+	var { position, scale, straight, noise, color, background, seed } = { ...defaults, ...params };
+
+	return corkRaw( position, scale, straight, noise, color, background, seed );
+
+}
+
+
+
+cork.defaults = defaults;
 
 
 

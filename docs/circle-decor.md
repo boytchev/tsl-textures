@@ -45,6 +45,7 @@ model.material.colorNode = circleDecor ( {
 
 ### Parameters
 
+* `position` &ndash; coordinates used to map texture, default is TSL `positionGeometry` node
 * `scale` &ndash; level of details of the pattern, higher value generates finer details, [0, 4]
 * `grains` &ndash; side of additional smaller circles, [0,1]
 * `complexity` &ndash; amount of nested concentric circles [0,2]

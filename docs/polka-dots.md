@@ -44,6 +44,7 @@ model.material.colorNode = polkaDots ( {
 
 ### Parameters
 
+* `position` &ndash; coordinates used to map texture, default is TSL `positionGeometry` node
 * `count` &ndash; number of dots is 10*<sup>count</sup>*, [1,4]
 * `size` &ndash; relative dot size, [0,1]
 * `blur` &ndash; smoothness of dots edges, [0,1]

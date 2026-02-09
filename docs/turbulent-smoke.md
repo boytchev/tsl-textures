@@ -42,9 +42,11 @@ model.material.colorNode = turbulentSmoke ( {
 
 ### Parameters
 
+* `position` &ndash; coordinates used to map texture, default is TSL `positionGeometry` node
 * `scale` &ndash; level of details of the pattern, higher value generates finer details, [0, 4]
 * `speed` &ndash; smoke speed, negative values are slow, positive values are fast, [-2,2]
 * `details` &ndash; number of iterations [1,10]
+* `time` &ndash; current time for smoke animation, defaut is TSL's `time` node
 * `seed` &ndash; number for the random generator, each value generates specific pattern
 
 

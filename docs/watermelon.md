@@ -44,6 +44,8 @@ model.material.colorNode = watermelon ( {
 
 ### Parameters
 
+* `position` &ndash; coordinates used to map texture, default is TSL `positionGeometry` node
+* `uvs` &ndash; normalized 2D coordinates used to map texture, default is TSL `equirectUV( positionGeometry.normalize() )` node, but for flat surfaces `screenUV` would be better
 * `scale` &ndash; level of details of the stripes, higher value generates finer details, [0, 4]
 * `stripes` &ndash; number of stripes, [4, 30]
 * `variation` &ndash; variation of the stripes, [0, 1]

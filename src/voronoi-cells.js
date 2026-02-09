@@ -4,14 +4,15 @@
 
 
 import { Color } from 'three';
-import { exp, float, Fn, If, Loop, mix, positionGeometry, vec3 } from 'three/tsl';
-import { convertToNodes, noise, TSLFn } from './tsl-utils.js';
+import { exp, float, Fn, If, int, Loop, mix, positionGeometry, vec3 } from 'three/tsl';
+import { noise, vnoise } from './tsl-utils.js';
 
 
 
 var defaults = {
 	$name: 'Voronoi cells',
 
+	position: positionGeometry,
 	scale: 2,
 	variation: 0,
 	facet: 0,
@@ -24,18 +25,9 @@ var defaults = {
 
 
 
-var cellCenter = Fn( ([ cell ])=>{
+var voronoiCellsRaw = Fn( ([ position, scale, variation, facet, color, background, seed ])=>{
 
-	return cell.add( noise( cell.mul( Math.PI ) ) );
-
-} );
-
-
-var voronoiCells = TSLFn( ( params )=>{
-
-	params = convertToNodes( params, defaults );
-
-	var pos = positionGeometry.mul( exp( params.scale.div( 2 ).add( 0.5 ) ) ).add( params.seed ).toVar( );
+	var pos = position.mul( exp( scale.div( 2 ).add( 0.5 ) ) ).add( seed ).toVar( );
 
 	var midCell = pos.round().toVar();
 
@@ -45,15 +37,17 @@ var voronoiCells = TSLFn( ( params )=>{
 	var cell = vec3().toVar();
 	var dist = float().toVar();
 
-	var i = float( 0 ).toVar();
+	var i=int( 0 ).toVar( 'i' ),
+		j=int( 0 ).toVar( 'j' ),
+		k=int( 0 ).toVar( 'k' );
 
-	Loop( 27, () => {
+	// Loop uses hard-coded i, j, k as indices
+	Loop( 3, 3, 3, () => {
 
-		var ix = i.mod( 3 ).sub( 1 );
-		var iy = i.div( 3 ).floor().mod( 3 ).sub( 1 );
-		var iz = i.div( 9 ).floor().sub( 1 );
-		cell.assign( midCell.add( vec3( ix, iy, iz ) ) );
-		dist.assign( pos.distance( cellCenter( cell ) ).add( noise( pos ).div( 5 ) ) );
+		cell.assign( midCell.add( vec3( i, j, k ).sub( 1 ) ) );
+		//var cellCenter = cell.add( noise( cell.mul( Math.PI ) ) ); // too slow on WebGL2
+		var cellCenter = cell.add( vnoise( cell.mul( Math.PI*2 ) ).div( 2 ) );
+		dist.assign( pos.distance( cellCenter ) );
 
 		If( dist.lessThan( minDist ), ()=>{
 
@@ -61,20 +55,44 @@ var voronoiCells = TSLFn( ( params )=>{
 			minCell.assign( cell );
 
 		} );
-		i.addAssign( 1 );
 
 	} );
 
-
 	var n = noise( minCell.mul( Math.PI ) ).toVar();
-	var k = mix( minDist, n.add( 1 ).div( 2 ), params.facet );
+	var m = mix( minDist, n.add( 1 ).div( 2 ), facet );
 
-	var color = mix( params.color, params.background, k ).toVar();
+	var color = mix( color, background, m ).toVar();
 	var randomColor = vec3( n.mul( 16.8 ), n.mul( 31.4159 ), n.mul( 27.1828 ) ).sin().add( 1 ).div( 2 );
 
-	return mix( color, mix( color, randomColor, params.variation ), params.variation );
+	return mix( color, mix( color, randomColor, variation ), variation );
 
-}, defaults );
+} ).setLayout( {
+	name: 'voronoiCellsRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'variation', type: 'float' },
+		{ name: 'facet', type: 'float' },
+		{ name: 'color', type: 'vec3' },
+		{ name: 'background', type: 'vec3' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
+
+
+
+function voronoiCells( params={} ) {
+
+	var { position, scale, variation, facet, color, background, seed } = { ...defaults, ...params };
+
+	return voronoiCellsRaw( position, scale, variation, facet, color, background, seed );
+
+}
+
+
+
+voronoiCells.defaults = defaults;
 
 
 

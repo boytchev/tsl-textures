@@ -17,7 +17,7 @@ const TEXTURES = [
 	'Dalmatian spots', 'Dyson sphere', 'Entangled', 'Fordite', 'Gas giant',
 	'Grid', 'Isolines', 'Karst rock', 'Marble', 'Neon lights', 'Planet',
 	'Photosphere', 'Polka dots', 'Processed wood', 'Protozoa', 'Runny eggs',
-	'Satin', 'Rough clay', 'Rust', 'Scepter head', 'Scream', 'Simplex noise',
+	'Satin', 'Rough clay', 'Rust', 'Scepter head', 'Scream', 'Perlin noise',
 	'Stars', 'Tiger fur', 'Voronoi cells', 'Water drops', 'Watermelon',
 	'Wood', 'Zebra lines', 'Darth Maul', 'Brain', 'Static noise', 'Circle decor',
 	'Reticular veins', 'Roman paving', 'Crumpled fabric', 'Isolayers',
@@ -132,12 +132,16 @@ const X_PREFIX = 'https://x.com/PavelBoytchev/status/';
 
 function textureBlock( name ) {
 
-	var file = name.toLowerCase().replaceAll( ' ', '-' );
+	var warning = name.indexOf('*')>-1 ? ' warning':'';
+	
+	name = name.replaceAll( '*', '' );
+	
+	var file = name.toLowerCase().replaceAll( ' ', '-' ).replaceAll( '*', '' );
 
 	var html = '';
 
 	html += '<a class="style-block" href="./online/'+file+'.html">';
-	html += '    <div class="title">'+name+'</div>';
+	html += '    <div class="title'+warning+'">'+name+'</div>';
 	html += '    <img src="./docs/images/'+file+'.png">';
 	html += '</a>';
 
@@ -148,12 +152,16 @@ function textureBlock( name ) {
 
 function exampleBlock( name ) {
 
+	var warning = name.indexOf('*')>-1 ? ' warning':'';
+	
+	name = name.replaceAll( '*', '' );
+
 	var file = name.toLowerCase().replaceAll( ' ', '-' );
 
 	var html = '';
 
 	html += '<a class="style-block big-block" href="./examples/'+file+'/index.html">';
-	html += '    <div class="title">'+name+'</div>';
+	html += '    <div class="title'+warning+'">'+name+'</div>';
 	html += '    <img src="./examples/'+file+'/screenshot.jpg">';
 	html += '</a>';
 

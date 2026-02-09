@@ -4,8 +4,8 @@
 
 
 import { Vector2, Vector3 } from "three";
-import { cross, Fn, mix, normalLocal, positionGeometry, sub, tangentLocal, transformNormalToView, vec3, vec4 } from 'three/tsl';
-import { convertToNodes, matScale, matTrans, selectPlanar, TSLFn } from './tsl-utils.js';
+import { cross, Fn, mix, normalLocal, positionGeometry, tangentLocal, vec3 } from 'three/tsl';
+import { approximateNormal, selectPlanar } from './tsl-utils.js';
 
 
 
@@ -25,51 +25,86 @@ var defaults = {
 
 
 
-var surfacePos = Fn( ([ pos, params ])=>{
+var surfacePos = Fn( ([ pos, scales, center, selectorAngles, selectorCenter, selectorWidth ])=>{
 
-	var zone = selectPlanar( pos, params.selectorAngles, params.selectorCenter, params.selectorWidth );
+	var zone = selectPlanar( pos, selectorAngles, selectorCenter, selectorWidth );
 
-	var S = matScale( mix( vec3( 1, 1, 1 ), params.scales, zone ) ),
-		T = matTrans( params.center ),
-		TN = matTrans( params.center.negate() );
+	var S = mix( vec3( 1, 1, 1 ), scales, zone );
 
-	return T.mul( S ).mul( TN ).mul( vec4( pos, 1 ) ).xyz;
+	return pos.sub( center ).mul( S ).add( center );
 
 } );
 
 
 
-var scaler = TSLFn( ( params )=>{
+var scalerRaw = Fn( ([ scales, center, selectorAngles, selectorCenter, selectorWidth ])=>{
 
-	params = convertToNodes( params, defaults );
+	return surfacePos( positionGeometry, scales, center, selectorAngles, selectorCenter, selectorWidth );
 
-	return surfacePos( positionGeometry, params );
+} ).setLayout( {
+	name: 'scalerRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'scales', type: 'vec3' },
+		{ name: 'center', type: 'vec3' },
+		{ name: 'selectorAngles', type: 'vec2' },
+		{ name: 'selectorCenter', type: 'vec3' },
+		{ name: 'selectorWidth', type: 'float' },
+	]
+} );
 
-}, defaults );
 
 
+var scalerNormalRaw = Fn( ([ scales, center, selectorAngles, selectorCenter, selectorWidth ]) => {
 
-scaler.normal = TSLFn( ( params ) => {
-
-	params = convertToNodes( params, defaults );
-
-	var eps = 0.01;
+	var EPS = 0.01;
 
 	var position = positionGeometry,
 		normal = normalLocal.normalize().toVar(),
-		tangent = tangentLocal.normalize().mul( eps ).toVar(),
-		bitangent = cross( normal, tangent ).normalize().mul( eps ).toVar();
+		tangent = tangentLocal.normalize().mul( EPS ).toVar(),
+		bitangent = cross( normal, tangent ).normalize().mul( EPS ).toVar();
 
-	var pos = surfacePos( position, params );
-	var posU = surfacePos( position.add( tangent ), params );
-	var posV = surfacePos( position.add( bitangent ), params );
+	var pos = surfacePos( position, scales, center, selectorAngles, selectorCenter, selectorWidth );
+	var posU = surfacePos( position.add( tangent ), scales, center, selectorAngles, selectorCenter, selectorWidth );
+	var posV = surfacePos( position.add( bitangent ), scales, center, selectorAngles, selectorCenter, selectorWidth );
 
-	var dU = sub( posU, pos ),
-		dV = sub( posV, pos );
+	return approximateNormal( pos, posU, posV );
 
-	return transformNormalToView( cross( dU, dV ).normalize() );
+} ).setLayout( {
+	name: 'scalerNormalRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'scales', type: 'vec3' },
+		{ name: 'center', type: 'vec3' },
+		{ name: 'selectorAngles', type: 'vec2' },
+		{ name: 'selectorCenter', type: 'vec3' },
+		{ name: 'selectorWidth', type: 'float' },
+	]
+} );
 
-}, defaults );
+
+
+function scaler( params={} ) {
+
+	var { scales, center, selectorAngles, selectorCenter, selectorWidth } = { ...defaults, ...params };
+
+	return scalerRaw( scales, center, selectorAngles, selectorCenter, selectorWidth );
+
+}
+
+
+
+scaler.normal = function ( params={} ) {
+
+	var { scales, center, selectorAngles, selectorCenter, selectorWidth } = { ...defaults, ...params };
+
+	return scalerNormalRaw( scales, center, selectorAngles, selectorCenter, selectorWidth );
+
+};
+
+
+
+scaler.defaults = defaults;
 
 
 

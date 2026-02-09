@@ -10,15 +10,15 @@ up to three neon colors. Click on a snapshot to open it online.
 
 <p class="gallery">
 
-	<a class="style-block nocaption" href="../online/neon-lights.html?scale=1.5&thinness=0.8&mode=0&colorA=16711680&colorB=65280&colorC=255&background=0">
+	<a class="style-block nocaption" href="../online/neon-lights.html?scale=2.5&thinness=0.8&mode=0&colorA=16711680&colorB=65280&colorC=255&background=0">
 		<img src="images/neon-lights-1.png">
 	</a>
 
-	<a class="style-block nocaption" href="../online/neon-lights.html?scale=0.88&thinness=0.66&mode=0&colorA=15198183&colorB=16711895&colorC=903374&background=29183">
+	<a class="style-block nocaption" href="../online/neon-lights.html?scale=3.16&thinness=0.66&mode=0&colorA=15198183&colorB=16711895&colorC=903374&background=29183">
 		<img src="images/neon-lights-2.png">
 	</a>
 
-	<a class="style-block nocaption" href="../online/neon-lights.html?scale=1.44&thinness=0.92&mode=1&colorA=13069677&colorB=8378056&colorC=852066&background=16709611">
+	<a class="style-block nocaption" href="../online/neon-lights.html?scale=2.56&thinness=0.92&mode=1&colorA=13069677&colorB=8378056&colorC=852066&background=16709611">
 		<img src="images/neon-lights-3.png">
 	</a>
 
@@ -31,7 +31,7 @@ up to three neon colors. Click on a snapshot to open it online.
 import { neonLights } from "tsl-textures";
 
 model.material.colorNode = neonLights ( {
-	scale: 1.5,
+	scale: 2,
 	thinness: 0.8,
 	mode: 0,
 	colorA: new THREE.Color(16711680),
@@ -45,6 +45,7 @@ model.material.colorNode = neonLights ( {
 
 ### Parameters
 
+* `position` &ndash; coordinates used to map texture, default is TSL `positionGeometry` node
 * `scale` &ndash; level of details of the pattern, higher value generates finer details, [0, 4]
 * `thinness` &ndash; thinness of lights, [0,1]
 * `mode` &ndash; additive or subtractive blending

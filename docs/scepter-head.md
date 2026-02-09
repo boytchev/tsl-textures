@@ -44,6 +44,7 @@ model.material.colorNode = scepterHead ( {
 
 ### Parameters
 
+* `position` &ndash; coordinates used to map texture, default is TSL `positionGeometry` node
 * `xFactor` &ndash; rim design along X axis, [0,100]
 * `yFactor` &ndash; rim design along Y axis, [0,100]
 * `zFactor` &ndash; rim design along Z axis, [0,100]

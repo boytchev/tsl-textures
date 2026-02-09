@@ -4,14 +4,15 @@
 
 
 import { Color } from "three";
-import { add, clamp, exp, Fn, mix, mul, positionGeometry, vec4 } from 'three/tsl';
-import { convertToNodes, noised, TSLFn } from './tsl-utils.js';
+import { clamp, exp, Fn, mix, mul, positionGeometry } from 'three/tsl';
+import { fractal } from './tsl-utils.js';
 
 
 
 var defaults = {
 	$name: 'Clouds',
 
+	position: positionGeometry,
 	scale: 2,
 	density: 0.5,
 	opacity: 1,
@@ -24,49 +25,89 @@ var defaults = {
 
 
 
-var _clouds = Fn( ( params ) => {
+var cloud_core = Fn( ([ position, scale, density, seed ]) => {
 
-	const pos = positionGeometry;
-	const scale = exp( params.scale.div( 1.5 ).sub( 0.5 ) );
+	const pos = position.mul( exp( scale.div( 1.5 ).sub( 0.5 ) ) ).add( seed ).toVar( 'pos' );
 
-	// color blending
-	const k = add(
-		noised( pos, scale, 1, params.seed ),
-		noised( pos, scale, 2, params.seed ).mul( 0.80 ),
-		noised( pos, scale, 6, params.seed ).mul( 0.10 ),
-		noised( pos, scale, 8, params.seed ).mul( 0.07, params.opacity ),
-		params.density.remap( 0, 1, -0.5, 1.5 )
-	);
+	return fractal( pos, 4 ).add( density.remap( 0, 1, -0.5, 1.5 ) );
 
-	// opacity
-	const a = clamp( 0, 1, mul( k, 2 ).pow( 1.5 ).sub( 1 ).mul( params.opacity ) );
-
-	// final color+opacity
-	return vec4( mix( params.subcolor, params.color, k.clamp( 0, 1 ) ), a );
-
-} );
+} ).setLayout( {
+	name: 'cloud_core',
+	type: 'float',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'density', type: 'float' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
 
 
 
-var clouds = TSLFn( ( params ) => {
+var cloudsRaw = Fn( ([ position, scale, density, /*opacity,*/color, subcolor, seed ]) => {
 
-	// prepare parameters
-	params = convertToNodes( params, defaults );
-
-	return _clouds( params ).rgb;
-
-}, defaults );
+	var k = cloud_core( position, scale, density, seed );
+	return mix( subcolor, color, k.clamp( 0, 1 ) );
 
 
+} ).setLayout( {
+	name: 'cloudsRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'density', type: 'float' },
+		/*{ name: 'opacity', type: 'float' },*/
+		{ name: 'color', type: 'vec3' },
+		{ name: 'subcolor', type: 'vec3' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
 
-clouds.opacity = TSLFn( ( params ) => {
 
-	// prepare parameters
-	params = convertToNodes( params, defaults );
 
-	return _clouds( params ).a;
+var cloudsOpacityRaw = Fn( ([ position, scale, density, opacity, /*color,subcolor,*/seed ]) => {
 
-}, defaults );
+	var k = cloud_core( position, scale, density, seed );
+	return clamp( 0, 1, mul( k, 2 ).pow( 1.5 ).sub( 1 ).mul( opacity ) );
+
+} ).setLayout( {
+	name: 'cloudsOpacityRaw',
+	type: 'float',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'density', type: 'float' },
+		{ name: 'opacity', type: 'float' },
+		/*{ name: 'color', type: 'vec3' },*/
+		/*{ name: 'subcolor', type: 'vec3' },*/
+		{ name: 'seed', type: 'float' },
+	] }
+);
+
+
+
+function clouds( params={} ) {
+
+	var { position, scale, density, /*opacity,*/color, subcolor, seed } = { ...defaults, ...params };
+
+	return cloudsRaw( position, scale, density, /*opacity,*/color, subcolor, seed );
+
+}
+
+
+
+clouds.opacity = function ( params={} ) {
+
+	var { position, scale, density, opacity, /*color,subcolor,*/seed } = { ...defaults, ...params };
+
+	return cloudsOpacityRaw( position, scale, density, opacity, /*color,subcolor,*/seed );
+
+};
+
+
+
+clouds.defaults = defaults;
 
 
 

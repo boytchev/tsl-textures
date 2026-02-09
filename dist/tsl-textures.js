@@ -1,10 +1,126 @@
 // TSL Textures v2.5.1
 
-import { Fn, min, sub, max, vec3, float, add, If, select, sin, cos, vec4, mul, cross, remap, pow, log2, mat4, smoothstep, positionGeometry, dFdx, dFdy, transformNormalToView, mx_noise_float, uniform, exp, mx_fractal_noise_float, mix, time, round, pow2, abs, or, acos, clamp, normalLocal, tangentLocal, Loop, floor, oneMinus, screenSize, screenUV, equirectUV, div, remapClamp, sqrt, mat2, mod, distance, radians, matcapUV, mx_worley_noise_float, sign, tan, screenCoordinate, reciprocal, vec2, mx_worley_noise_vec2, mx_fractal_noise_vec3, mx_worley_noise_vec3 } from 'three/tsl';
-export { mx_noise_float as noise } from 'three/tsl';
+import { Fn, vec3, sub, transformNormalToView, cross, remap, pow, mul, log2, min, max, float, add, If, select, sin, cos, rotate, smoothstep, mx_fractal_noise_float, mix, mx_noise_float, time, positionGeometry, or, acos, clamp, exp, normalLocal, tangentLocal, int, Loop, oneMinus, abs, equirectUV, screenSize, exp2, div, round, remapClamp, screenUV, sqrt, mat2, mod, distance, radians, matcapUV, mx_worley_noise_float, sign, tan, floor, screenCoordinate, reciprocal, vec2, mx_worley_noise_vec2, mx_fractal_noise_vec3, mx_worley_noise_vec3 } from 'three/tsl';
+export { mx_fractal_noise_float as fractal, mx_fractal_noise_vec3 as fractal3, mx_noise_float as noise, mx_worley_noise_float as voronoi, mx_worley_noise_vec2 as voronoi2, mx_worley_noise_vec3 as voronoi3 } from 'three/tsl';
 import { Color, Vector3, Vector2 } from 'three';
 
-//import { mx_perlin_noise_float as noise } from 'https://cdn.jsdelivr.net/npm/three@0.167.0/src/nodes/materialx/lib/mx_noise.js';
+// simple vector noise, vec3->float[-1,1]
+const vnoise = Fn( ([ v ])=>{
+
+	return v.dot( vec3( 12.9898, 78.233, -97.5123 ) ).sin().mul( 43758.5453 ).fract().mul( 2 ).sub( 1 );
+
+} ).setLayout( {
+	name: 'vnoise',
+	type: 'float',
+	inputs: [
+		{ name: 'v', type: 'vec3' },
+	]
+} );
+
+
+
+// approximate normal vector given point and two neighbout points
+const approximateNormal = Fn( ([ pos, posU, posV ])=>{
+
+	var dU = sub( posU, pos ),
+		dV = sub( posV, pos );
+
+	return transformNormalToView( cross( dU, dV ).normalize() );
+
+} ).setLayout( {
+	name: 'approximateNormal',
+	type: 'vec3',
+	inputs: [
+		{ name: 'pos', type: 'vec3' },
+		{ name: 'posU', type: 'vec3' },
+		{ name: 'posV', type: 'vec3' },
+	]
+} );
+
+
+
+
+// exponential version of remap
+const remapExp = Fn( ([ x, fromMin, fromMax, toMin, toMax ]) => {
+
+	x = remap( x, fromMin, fromMax, 0, 1 );
+	x = pow( 2, mul( x, log2( toMax.div( toMin ) ) ).add( log2( toMin ) ) );
+	return x;
+
+} ).setLayout( {
+	name: 'remapExp',
+	type: 'float',
+	inputs: [
+		{ name: 'x', type: 'float' },
+		{ name: 'fromMin', type: 'float' },
+		{ name: 'fromMax', type: 'float' },
+		{ name: 'toMin', type: 'float' },
+		{ name: 'toMax', type: 'float' },
+	]
+} );
+
+
+
+// show notification that
+var banner = null;
+var bannerCounter = 10;
+async function showFallbackWarning( ) {
+
+	if ( navigator.gpu != undefined ) {
+
+		var adapter = await navigator.gpu.requestAdapter();
+		if ( adapter ) return;
+
+	}
+
+	var html = `
+	<div style="font-size:1.25em; font-weight:bold;">PLEASE, WAIT</div>
+	<div  style="font-size:0.85em; font-weight:100;" >NO WEBGPU &mdash; TRYING WEBGL2</div>
+	<div id="counter"></div>
+	`;
+
+	banner = document.createElement( 'div' );
+	banner.innerHTML = html;
+
+	banner.style.left = 'calc(50% - 8em)';
+	banner.style.width = '16em';
+
+	banner.style.fontFamily = 'Bahnschrifts, Arial';
+	banner.style.position = 'absolute';
+	banner.style.bottom = '20px';
+	banner.style.padding = '12px 6px';
+	banner.style.border = '1px solid white';
+	banner.style.borderRadius = '4px';
+	banner.style.background = 'rgba(0,0,0,0.5)';
+	banner.style.color = 'white';
+	banner.style.textAlign = 'center';
+	banner.style.opacity = '0.8';
+	banner.style.outline = 'none';
+	banner.style.zIndex = '999';
+
+	document.body.appendChild( banner );
+
+}
+
+
+
+function hideFallbackWarning( ) {
+
+	if ( banner ) {
+
+		if ( bannerCounter>0 )
+			bannerCounter--;
+		else {
+
+			banner.style.display = 'none';
+			banner = null;
+
+		}
+
+	}
+
+}
+
 
 
 // helper function - convert hsl to rgb, ported to TSL from:
@@ -16,9 +132,7 @@ const hslHelper = Fn( ([ h, s, l, n ])=>{
 	var a = s.mul( min( l, sub( 1, l ) ) );
 	return l.sub( a.mul( max( -1, min( min( k.sub( 3 ), sub( 9, k ) ), 1 ) ) ) );
 
-} );
-
-hslHelper.setLayout( {
+} ).setLayout( {
 	name: 'hslHelper',
 	type: 'float',
 	inputs: [
@@ -32,11 +146,11 @@ hslHelper.setLayout( {
 
 
 // convert from hsl to rgb
-const hsl = Fn( ([ h, s, l ]) => {
+const hsl = Fn( ([ col ]) => {
 
-	h = h.fract().add( 1 ).fract();
-	s = s.clamp( 0, 1 );
-	l = l.clamp( 0, 1 );
+	var h = col.x.fract().add( 1 ).fract();
+	var s = col.y.clamp( 0, 1 );
+	var l = col.z.clamp( 0, 1 );
 
 	var r = hslHelper( h, s, l, 0 );
 	var g = hslHelper( h, s, l, 8 );
@@ -44,17 +158,14 @@ const hsl = Fn( ([ h, s, l ]) => {
 
 	return vec3( r, g, b );
 
-} );
-
-hsl.setLayout( {
+} ).setLayout( {
 	name: 'hsl',
 	type: 'vec3',
 	inputs: [
-		{ name: 'h', type: 'float' },
-		{ name: 's', type: 'float' },
-		{ name: 'l', type: 'float' },
+		{ name: 'col', type: 'vec3' },
 	]
 } );
+
 
 
 // convert from rgb to hsl
@@ -108,32 +219,6 @@ toHsl.setLayout( {
 
 
 
-
-// make all elements dynamic (i.e. uniform)
-function dynamic( params ) {
-
-	var result = {};
-
-	for ( var [ key, value ] of Object.entries( params ) ) {
-
-		if ( key[ 0 ]!='$' ) {
-
-			if ( value instanceof Vector3 )
-				result[ key ] = uniform( value, 'vec3' );
-			else
-				result[ key ] = uniform( value );
-
-		}
-
-	}
-
-	return result;
-
-}
-
-
-
-// convert phi-theta angles to position on unit sphere
 const spherical = Fn( ([ phi, theta ]) => {
 
 	return vec3(
@@ -142,9 +227,7 @@ const spherical = Fn( ([ phi, theta ]) => {
 		cos( theta ).mul( sin( phi ) )
 	);
 
-} );
-
-spherical.setLayout( {
+} ).setLayout( {
 	name: 'spherical',
 	type: 'vec3',
 	inputs: [
@@ -155,244 +238,20 @@ spherical.setLayout( {
 
 
 
-// apply Euler rotation to a vector
-const applyEuler = Fn( ([ vec, eu ]) => {
+const rotatePivot = Fn( ([ vector, pivot, angle ])=>{
 
-	var quat = quaternionFromEuler( eu );
-	return applyQuaternion( vec, quat );
+	return rotate( vector.sub( pivot ), angle ).add( pivot );
 
-} );
-
-applyEuler.setLayout( {
-	name: 'applyEuler',
-	type: 'vec4',
-	inputs: [
-		{ name: 'vec', type: 'vec3' },
-		{ name: 'eu', type: 'vec3' },
-	]
-} );
-
-
-// convert Euler XYZ angles to quaternion
-const quaternionFromEuler = Fn( ([ eu ]) => {
-
-	var c1 = cos( eu.x.div( 2 ) );
-	var c2 = cos( eu.y.div( 2 ) );
-	var c3 = cos( eu.z.div( 2 ) );
-
-	var s1 = sin( eu.x.div( 2 ) );
-	var s2 = sin( eu.y.div( 2 ) );
-	var s3 = sin( eu.z.div( 2 ) );
-
-	return vec4(
-		add( mul( s1, c2, c3 ), mul( c1, s2, s3 ) ),
-		sub( mul( c1, s2, c3 ), mul( s1, c2, s3 ) ),
-		add( mul( c1, c2, s3 ), mul( s1, s2, c3 ) ),
-		sub( mul( c1, c2, c3 ), mul( s1, s2, s3 ) ),
-	);
-
-} );
-
-quaternionFromEuler.setLayout( {
-	name: 'quaternionFromEuler',
-	type: 'vec4',
-	inputs: [
-		{ name: 'eu', type: 'vec3' },
-	]
-} );
-
-
-// apply quaternion rotation to a vector
-const applyQuaternion = Fn( ([ vec, quat ]) => {
-
-	var t = cross( quat.xyz, vec ).mul( 2 ).toVar( );
-
-	return add( vec, t.mul( quat.w ), cross( quat.xyz, t ) );
-
-} );
-
-applyQuaternion.setLayout( {
-	name: 'applyQuaternion',
+} ).setLayout( {
+	name: 'rotatePivot',
 	type: 'vec3',
 	inputs: [
-		{ name: 'vec', type: 'vec3' },
-		{ name: 'quat', type: 'vec4' },
-	]
-} );
-
-
-// exponential version of remap
-const remapExp = Fn( ([ x, fromMin, fromMax, toMin, toMax ]) => {
-
-	x = remap( x, fromMin, fromMax, 0, 1 );
-	x = pow( 2, mul( x, log2( toMax.div( toMin ) ) ).add( log2( toMin ) ) );
-	return x;
-
-} );
-
-remapExp.setLayout( {
-	name: 'remapExp',
-	type: 'float',
-	inputs: [
-		{ name: 'x', type: 'float' },
-		{ name: 'fromMin', type: 'float' },
-		{ name: 'fromMax', type: 'float' },
-		{ name: 'toMin', type: 'float' },
-		{ name: 'toMax', type: 'float' },
-	]
-} );
-
-
-
-// simple vector noise, vec3->float[-1,1]
-const vnoise = Fn( ([ v ])=>{
-
-	return v.dot( vec3( 12.9898, 78.233, -97.5123 ) ).sin().mul( 43758.5453 ).fract().mul( 2 ).sub( 1 );
-
-} );
-
-vnoise.setLayout( {
-	name: 'vnoise',
-	type: 'float',
-	inputs: [
-		{ name: 'v', type: 'vec3' },
-	]
-} );
-
-
-
-// generate X-rotation matrix
-const matRotX = Fn( ([ angle ])=>{
-
-	var	cos = angle.cos().toVar(),
-		sin = angle.sin().toVar();
-
-	return mat4(
-		1, 0, 0, 0,
-		0, cos, sin, 0,
-		0, sin.negate(), cos, 0,
-		0, 0, 0, 1 );
-
-} );
-
-matRotX.setLayout( {
-	name: 'matRotX',
-	type: 'mat4',
-	inputs: [
-		{ name: 'angle', type: 'float' },
-	]
-} );
-
-
-
-// generate Y-rotation matrix
-const matRotY = Fn( ([ angle ])=>{
-
-	var	cos = angle.cos().toVar(),
-		sin = angle.sin().toVar();
-
-	return mat4(
-		cos, 0, sin.negate(), 0,
-		0, 1, 0, 0,
-		sin, 0, cos, 0,
-		0, 0, 0, 1 );
-
-} );
-
-matRotY.setLayout( {
-	name: 'matRotY',
-	type: 'mat4',
-	inputs: [
-		{ name: 'angle', type: 'float' },
-	]
-} );
-
-
-
-// generate Z-rotation matrix
-const matRotZ = Fn( ([ angle ])=>{
-
-	var	cos = angle.cos().toVar(),
-		sin = angle.sin().toVar();
-
-	return mat4(
-		cos, sin, 0, 0,
-		sin.negate(), cos, 0, 0,
-		0, 0, 1, 0,
-		0, 0, 0, 1 );
-
-} );
-
-matRotZ.setLayout( {
-	name: 'matRotZ',
-	type: 'mat4',
-	inputs: [
-		{ name: 'angle', type: 'float' },
-	]
-} );
-
-
-
-// generate YXZ rotation matrix
-const matRotYXZ = Fn( ([ angles ])=>{
-
-	var RX = matRotX( angles.x ),
-		RY = matRotY( angles.y ),
-		RZ = matRotZ( angles.z );
-
-	return RY.mul( RX ).mul( RZ );
-
-} );
-
-matRotYXZ.setLayout( {
-	name: 'matRotYXZ',
-	type: 'mat4',
-	inputs: [
-		{ name: 'angles', type: 'vec3' },
-	]
-} );
-
-
-
-// generate scaling matrix
-const matScale = Fn( ([ scales ])=>{
-
-	return mat4(
-		scales.x, 0, 0, 0,
-		0, scales.y, 0, 0,
-		0, 0, scales.z, 0,
-		0, 0, 0, 1 );
-
-} );
-
-matScale.setLayout( {
-	name: 'matScale',
-	type: 'mat4',
-	inputs: [
-		{ name: 'scales', type: 'vec3' },
-	]
-} );
-
-
-
-// generate translation matrix
-const matTrans = Fn( ([ vector ])=>{
-
-	return mat4(
-		1, 0, 0, 0,
-		0, 1, 0, 0,
-		0, 0, 1, 0,
-		vector.x, vector.y, vector.z, 1 );
-
-} );
-
-matTrans.setLayout( {
-	name: 'matTrans',
-	type: 'mat4',
-	inputs: [
 		{ name: 'vector', type: 'vec3' },
+		{ name: 'pivot', type: 'vec3' },
+		{ name: 'angle', type: 'vec3' },
 	]
 } );
+
 
 
 const selectPlanar = Fn( ([ pos, selAngles, selCenter, selWidth ])=>{
@@ -425,9 +284,7 @@ const selectPlanar = Fn( ([ pos, selAngles, selCenter, selWidth ])=>{
 
 	return smoothstep( 0, 1, k );
 
-} );
-
-selectPlanar.setLayout( {
+} ).setLayout( {
 	name: 'selectPlanar',
 	type: 'float',
 	inputs: [
@@ -438,172 +295,16 @@ selectPlanar.setLayout( {
 	]
 } );
 
-
-const overlayPlanar = Fn( ( params )=>{
-
-	var zone = selectPlanar(
-		positionGeometry,
-		params.selectorAngles,
-		params.selectorCenter,
-		params.selectorWidth
-	).sub( 0.5 ).mul( 2 ).abs().oneMinus().pow( 0.25 ).negate().mul(
-		params.selectorShow
-	);
-
-	return vec3( 0, zone, zone );
-
-} );
-
-
-
-const normalVector = Fn( ([ pos ])=>{
-
-	var dU = dFdx( pos ),
-		dV = dFdy( pos );
-
-	return transformNormalToView( cross( dU, dV ).normalize() );
-
-} );
-
-normalVector.setLayout( {
-	name: 'normalVector',
-	type: 'vec3',
-	inputs: [
-		{ name: 'pos', type: 'vec3' },
-	]
-} );
-
-
-var banner = null;
-var bannerCounter = 10;
-async function showFallbackWarning( ) {
-
-	if ( navigator.gpu != undefined ) {
-
-		var adapter = await navigator.gpu.requestAdapter();
-		if ( adapter ) return;
-
-	}
-
-	var html = `
-	<div style="font-size:1.25em; font-weight:bold;">PLEASE, WAIT</div>
-	<div  style="font-size:0.85em; font-weight:100;" >NO WEBGPU &mdash; TRYING WEBGL2</div>
-	<div id="counter"></div>
-	`;
-
-	banner = document.createElement( 'div' );
-	banner.innerHTML = html;
-
-	banner.style.left = 'calc(50% - 8em)';
-	banner.style.width = '16em';
-
-	banner.style.fontFamily = 'Bahnschrifts, Arial';
-	banner.style.position = 'absolute';
-	banner.style.bottom = '20px';
-	banner.style.padding = '12px 6px';
-	banner.style.border = '1px solid white';
-	banner.style.borderRadius = '4px';
-	banner.style.background = 'rgba(0,0,0,0.5)';
-	banner.style.color = 'white';
-	banner.style.textAlign = 'center';
-	banner.style.opacity = '0.8';
-	banner.style.outline = 'none';
-	banner.style.zIndex = '999';
-
-	document.body.appendChild( banner );
-
-}
-
-
-
-function hideFallbackWarning( ) {
-
-	if ( banner ) {
-
-		if ( bannerCounter>0 )
-			bannerCounter--;
-		else {
-
-			banner.style.display = 'none';
-			//		document.removeChild( banner );
-			banner = null;
-
-		}
-
-	}
-
-}
-
-
-
-// converts all numeric, color and vector properties to nodes
-function convertToNodes( userParams, defaults ) {
-
-	var propertyNames = [];
-	for ( var item of userParams ) {
-
-	  if ( item && typeof item === 'object' ) {
-
-			propertyNames = Object.keys( item );
-			break;
-
-		}
-
-	}
-
-	var params = { ...defaults };
-
-	for ( var key of propertyNames ) {
-
-		if ( typeof userParams[ key ] !== 'undefined' )
-			params[ key ] = userParams[ key ];
-
-	}
-
-	for ( var name of Object.keys( params ) ) {
-
-		if ( typeof params[ name ] === 'number' )
-			params[ name ] = float( params[ name ]);
-		else
-			if ( params[ name ] instanceof Color )
-				params[ name ] = vec3( params[ name ].r, params[ name ].g, params[ name ].b );
-			else
-				if ( params[ name ] instanceof Vector3 )
-					params[ name ] = vec3( params[ name ].x, params[ name ].y, params[ name ].z );
-
-	}
-
-	return params;
-
-}
-
-
-
-// generate scaled noise
-function noised( pos, scale=1, octave=1, seed=0 ) {
-
-	return mx_noise_float( pos.mul( scale, octave ).add( seed ) );
-
-}
-
-
-
-const TSLFn = ( fn, defaults, layout=null ) => {
-
-	var wrapper = ( ...args ) => Fn( fn, layout )( ...args );
-	wrapper.defaults = defaults;
-	return wrapper;
-
-};
-
 var defaults$N = {
 	$name: 'Brain',
 
+	position: positionGeometry,
 	scale: 2,
-	smooth: 0.5,
 
+	smooth: 0.5,
 	wave: 0.5,
 	speed: 2.5,
+	time: time,
 
 	color: new Color( 0xFFD0D0 ),
 	background: new Color( 0x500000 ),
@@ -613,43 +314,93 @@ var defaults$N = {
 
 
 
-var brain = TSLFn( ( params )=>{
+var brainRaw = Fn( ([ position, scale, xsmooth, /*wave, speed, time,*/ color, background, seed ])=>{
 
-	params = convertToNodes( params, brain.defaults );
+	var pos = position.mul( scale.div( 3 ).exp( ) ).add( seed ).toVar( 'pos' );
 
-	var pos = positionGeometry.mul( exp( params.scale.div( 3 ) ) ).add( params.seed ).toVar( );
-
-	var octaves = exp( params.smooth.oneMinus().mul( 2 ) );
+	var octaves = xsmooth.oneMinus().mul( 2 ).exp( ).toVar( 'octaves' );
 
 	var n = mx_fractal_noise_float( pos.mul( 5 ), octaves ).add( 1 ).div( 2 ).clamp( 0, 1 ).pow( 2 );
 
-	return mix( params.color, params.background, n );
+	return mix( color, background, n );
 
-}, defaults$N );
+} ).setLayout( {
+	name: 'brainRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'xsmooth', type: 'float' },
+		/*{ name: 'wave', type: 'float' },*/
+		/*{ name: 'speed', type: 'float' },*/
+		/*{ name: 'time', type: 'float' },*/
+		{ name: 'color', type: 'vec3' },
+		{ name: 'background', type: 'vec3' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
+
+
+var brainNormalRaw = Fn( ([ position, scale, xsmooth, wave, speed, time, /*color, background,*/ seed ])=>{
+
+	var pos = position.mul( scale.div( 3 ).exp( ) ).add( seed ).toVar( 'pos' );
+
+	var octaves = xsmooth.oneMinus().mul( 2 ).exp( ).toVar( 'octaves' );
+
+	const EPS = 0.01;
+
+	var n = mx_fractal_noise_float( pos.mul( 5 ), octaves ).toVar( 'n' ),
+		dx = mx_fractal_noise_float( pos.add( vec3( EPS, 0, 0 ) ).mul( 5 ), octaves ).sub( n ).div( EPS ).toVar( 'dx' ),
+		dy = mx_fractal_noise_float( pos.add( vec3( 0, EPS, 0 ) ).mul( 5 ), octaves ).sub( n ).div( EPS ).toVar( 'dy' );
+
+	var dTime = mx_noise_float( pos.mul( wave, 5 ) ).add( 1 ).div( 2 ).mul( 6.28 ).toVar( 'dTime' );
+
+	return vec3( dx, dy, time.mul( speed ).add( dTime ).sin().add( n, 1 ) ).normalize();
+
+} ).setLayout( {
+	name: 'brainNormalRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'xsmooth', type: 'float' },
+		{ name: 'wave', type: 'float' },
+		{ name: 'speed', type: 'float' },
+		{ name: 'time', type: 'float' },
+		/*{ name: 'color', type: 'vec3' },*/
+		/*{ name: 'background', type: 'vec3' },*/
+		{ name: 'seed', type: 'float' },
+	] }
+);
 
 
 
-brain.normal = TSLFn( ( params )=>{
+function brain( params={} ) {
 
-	params = convertToNodes( params, brain.defaults );
+	var { position, scale, smooth, /*wave, speed, time,*/ color, background, seed } = { ...defaults$N, ...params };
 
-	var pos = positionGeometry.mul( exp( params.scale.div( 3 ) ) ).add( params.seed ).toVar( );
+	return brainRaw( position, scale, smooth, /*wave, speed, time,*/ color, background, seed );
 
-	var octaves = exp( params.smooth.oneMinus().mul( 2 ) );
+}
 
-	var eps = 0.01;
-	var n = mx_fractal_noise_float( pos.mul( 5 ), octaves );
-	var dx = mx_fractal_noise_float( pos.add( vec3( eps, 0, 0 ) ).mul( 5 ), octaves ).sub( n ).div( eps );
-	var dy = mx_fractal_noise_float( pos.add( vec3( 0, eps, 0 ) ).mul( 5 ), octaves ).sub( n ).div( eps );
 
-	var dTime = mx_noise_float( pos.mul( params.wave.mul( 5 ) ) ).add( 1 ).div( 2 ).mul( 6.28 );
-	return vec3( dx, dy, time.mul( params.speed ).add( dTime ).sin().add( n, 1 ) ).normalize();
 
-} );
+brain.normal = function ( params={} ) {
+
+	var { position, scale, smooth, wave, speed, time, /*color, background,*/ seed } = { ...defaults$N, ...params };
+
+	return brainNormalRaw( position, scale, smooth, wave, speed, time, /*color, background,*/ seed );
+
+};
+
+
+
+brain.defaults = defaults$N;
 
 var defaults$M = {
 	$name: 'Camouflage',
 
+	position: positionGeometry,
 	scale: 2,
 
 	colorA: new Color( 0xc2bea8 ),
@@ -662,47 +413,67 @@ var defaults$M = {
 
 
 
-var camouflage = TSLFn( ( params )=>{
+var camouflageRaw = Fn( ([ position, scale, colorA, colorB, colorC, colorD, seed ])=>{
 
-	params = convertToNodes( params, camouflage.defaults );
+	var pos = position.mul( scale.exp( ) ).add( seed ).toVar( 'pos' );
 
-	var pos = positionGeometry.mul( exp( params.scale ) ).add( params.seed ).toVar( );
+	var color = colorD.toVar( 'color' );
 
-	var color = vec3( 0, 0, 0 ).toVar( );
+	If( mx_noise_float( pos ).greaterThanEqual( 0.3 ), () => {
 
-	If( round( mx_noise_float( pos, 1, 0.2 ) ).greaterThanEqual( 1 ), () => {
-
-		color.assign( params.colorA );
+		color.assign( colorA );
 
 	}
 	)
-		.ElseIf( round( mx_noise_float( pos.yzx, 1, 0.3 ) ).greaterThanEqual( 1 ), () => {
+		.ElseIf( mx_noise_float( pos.yzx ).greaterThanEqual( 0.2 ), () => {
 
-			color.assign( params.colorB );
-
-		}
-		)
-		.ElseIf( round( mx_noise_float( pos.zxy, 1, 0.4 ) ).greaterThanEqual( 1 ), () => {
-
-			color.assign( params.colorC );
+			color.assign( colorB );
 
 		}
 		)
-		.Else( () => {
+		.ElseIf( mx_noise_float( pos.zxy ).greaterThanEqual( 0.1 ), () => {
 
-			color.assign( params.colorD );
+			color.assign( colorC );
 
 		}
 		);
 
 	return color;
 
-}, defaults$M );
+} ).setLayout( {
+	name: 'camouflageRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'colorA', type: 'vec3' },
+		{ name: 'colorB', type: 'vec3' },
+		{ name: 'colorC', type: 'vec3' },
+		{ name: 'colorD', type: 'vec3' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
+
+
+
+function camouflage( params={} ) {
+
+	var { position, scale, colorA, colorB, colorC, colorD, seed } = { ...defaults$M, ...params };
+
+	return camouflageRaw( position, scale, colorA, colorB, colorC, colorD, seed );
+
+}
+
+
+
+camouflage.defaults = defaults$M;
 
 var defaults$L = {
 	$name: 'Cave art',
 
+	position: positionGeometry,
 	scale: 2,
+
 	thinness: 2,
 	noise: 0.3,
 
@@ -714,17 +485,15 @@ var defaults$L = {
 
 
 
-var caveArt = TSLFn( ( params ) => {
+var caveArtRaw = Fn( ([ position, scale, thinness, xnoise, color, background, seed ]) => {
 
-	params = convertToNodes( params, defaults$L );
+	var pos = position.mul( scale.exp( ) ).add( seed ).toVar( 'pos' );
 
-	var pos = positionGeometry.mul( exp( params.scale ) ).add( params.seed ).toVar( );
+	thinness = float( 3 ).sub( thinness ).exp( );
 
-	var k1 = mx_noise_float( pos, 4 ).sin().toVar();
-	var k2 = mx_noise_float( pos.mul( 1.5 ), 4 ).cos().toVar();
-
-	var thinness = exp( sub( float( 3 ), params.thinness ) );
-	var k = sub( thinness, pow2( abs( add( k1, k2 ) ) ).mul( 20 ) ).toVar();
+	var k1 = mx_noise_float( pos, 4 ).sin().toVar( 'k1' ),
+		k2 = mx_noise_float( pos.mul( 1.5 ), 4 ).cos().toVar( 'k2' ),
+		k = thinness.sub( k1.add( k2 ).abs( ).pow2( ).mul( 20 ) ).toVar( 'k' );
 
 	If( or( k1.greaterThan( k2 ), k.lessThan( 0 ) ), ()=>{
 
@@ -734,42 +503,64 @@ var caveArt = TSLFn( ( params ) => {
 
 	If( k.lessThanEqual( 0 ), ()=>{
 
-		k.assign( params.noise.mul( pow2( mx_noise_float( pos.mul( 30 ) ) ) ) );
+		k.assign( xnoise.mul( mx_noise_float( pos.mul( 30 ) ).pow2( ) ) );
 
 	} );
 
-	return mix( params.background, params.color, k );
+	return mix( background, color, k );
 
-}, defaults$L );
+} ).setLayout( {
+	name: 'caveArtRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'thinness', type: 'float' },
+		{ name: 'xnoise', type: 'float' },
+		{ name: 'color', type: 'vec3' },
+		{ name: 'background', type: 'vec3' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
+
+
+
+function caveArt( params={} ) {
+
+	var { position, scale, thinness, noise, color, background, seed } = { ...defaults$L, ...params };
+
+	return caveArtRaw( position, scale, thinness, noise, color, background, seed );
+
+}
+
+
+
+caveArt.defaults = defaults$L;
 
 var defaults$K = {
 	$name: 'Circles',
+
+	position: positionGeometry,
 
 	scale: 2,
 	variety: 1,
 
 	color: new Color( 0xF0E0D0 ),
 
-	flat: 0,
-
 	seed: 0,
 };
 
 
 
-var circles = TSLFn( ( params ) => {
+var circlesRaw = Fn( ([ position, scale, variety, color, seed ]) => {
 
-	params = convertToNodes( params, defaults$K );
-
-	var pos = select( params.flat, positionGeometry, positionGeometry.normalize() );
+	var pos = position.toVar();
 
 	var angle = acos( clamp( pos.y, -1, 1 ) ).mul( 20 );
 
-	var scale = exp( params.scale.sub( 1 ) );
+	var x = angle.div( 3000 ).mul( exp( scale.sub( 1 ) ) );
 
-	var x = angle.div( 3000 ).mul( scale );
-
-	var k = float( params.seed.sin().mul( 100 ) ).toVar();
+	var k = seed.sin().mul( 100 ).toVar();
 
 	for ( var n=0; n<=10; n++ ) {
 
@@ -779,21 +570,46 @@ var circles = TSLFn( ( params ) => {
 
 	k.assign( k.div( 200 ).clamp( -2, 2 ) );
 
-	var HSL = toHsl( params.color );
+	var HSL = toHsl( color );
 
-	var hue = HSL.x.add( k.mul( params.variety ) ).mod( 1 ).mul( 10 );
+	var hue = HSL.x.add( k.mul( variety ) ).mod( 1 ).mul( 10 );
 
 	var huei = hue.floor();
 	var huef = hue.sub( huei );
 	huef = select( huef.lessThan( 0.5 ), huef.pow( 1.5 ), huef.pow( 1/1.5 ) );
 
-	return hsl( huei.add( huef ).div( 10 ), HSL.y, HSL.z );
+	return hsl( vec3( huei.add( huef ).div( 10 ), HSL.yz ) );
 
-}, defaults$K );
+} ).setLayout( {
+	name: 'circlesRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'variety', type: 'float' },
+		{ name: 'color', type: 'vec3' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
+
+
+
+function circles( params={} ) {
+
+	var { position, scale, variety, color, seed } = { ...defaults$K, ...params };
+
+	return circlesRaw( position, scale, variety, color, seed );
+
+}
+
+
+
+circles.defaults = defaults$K;
 
 var defaults$J = {
 	$name: 'Clouds',
 
+	position: positionGeometry,
 	scale: 2,
 	density: 0.5,
 	opacity: 1,
@@ -806,53 +622,95 @@ var defaults$J = {
 
 
 
-var _clouds = Fn( ( params ) => {
+var cloud_core = Fn( ([ position, scale, density, seed ]) => {
 
-	const pos = positionGeometry;
-	const scale = exp( params.scale.div( 1.5 ).sub( 0.5 ) );
+	const pos = position.mul( exp( scale.div( 1.5 ).sub( 0.5 ) ) ).add( seed ).toVar( 'pos' );
 
-	// color blending
-	const k = add(
-		noised( pos, scale, 1, params.seed ),
-		noised( pos, scale, 2, params.seed ).mul( 0.80 ),
-		noised( pos, scale, 6, params.seed ).mul( 0.10 ),
-		noised( pos, scale, 8, params.seed ).mul( 0.07, params.opacity ),
-		params.density.remap( 0, 1, -0.5, 1.5 )
-	);
+	return mx_fractal_noise_float( pos, 4 ).add( density.remap( 0, 1, -0.5, 1.5 ) );
 
-	// opacity
-	const a = clamp( 0, 1, mul( k, 2 ).pow( 1.5 ).sub( 1 ).mul( params.opacity ) );
-
-	// final color+opacity
-	return vec4( mix( params.subcolor, params.color, k.clamp( 0, 1 ) ), a );
-
-} );
+} ).setLayout( {
+	name: 'cloud_core',
+	type: 'float',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'density', type: 'float' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
 
 
 
-var clouds = TSLFn( ( params ) => {
+var cloudsRaw = Fn( ([ position, scale, density, /*opacity,*/color, subcolor, seed ]) => {
 
-	// prepare parameters
-	params = convertToNodes( params, defaults$J );
-
-	return _clouds( params ).rgb;
-
-}, defaults$J );
+	var k = cloud_core( position, scale, density, seed );
+	return mix( subcolor, color, k.clamp( 0, 1 ) );
 
 
+} ).setLayout( {
+	name: 'cloudsRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'density', type: 'float' },
+		/*{ name: 'opacity', type: 'float' },*/
+		{ name: 'color', type: 'vec3' },
+		{ name: 'subcolor', type: 'vec3' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
 
-clouds.opacity = TSLFn( ( params ) => {
 
-	// prepare parameters
-	params = convertToNodes( params, defaults$J );
 
-	return _clouds( params ).a;
+var cloudsOpacityRaw = Fn( ([ position, scale, density, opacity, /*color,subcolor,*/seed ]) => {
 
-}, defaults$J );
+	var k = cloud_core( position, scale, density, seed );
+	return clamp( 0, 1, mul( k, 2 ).pow( 1.5 ).sub( 1 ).mul( opacity ) );
+
+} ).setLayout( {
+	name: 'cloudsOpacityRaw',
+	type: 'float',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'density', type: 'float' },
+		{ name: 'opacity', type: 'float' },
+		/*{ name: 'color', type: 'vec3' },*/
+		/*{ name: 'subcolor', type: 'vec3' },*/
+		{ name: 'seed', type: 'float' },
+	] }
+);
+
+
+
+function clouds( params={} ) {
+
+	var { position, scale, density, /*opacity,*/color, subcolor, seed } = { ...defaults$J, ...params };
+
+	return cloudsRaw( position, scale, density, /*opacity,*/color, subcolor, seed );
+
+}
+
+
+
+clouds.opacity = function ( params={} ) {
+
+	var { position, scale, density, opacity, /*color,subcolor,*/seed } = { ...defaults$J, ...params };
+
+	return cloudsOpacityRaw( position, scale, density, opacity, /*color,subcolor,*/seed );
+
+};
+
+
+
+clouds.defaults = defaults$J;
 
 var defaults$I = {
 	$name: 'Concrete',
 	$normalNode: true,
+
+	position: positionGeometry,
 
 	scale: 2,
 	density: 0.5,
@@ -863,44 +721,77 @@ var defaults$I = {
 
 
 
-var surfacePos$7 = Fn( ([ pos, normal, bump, density, seed ]) => {
+var surfacePos$7 = Fn( ([ position, normal, density ]) => {
 
-	var k = mx_noise_float( pos.add( seed ) ).mul( 0.5 ).add( 0.5 );
-	k = bump.mul( pow( abs( k ), density ) );
+	var k = mx_noise_float( position, 0.5, 0.5 ).abs().pow( density );
 
-	return pos.add( k.mul( normal ) );
+	return position.add( normal.mul( k ) );
 
-} );
+} ).setLayout( {
+	name: 'surfacePos',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'normal', type: 'vec3' },
+		{ name: 'density', type: 'float' },
+	] }
+);
 
 
-var concrete = TSLFn( ( params ) => {
 
-	params = convertToNodes( params, defaults$I );
+var concreteRaw = Fn( ([ position, normal, tangent, scale, density, bump, seed ]) => {
 
-	var eps = 0.001;
+	const EPS = 0.001;
 
-	var position = positionGeometry.mul( exp( params.scale.div( 2 ).add( 2 ) ) ).toVar( ),
-		normal = normalLocal.normalize().toVar(),
-		tangent = tangentLocal.normalize().mul( eps ).toVar(),
-		bitangent = cross( normal, tangent ).normalize().mul( eps ).toVar();
+	var seed3d = vec3( 1, 2, 3 ).mul( seed ).sin().mul( 100 ).toVar( 'seed3d' );
 
-	var density = remap( params.density, 0, 1, 10, 0.5 ).toVar();
-	var seed = vec3( sin( params.seed ).mul( 100 ), cos( params.seed.div( 2 ) ).mul( 100 ), sin( params.seed.div( 3 ) ).mul( 100 ) ).toVar();
+	var xposition = position.mul( exp( scale.div( 2 ).add( 2 ) ) ).add( seed3d ).toVar( 'xposition' ),
+		xnormal = normal.normalize().toVar( 'xnormal' ),
+		xtangent = tangent.normalize().mul( EPS ).toVar( 'xtangent' ),
+		xbitangent = cross( xnormal, xtangent ).normalize().mul( EPS ).toVar( 'xbitangent' );
 
-	var pos = surfacePos$7( position, normal, params.bump, density, seed );
-	var posU = surfacePos$7( position.add( tangent ), normal, params.bump, density, seed );
-	var posV = surfacePos$7( position.add( bitangent ), normal, params.bump, density, seed );
+	var xdensity = remap( density, 0, 1, 10, 0.5 ).toVar( 'xdensity' );
 
-	var dU = sub( posU, pos ),
-		dV = sub( posV, pos );
+	xnormal.mulAssign( bump );
 
-	return transformNormalToView( cross( dU, dV ).normalize() );
+	var pos = surfacePos$7( xposition, xnormal, xdensity ).toVar( 'pos' ),
+		posU = surfacePos$7( xposition.add( xtangent ), xnormal, xdensity ).toVar( 'posU' ),
+		posV = surfacePos$7( xposition.add( xbitangent ), xnormal, xdensity ).toVar( 'posV' );
 
-}, defaults$I );
+	return approximateNormal( pos, posU, posV );
+
+} ).setLayout( {
+	name: 'concreteRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'normal', type: 'vec3' },
+		{ name: 'tangent', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'density', type: 'float' },
+		{ name: 'bump', type: 'float' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
+
+
+
+function concrete( params={} ) {
+
+	var { position, scale, density, bump, seed } = { ...defaults$I, ...params };
+
+	return concreteRaw( position, normalLocal, tangentLocal, scale, density, bump, seed );
+
+}
+
+
+
+concrete.defaults = defaults$I;
 
 var defaults$H = {
 	$name: 'Cork',
 
+	position: positionGeometry,
 	scale: 1,
 	straight: 1,
 	noise: 0.3,
@@ -913,39 +804,32 @@ var defaults$H = {
 
 
 
-var cellCenter$1 = Fn( ([ cell ])=>{
+var corkRaw = Fn( ([ position, scale, straight, xnoise, color, background, seed ])=>{
 
-	return cell.add( vnoise( cell ) );
+	var pos = position.mul( exp( scale.div( 1.5 ).add( 1 ) ) ).add( seed ).toVar( 'pos' );
 
-} );
+	var midCell = pos.round().toConst( 'midCell' );
 
+	var minCell = midCell.toVar( 'minCell' ),
+		minDist = float( 1 ).toVar( 'minDist' );
 
-var cork = TSLFn( ( params )=>{
+	var cell = vec3().toVar( 'cell' ),
+		dist = float().toVar( 'dist' );
 
-	params = convertToNodes( params, defaults$H );
+	var strtaightness = straight.exp().reciprocal().toVar( 'strtaightness' );
 
-	var pos = positionGeometry.mul( exp( params.scale.div( 1.5 ).add( 1 ) ) ).add( params.seed ).toVar( );
+	var i=int( 0 ).toVar( 'i' ),
+		j=int( 0 ).toVar( 'j' ),
+		k=int( 0 ).toVar( 'k' );
 
-	var midCell = pos.round().toVar();
+	// Loop uses hard-coded i, j, k as indices
+	Loop( 3, 3, 3, () => {
 
-	var minCell = midCell.toVar();
-	var minDist = float( 1 ).toVar();
+		cell.assign( midCell.add( vec3( i, j, k ).sub( 1 ) ) );
+		var cellCenter = cell.add( vnoise( cell ) );
+		dist.assign( pos.distance( cellCenter ) );
 
-	var cell = vec3().toVar();
-	var dist = float().toVar();
-
-	var i = float( 0 ).toVar();
-
-
-	Loop( 27, () => {
-
-		var ix = i.mod( 3 ).sub( 1 );
-		var iy = i.div( 3 ).floor().mod( 3 ).sub( 1 );
-		var iz = i.div( 9 ).floor().sub( 1 );
-		cell.assign( midCell.add( vec3( ix, iy, iz ) ) );
-		dist.assign( pos.distance( cellCenter$1( cell ) ) );
-
-		dist.addAssign( mx_noise_float( pos.add( cell ) ).div( params.straight.exp() ) );
+		dist.addAssign( mx_noise_float( pos.add( cell ), strtaightness ) );
 
 		If( dist.lessThan( minDist ), ()=>{
 
@@ -953,25 +837,52 @@ var cork = TSLFn( ( params )=>{
 			minCell.assign( cell );
 
 		} );
-		i.addAssign( 1 );
 
 	} );
 
-	var n = mx_noise_float( minCell.mul( Math.PI ) ).toVar();
-	var r = mx_noise_float( pos.mul( 12 ) ).toVar();
-	r.assign( r.sign().mul( r.abs().pow3() ) );
-	r.addAssign( mx_noise_float( pos.mul( 40 ) ).div( 3 ) );
-	var k = n.add( 1 ).div( 2 );
+	var n = mx_noise_float( minCell.mul( Math.PI ), 0.5, 0.5 ).toVar( 'n' );
 
-	var color = mix( params.color, params.background, k.add( r.mul( params.noise ) ) ).toVar();
+	var r = mx_noise_float( pos.mul( 12 ) ).toVar( 'r' );
+	r.mulAssign( r, r );
+	r.addAssign( mx_noise_float( pos.mul( 40 ), 1/3 ) );
 
-	return color;
+	var result = mix( color, background, n.add( r.mul( xnoise ) ) );
 
-}, defaults$H );
+	return result;
+
+} ).setLayout( {
+	name: 'camouflageRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'straight', type: 'float' },
+		{ name: 'xnoise', type: 'float' },
+		{ name: 'color', type: 'vec3' },
+		{ name: 'background', type: 'vec3' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
+
+
+
+function cork( params={} ) {
+
+	var { position, scale, straight, noise, color, background, seed } = { ...defaults$H, ...params };
+
+	return corkRaw( position, scale, straight, noise, color, background, seed );
+
+}
+
+
+
+cork.defaults = defaults$H;
 
 var defaults$G = {
 	$name: 'Dalmatian spots',
 	$width: 260,
+
+	position: positionGeometry,
 
 	scale: 2,
 	density: 0.6,
@@ -984,16 +895,14 @@ var defaults$G = {
 
 
 
-var dalmatianSpots = TSLFn( ( params )=>{
+var dalmatianSpotsRaw = Fn( ([ position, scale, density, color, background, seed ])=>{
 
-	params = convertToNodes( params, defaults$G );
+	var pos = position.mul( scale.exp( ) ).add( seed ).sub( 1000 ).toVar( 'pos' );
 
-	var pos = positionGeometry.mul( exp( params.scale ) ).add( params.seed ).sub( 1000 ).toVar( );
+	var k = float( 1 ).toVar( 'k' );
 
-	var k = float( 1 ).toVar();
-
-	var d = float( 1.5 ).sub( params.density ).mul( 2 ).toVar();
-	var count = params.density.mul( 5 ).add( 5 ).toVar();
+	var d = float( 1.5 ).sub( density ).mul( 2 ).toVar( 'd' );
+	var count = density.mul( 5 ).add( 5 ).toVar( 'count' );
 
 	Loop( count, ()=> {
 
@@ -1006,13 +915,39 @@ var dalmatianSpots = TSLFn( ( params )=>{
 
 	} );
 
-	return mix( params.background, params.color, k.clamp( 0, 1 ) );
+	return mix( background, color, k.clamp( 0, 1 ) );
 
-}, defaults$G );
+} ).setLayout( {
+	name: 'dalmatianSpotsRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'density', type: 'float' },
+		{ name: 'color', type: 'vec3' },
+		{ name: 'background', type: 'vec3' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
+
+
+
+function dalmatianSpots( params={} ) {
+
+	var { position, scale, density, color, background, seed } = { ...defaults$G, ...params };
+
+	return dalmatianSpotsRaw( position, scale, density, color, background, seed );
+
+}
+
+
+
+dalmatianSpots.defaults = defaults$G;
 
 var defaults$F = {
 	$name: 'Darth Maul',
 
+	position: positionGeometry,
 	scale: 2,
 	shift: new Vector3( 0, 0, 0 ),
 	complexity: 0,
@@ -1029,32 +964,60 @@ var defaults$F = {
 
 
 
-var darthMaul = TSLFn( ( params ) => {
+var darthMaulRaw = Fn( ([ position, scale, shift, complexity, angle, distance, color, background, balance, seed ]) => {
 
-	params = convertToNodes( params, defaults$F );
+	var xposition = position.add( shift ).mul( exp( scale.div( 1.5 ).sub( 1 ) ) ).sub( shift ).mul( vec3( 1, 1/2, 1/2 ) ).toVar( );
 
-	var position = positionGeometry.add( params.shift ).mul( exp( params.scale.div( 1.5 ).sub( 1 ) ) ).sub( params.shift ).mul( vec3( 1, 1/2, 1/2 ) ).toVar( );
-
-	var s = select( positionGeometry.y.mul( params.angle.radians().cos() ).add( positionGeometry.z.mul( params.angle.radians().sin() ) ).greaterThan( params.distance ), 1, 0 );
+	var s = select( position.y.mul( angle.radians().cos() ).add( position.z.mul( angle.radians().sin() ) ).greaterThan( distance ), 1, 0 );
 
 	// implement symmetry
-	position.x.assign( position.x.add( params.shift.x ).abs() );
-	position.y.addAssign( params.seed );
-	position.z.mulAssign( params.shift.z );
+	xposition.x.assign( xposition.x.add( shift.x ).abs() );
+	xposition.y.addAssign( seed );
+	xposition.z.mulAssign( shift.z );
 
-	var n = mx_noise_float( position ).toVar();
+	var n = mx_noise_float( xposition ).toVar();
 
-	var k = n.sin().mul( n.mul( params.complexity.mul( 2 ).add( 1 ).exp() ).sin() ).remap( 0, 0.2, 1, -1 ).greaterThan( params.balance ).select( 0, 1 );
+	var k = n.sin().mul( n.mul( complexity.mul( 2 ).add( 1 ).exp() ).sin() ).remap( 0, 0.2, 1, -1 ).greaterThan( balance ).select( 0, 1 );
 
-	var c = select( position.x.greaterThan( mx_noise_float( position.mul( 2.3 ) ).abs().mul( 0.5 ).add( 0.02 )	), 1, 0 );
+	var c = select( xposition.x.greaterThan( mx_noise_float( xposition.mul( 2.3 ) ).abs().mul( 0.5 ).add( 0.02 )	), 1, 0 );
 
-	return mix( params.background, params.color, k.mul( s ).mul( c ).clamp( 0, 1 ) );
+	return mix( background, color, k.mul( s ).mul( c ).clamp( 0, 1 ) );
 
-}, defaults$F );
+} ).setLayout( {
+	name: 'darthMaulRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'shift', type: 'vec3' },
+		{ name: 'complexity', type: 'float' },
+		{ name: 'angle', type: 'float' },
+		{ name: 'distance', type: 'float' },
+		{ name: 'color', type: 'vec3' },
+		{ name: 'background', type: 'vec3' },
+		{ name: 'balance', type: 'float' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
+
+
+
+function darthMaul( params={} ) {
+
+	var { position, scale, shift, complexity, angle, distance, color, background, balance, seed } = { ...defaults$F, ...params };
+
+	return darthMaulRaw( position, scale, shift, complexity, angle, distance, color, background, balance, seed );
+
+}
+
+
+
+darthMaul.defaults = defaults$F;
 
 var defaults$E = {
 	$name: 'Dyson sphere',
 
+	position: positionGeometry,
 	scale: 2,
 	complexity: 2,
 
@@ -1074,15 +1037,29 @@ var noisea = Fn( ([ pos ])=>{
 	p.addAssign( p.dot( p.add( vec3( 31.4159, 27.1828, 14.142 ) ) ) );
 	return p.z.mul( p.x.add( p.y ) ).fract().mul( 2 ).sub( 1 );
 
-} );
+} ).setLayout( {
+	name: 'noisea',
+	type: 'float',
+	inputs: [
+		{ name: 'pos', type: 'vec3' },
+	] }
+);
 
 
-var smooth = Fn( ([ x ])=>{
+
+var smoother = Fn( ([ x ])=>{
 
 	var t = x.oneMinus().clamp( 0, 1 ).toVar();
 	return t.mul( t ).mul( float( 3 ).sub( t.mul( 2 ) ) );
 
-} );
+} ).setLayout( {
+	name: 'smoother',
+	type: 'float',
+	inputs: [
+		{ name: 'x', type: 'float' },
+	] }
+);
+
 
 
 var noiseg = Fn( ([ pos ])=>{
@@ -1096,13 +1073,13 @@ var noiseg = Fn( ([ pos ])=>{
 	var minz = pos.z.floor().toVar();
 	var maxz = minz.add( 1 ).toVar();
 
-	var dx = smooth( pos.x.fract() ).toVar();
-	var dy = smooth( pos.y.fract() ).toVar();
-	var dz = smooth( pos.z.fract() ).toVar();
+	var dx = smoother( pos.x.fract() ).toVar();
+	var dy = smoother( pos.y.fract() ).toVar();
+	var dz = smoother( pos.z.fract() ).toVar();
 
-	var mx = smooth( dx.oneMinus() ).toVar();
-	var my = smooth( dy.oneMinus() ).toVar();
-	var mz = smooth( dz.oneMinus() ).toVar();
+	var mx = smoother( dx.oneMinus() ).toVar();
+	var my = smoother( dy.oneMinus() ).toVar();
+	var mz = smoother( dz.oneMinus() ).toVar();
 
 	var n000 = noisea( vec3( minx, miny, minz ) ).mul( mx ).mul( my ).mul( mz ).toVar();
 	var n001 = noisea( vec3( minx, miny, maxz ) ).mul( mx ).mul( my ).mul( dz ).toVar();
@@ -1115,33 +1092,63 @@ var noiseg = Fn( ([ pos ])=>{
 
 	return n000.add( n001 ).add( n010 ).add( n011 ).add( n100 ).add( n101 ).add( n110 ).add( n111 );
 
-} );
+} ).setLayout( {
+	name: 'noiseg',
+	type: 'float',
+	inputs: [
+		{ name: 'pos', type: 'vec3' },
+	] }
+);
 
 
 
-var dysonSphere = TSLFn( ( params )=>{
+var dysonSphereRaw = Fn( ([ position, scale, complexity, color, background, seed ])=>{
 
-	params = convertToNodes( params, defaults$E );
-
-	var pos = positionGeometry.mul( exp( params.scale.div( 2 ).add( 0.5 ) ) ).add( params.seed ).toVar( );
+	var pos = position.mul( exp( scale.div( 2 ).add( 0.5 ) ) ).add( seed ).toVar( );
 
 	var res = vec3().toVar();
 	var factor = float( 1 ).toVar();
 
-	Loop( params.complexity.add( 4 ), ()=>{
+	Loop( complexity.add( 4 ), ()=>{
 
 		res.addAssign( noiseg( pos.mul( factor ) ) );
 		factor.addAssign( factor );
 
 	} );
 
-	return mix( params.background, params.color, res.x.add( 1 ).div( 5 ) );
+	return mix( background, color, res.x.add( 1 ).div( 5 ) );
 
-}, defaults$E );
+} ).setLayout( {
+	name: 'dysonSphereRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'complexity', type: 'float' },
+		{ name: 'color', type: 'vec3' },
+		{ name: 'background', type: 'vec3' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
+
+
+
+function dysonSphere( params={} ) {
+
+	var { position, scale, complexity, color, background, seed } = { ...defaults$E, ...params };
+
+	return dysonSphereRaw( position, scale, complexity, color, background, seed );
+
+}
+
+
+
+dysonSphere.defaults = defaults$E;
 
 var defaults$D = {
 	$name: 'Entangled',
 
+	position: positionGeometry,
 	scale: 2,
 	density: 10,
 
@@ -1153,63 +1160,111 @@ var defaults$D = {
 
 
 
-var entangled = TSLFn( ( params ) => {
+var entangledRaw = Fn( ([ position, scale, density, color, background, seed ]) => {
 
-	params = convertToNodes( params, defaults$D );
-
-	var scale = exp( params.scale.div( 2 ) ).toVar( );
-	var pos = positionGeometry.add( params.seed ).toVar( );
+	var xscale = exp( scale.div( 2 ) ).toVar( );
+	var pos = position.add( seed ).toVar( );
 	var k = float( -1e4 ).toVar( );
 	var k1 = float( 0 ).toVar( );
 
-	Loop( floor( float( params.density ) ), ()=> {
+	Loop( density, ()=> {
 
-		k1.assign( sin( mx_noise_float( mul( pos, scale ) ).mul( 3*Math.PI ) ) );
+		k1.assign( sin( mx_noise_float( mul( pos, xscale ) ).mul( 3*Math.PI ) ) );
 		k.assign( max( k, k1 ) );
-		scale.mulAssign( 1.2 );
+		xscale.mulAssign( 1.2 );
 
 	} );
 
 	k.assign( oneMinus( pow( abs( k ), 5 ) ).mul( 6 ) );
 
-	return mix( params.color, params.background, k );
+	return mix( color, background, k );
 
-}, defaults$D );
+} ).setLayout( {
+	name: 'entangled',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'density', type: 'int' },
+		{ name: 'color', type: 'vec3' },
+		{ name: 'background', type: 'vec3' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
+
+
+
+function entangled( params={} ) {
+
+	var { position, scale, density, color, background, seed } = { ...defaults$D, ...params };
+
+	return entangledRaw( position, scale, density, color, background, seed );
+
+}
+
+
+
+entangled.defaults = defaults$D;
 
 var defaults$C = {
 	$name: 'Fordite',
+
+	position: positionGeometry,
 	scale: 2,
 	color: new Color( 0, 0, 0 ),
+
 	seed: 0,
 };
 
 
 
-var fordite = TSLFn( ( params ) => {
+var forditeRaw = Fn( ([ position, scale, color, seed ]) => {
 
-	params = convertToNodes( params, defaults$C );
-
-	var pos = positionGeometry.mul( exp( params.scale ) ).add( params.seed ).toVar( );
+	var pos = position.mul( exp( scale ) ).add( seed ).toVar( );
 
 	var k = mx_noise_float(
 		vec3(
-			mx_noise_float( pos ),
-			mx_noise_float( pos ).mul( 2 ),
-			mx_noise_float( pos ).mul( 3 ),
+			mx_noise_float( pos, 1 ),
+			mx_noise_float( pos, 2 ),
+			mx_noise_float( pos, 3 ),
 		)
 	).toVar( );
 
-	return hsl(
+	return hsl( vec3(
 		k,
 		1,
 		sin( mul( k, Math.PI, 4 ) ).mul( 0.5 ).add( 0.5 )
-	).add( params.color );
+	) ).add( color );
 
-}, defaults$C );
+} ).setLayout( {
+	name: 'forditeRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'color', type: 'vec3' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
+
+
+
+function fordite( params={} ) {
+
+	var { position, scale, color, seed } = { ...defaults$C, ...params };
+
+	return forditeRaw( position, scale, color, seed );
+
+}
+
+
+
+fordite.defaults = defaults$C;
 
 var defaults$B = {
 	$name: 'Gas giant',
 
+	position: positionGeometry,
 	scale: 2,
 	turbulence: 0.3,
 	blur: 0.6,
@@ -1223,15 +1278,13 @@ var defaults$B = {
 
 
 
-var gasGiant = TSLFn( ( params )=>{
+var gasGiantRaw = Fn( ([ position, scale, turbulence, blur, colorA, colorB, colorC, seed ])=>{
 
-	params = convertToNodes( params, defaults$B );
-
-	var scale = params.scale.div( 2 ).add( 1 ).toVar();
-	var pos = positionGeometry.mul( exp( scale ) ).add( params.seed ).toVar( );
+	var xscale = scale.div( 2 ).add( 1 ).toVar();
+	var pos = position.mul( exp( xscale ) ).add( seed ).toVar( );
 
 	// turbulence strength
-	var turbulence = params.turbulence.mul(
+	var xturbulence = turbulence.mul(
 		mx_noise_float( vec3( 0, pos.y.mul( 0.5 ), 0 ).add( 1 ) ).add(
 			mx_noise_float( vec3( 0, pos.y.mul( 1 ), 0 ).add( 1 ) ).mul( 0.5 ),
 			mx_noise_float( vec3( 1, pos.y.mul( 2 ), 1 ).add( 1 ) ).mul( 0.25 )
@@ -1241,71 +1294,128 @@ var gasGiant = TSLFn( ( params )=>{
 	var spot = mx_noise_float( pos.div( 4 ) ).add( 1 ).div( 2 ).pow( 10 ).mul( 10 ).smoothstep( 0, 1 );
 
 	// apply turbulence
-	pos.addAssign( vec3( mx_noise_float( pos ), mx_noise_float( pos.yxz ), mx_noise_float( pos.yzx ) ).mul( turbulence.mul( spot.mul( 2 ).exp() ) ) );
+	pos.addAssign( vec3( mx_noise_float( pos ), mx_noise_float( pos.yxz ), mx_noise_float( pos.yzx ) ).mul( xturbulence.mul( spot.mul( 2 ).exp() ) ) );
 
 
-	var blur = params.blur.pow( 0.2 ).oneMinus().mul( turbulence.add( 1 ) ).toVar();
+	var xblur = blur.pow( 0.2 ).oneMinus().mul( xturbulence.add( 1 ) ).toVar();
 
-	var k = mx_noise_float( pos.mul( vec3( 0, scale, 0 ) ) );
-	k = k.add( mx_noise_float( pos.mul( vec3( 1, 15, 1 ) ) ).mul( blur ) );
+	var k = mx_noise_float( pos.mul( vec3( 0, xscale, 0 ) ) );
+	k = k.add( mx_noise_float( pos.mul( vec3( 1, 15, 1 ) ) ).mul( xblur ) );
 	k = k.add( -0.5 ).smoothstep( -1, 1 ).oneMinus();
 
 	var n = mx_noise_float( vec3( 0, pos.y.mul( 0.75 ), 0 ) ).add( 1 );
 
-	var HSL = toHsl( mix( params.colorB, params.colorA, n ) );
-	var color = hsl( HSL.x.add( mx_noise_float( pos.mul( vec3( 0, scale, 0 ) ) ).div( 4 ) ), HSL.y, HSL.z ).toVar();
+	var HSL = toHsl( mix( colorB, colorA, n ) );
+	var color = hsl( vec3( HSL.x.add( mx_noise_float( pos.mul( vec3( 0, xscale, 0 ) ) ).div( 4 ) ), HSL.yz ) ).toVar();
 
-	color.assign( mix( color, params.colorC, turbulence.mul( 0.3 ) ) );
+	color.assign( mix( color, colorC, xturbulence.mul( 0.3 ) ) );
 
 	return color.mul( k );
 
-}, defaults$B );
+} ).setLayout( {
+	name: 'gasGiantRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'turbulence', type: 'float' },
+		{ name: 'blur', type: 'float' },
+		{ name: 'colorA', type: 'vec3' },
+		{ name: 'colorB', type: 'vec3' },
+		{ name: 'colorC', type: 'vec3' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
+
+
+
+function gasGiant( params={} ) {
+
+	var { position, scale, turbulence, blur, colorA, colorB, colorC, seed } = { ...defaults$B, ...params };
+
+	return gasGiantRaw( position, scale, turbulence, blur, colorA, colorB, colorC, seed );
+
+}
+
+
+
+gasGiant.defaults = defaults$B;
 
 var defaults$A = {
 	$name: 'Grid',
+	$replaceExportUVS: screenUV,
+	$replaceExportASP: screenSize.x.div( screenSize.y ).log2(),
+
+	uvs: equirectUV( positionGeometry.normalize() ),
 
 	countU: 32,
 	countV: 16,
 
+	aspect: 1,
 	thinness: 0.8,
+	equirectangular: true,
 
 	color: new Color( 0x000000 ),
 	background: new Color( 0xFFFFFF ),
 
-	flat: 0,
 };
 
 
 
-var grid = TSLFn( ( params ) => {
+var gridRaw = Fn( ([ uvs, countU, countV, aspect, thinness, equirectangular, color, background ]) => {
 
-	params = convertToNodes( params, defaults$A );
+	var xaspect = max( exp2( aspect ), 1 );
 
-	var aspect = select( params.flat, screenSize.x.div( screenSize.y ), 2 );
+	var a = mul( uvs.x, xaspect, Math.PI ).toVar(),
+		b = mul( uvs.y, Math.PI ).toVar();
 
-	var uv = select( params.flat, screenUV, equirectUV( positionGeometry.normalize() ) ).toVar(),
-		a = mul( uv.x, aspect, Math.PI ),
-		b = mul( uv.y, Math.PI ).toVar();
-
-	var uTo = div( round( mul( uv.x, params.countU ) ), params.countU ),
-		vTo = div( round( mul( uv.y, params.countV ) ), params.countV ),
-		aTo = mul( uTo, aspect, Math.PI ),
+	var uTo = div( round( mul( uvs.x, countU ) ), countU ),
+		vTo = div( round( mul( uvs.y, countV ) ), countV ),
+		aTo = mul( uTo, xaspect, Math.PI ),
 		bTo = mul( vTo, Math.PI );
 
-	var angleU = abs( sub( a, aTo ) ).mul( select( params.flat, 1, sin( b ) ) ),
+	var angleU = abs( sub( a, aTo ) ).mul( mix( 1, sin( b ), equirectangular ) ),
 		angleV = abs( sub( b, bTo ) ),
 		angle = min( angleU, angleV );
 
-	var treshold = mul( min( div( aspect.mul( Math.PI ), params.countU ), div( Math.PI, params.countV ) ), remapClamp( pow( params.thinness, 0.5 ), 0, 1, 0.9, 0.04 ), 0.5 );
+	var treshold = mul( min( div( xaspect.mul( Math.PI ), countU ), div( Math.PI, countV ) ), remapClamp( pow( thinness, 0.5 ), 0, 1, 0.9, 0.04 ), 0.5 );
 	var k = oneMinus( smoothstep( sub( treshold, 0.002 ), add( treshold, 0.002 ), angle ) );
 
-	return mix( params.background, params.color, k );
+	return mix( background, color, k );
 
-}, defaults$A );
+} ).setLayout( {
+	name: 'gridRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'uvs', type: 'vec2' },
+		{ name: 'countU', type: 'float' },
+		{ name: 'countV', type: 'float' },
+		{ name: 'aspect', type: 'float' },
+		{ name: 'thinness', type: 'float' },
+		{ name: 'equirectangular', type: 'int' },
+		{ name: 'color', type: 'vec3' },
+		{ name: 'background', type: 'vec3' },
+	] }
+);
+
+
+
+function grid( params={} ) {
+
+	var { uvs, countU, countV, aspect, thinness, equirectangular, color, background } = { ...defaults$A, ...params };
+
+	return gridRaw( uvs, countU, countV, aspect, thinness, equirectangular, color, background );
+
+}
+
+
+
+grid.defaults = defaults$A;
 
 var defaults$z = {
 	$name: 'Isolines',
 
+	position: positionGeometry,
 	scale: 2,
 	density: 40,
 	blur: 0.3,
@@ -1319,25 +1429,51 @@ var defaults$z = {
 
 
 
-var isolines = TSLFn( ( params )=>{
+var isolinesRaw = Fn( ([ position, scale, density, blur, thinness, color, background, seed ])=>{
 
-	params = convertToNodes( params, defaults$z );
+	var pos = position.mul( exp( scale ) ).add( seed ).toVar( );
 
-	var pos = positionGeometry.mul( exp( params.scale ) ).add( params.seed ).toVar( );
-
-	var k = mx_noise_float( pos ).mul( params.density );
+	var k = mx_noise_float( pos, density );
 
 	k = oneMinus( sin( k ) ).div( 2 );
 
-	k = smoothstep( sub( params.thinness, params.blur ), add( params.thinness, params.blur ), k );
+	k = smoothstep( sub( thinness, blur ), add( thinness, blur ), k );
 
-	return mix( params.color, params.background, k );
+	return mix( color, background, k );
 
-}, defaults$z );
+} ).setLayout( {
+	name: 'isolinesRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'density', type: 'float' },
+		{ name: 'blur', type: 'float' },
+		{ name: 'thinness', type: 'float' },
+		{ name: 'color', type: 'vec3' },
+		{ name: 'background', type: 'vec3' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
+
+
+
+function isolines( params={} ) {
+
+	var { position, scale, density, blur, thinness, color, background, seed } = { ...defaults$z, ...params };
+
+	return isolinesRaw( position, scale, density, blur, thinness, color, background, seed );
+
+}
+
+
+
+isolines.defaults = defaults$z;
 
 var defaults$y = {
 	$name: 'Karst rock',
 
+	position: positionGeometry,
 	scale: 2,
 
 	color: new Color( 0xFFF4F0 ),
@@ -1348,11 +1484,9 @@ var defaults$y = {
 
 
 
-var karstRock = TSLFn( ( params )=>{
+var karstRockRaw = Fn( ([ position, scale, color, background, seed ])=>{
 
-	params = convertToNodes( params, defaults$y );
-
-	var pos = positionGeometry.mul( exp( params.scale ) ).add( params.seed.sin().mul( 5 ) ).toVar( );
+	var pos = position.mul( exp( scale ) ).add( seed.sin().mul( 5 ) ).toVar( );
 
 	var pos2 = pos.add( mx_noise_float( pos.mul( 2 ) ) ).toVar();
 
@@ -1361,13 +1495,38 @@ var karstRock = TSLFn( ( params )=>{
 	k.addAssign( mx_noise_float( pos.mul( 100 ) ).div( 3 ) );
 	k.addAssign( mx_noise_float( pos.mul( 2 ) ).div( 2 ) );
 
-	return mix( params.background, params.color, k ).mul( k.pow( 0.1 ) );
+	return mix( background, color, k ).mul( k.pow( 0.1 ) );
 
-}, defaults$y );
+} ).setLayout( {
+	name: 'karstRockRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'color', type: 'vec3' },
+		{ name: 'background', type: 'vec3' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
+
+
+
+function karstRock( params={} ) {
+
+	var { position, scale, color, background, seed } = { ...defaults$y, ...params };
+
+	return karstRockRaw( position, scale, color, background, seed );
+
+}
+
+
+
+karstRock.defaults = defaults$y;
 
 var defaults$x = {
 	$name: 'Marble',
 
+	position: positionGeometry,
 	scale: 1.2,
 	thinness: 5,
 	noise: 0.3,
@@ -1380,11 +1539,9 @@ var defaults$x = {
 
 
 
-var marble = TSLFn( ( params ) => {
+var marbleRaw = Fn( ([ position, scale, thinness, xnoise, color, background, seed ]) => {
 
-	params = convertToNodes( params, defaults$x );
-
-	var pos = positionGeometry.mul( exp( params.scale ) ).add( params.seed ).toVar( );
+	var pos = position.mul( exp( scale ) ).add( seed ).toVar( );
 
 	var k = add(
 		mx_noise_float( pos ),
@@ -1394,8 +1551,8 @@ var marble = TSLFn( ( params ) => {
 
 	var k = oneMinus( k.abs().pow( 2.5 ) ).toVar();
 
-	var	maxSmooth = oneMinus( pow( 0.5, params.thinness.add( 7 ) ) ).toVar(),
-		minSmooth = oneMinus( pow( 0.5, params.thinness.add( 7 ).mul( 0.5 ) ) ).toVar();
+	var	maxSmooth = oneMinus( pow( 0.5, thinness.add( 7 ) ) ).toVar(),
+		minSmooth = oneMinus( pow( 0.5, thinness.add( 7 ).mul( 0.5 ) ) ).toVar();
 
 	If( k.greaterThan( maxSmooth ), ()=>{
 
@@ -1416,16 +1573,44 @@ var marble = TSLFn( ( params ) => {
 
 		} );
 
-	k.assign( k.add( mul( params.noise, mx_noise_float( pos.mul( 150 ) ).abs().pow3() ) ) );
+	k.assign( k.add( mul( xnoise, mx_noise_float( pos.mul( 150 ) ).abs().pow3() ) ) );
 
-	return mix( params.background, params.color, k );
+	return mix( background, color, k );
 
-}, defaults$x );
+} ).setLayout( {
+	name: 'marbleRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'thinness', type: 'float' },
+		{ name: 'xnoise', type: 'float' },
+		{ name: 'color', type: 'vec3' },
+		{ name: 'background', type: 'vec3' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
+
+
+
+function marble( params={} ) {
+
+	var { position, scale, thinness, noise, color, background, seed } = { ...defaults$x, ...params };
+
+	return marbleRaw( position, scale, thinness, noise, color, background, seed );
+
+}
+
+
+
+marble.defaults = defaults$x;
 
 var defaults$w = {
 	$name: 'Neon Lights',
 
-	scale: 1.5,
+	position: positionGeometry,
+
+	scale: 2,
 	thinness: 0.8,
 	mode: 0, // 0=additive, 1=subtractive
 
@@ -1439,57 +1624,136 @@ var defaults$w = {
 
 
 
-var neonLights = TSLFn( ( params ) => {
+var neonLightsRaw = Fn( ([ position, scale, thinness, mode, colorA, colorB, colorC, background, seed ]) => {
 
-	params = convertToNodes( params, defaults$w );
+	var pos = position;
 
-	var pos = positionGeometry;//.mul( exp( params.scale ) ).add( params.seed ).toVar( );
+	var xscale = exp( scale.remap( 0, 4, -2, 2 ) ).toVar();
+	var xthinness = exp( thinness.remap( 0, 1, 1.5, 0 ) ).toVar();
 
-	var scale = exp( params.scale.remap( 0, 4, 2, -2 ) ).toVar();
-	var thinness = exp( params.thinness.remap( 0, 1, 1.5, 0 ) ).toVar();
-
-	var color = params.background.toVar();
+	var color = background.toVar();
 	var neon = vec3( 0 ).toVar();
 
 	var x = mx_noise_float( pos.xyz ).toVar();
 	var y = mx_noise_float( pos.yzx ).toVar();
 	var z = mx_noise_float( pos.zxy ).toVar();
 
-	var k = mx_noise_float( vec3( x, y, z ).mul( scale ).add( params.seed ) ).toVar();
+	var k = mx_noise_float( vec3( x, y, z ).mul( xscale ).add( seed ) ).toVar();
 	k.assign( oneMinus( sqrt( abs( k ) ) ).pow( 3 ) );
 
-	neon.assign( params.colorA );
+	neon.assign( colorA );
 	var HSL = toHsl( neon );
-	neon.assign( hsl( HSL.x, HSL.y, HSL.z.mul( k ) ) );
+	neon.assign( hsl( vec3( HSL.xy, HSL.z.mul( k ) ) ) );
 
-	color.addAssign( select( params.mode.equal( 0 ), neon, neon.negate() ).mul( thinness ) );
+	color.addAssign( select( mode.equal( 0 ), neon, neon.negate() ).mul( xthinness ) );
 
-	k.assign( mx_noise_float( vec3( y, z, x ).mul( scale ).sub( params.seed ) ) );
+	k.assign( mx_noise_float( vec3( y, z, x ).mul( xscale ).sub( seed ) ) );
 	k.assign( oneMinus( sqrt( abs( k ) ) ).pow( 3 ) );
 
-	neon.assign( params.colorB );
+	neon.assign( colorB );
 	var HSL = toHsl( neon );
-	neon.assign( hsl( HSL.x, HSL.y, HSL.z.mul( k ) ) );
+	neon.assign( hsl( vec3( HSL.xy, HSL.z.mul( k ) ) ) );
 
-	color.addAssign( select( params.mode.equal( 0 ), neon, neon.negate() ).mul( thinness ) );
+	color.addAssign( select( mode.equal( 0 ), neon, neon.negate() ).mul( xthinness ) );
 
 
-	k.assign( mx_noise_float( vec3( z, x, y.negate() ).mul( scale ).add( params.seed ) ) );
+	k.assign( mx_noise_float( vec3( z, x, y.negate() ).mul( xscale ).add( seed ) ) );
 	k.assign( oneMinus( sqrt( abs( k ) ) ).pow( 3 ) );
 
-	neon.assign( params.colorC );
+	neon.assign( colorC );
 	var HSL = toHsl( neon );
-	neon.assign( hsl( HSL.x, HSL.y, HSL.z.mul( k ) ) );
+	neon.assign( hsl( vec3( HSL.xy, HSL.z.mul( k ) ) ) );
 
-	color.addAssign( select( params.mode.equal( 0 ), neon, neon.negate() ).mul( thinness ) );
+	color.addAssign( select( mode.equal( 0 ), neon, neon.negate() ).mul( xthinness ) );
 
 	return color;
 
-}, defaults$w );
+} ).setLayout( {
+	name: 'neonLightsRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'thinness', type: 'float' },
+		{ name: 'node', type: 'float' },
+		{ name: 'colorA', type: 'vec3' },
+		{ name: 'colorB', type: 'vec3' },
+		{ name: 'colorC', type: 'vec3' },
+		{ name: 'background', type: 'vec3' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
+
+
+
+function neonLights( params={} ) {
+
+	var { position, scale, thinness, mode, colorA, colorB, colorC, background, seed } = { ...defaults$w, ...params };
+
+	return neonLightsRaw( position, scale, thinness, mode, colorA, colorB, colorC, background, seed );
+
+}
+
+
+
+neonLights.defaults = defaults$w;
 
 var defaults$v = {
+	$name: 'Perlin noise',
+
+	position: positionGeometry,
+	scale: 2,
+	balance: 0,
+	contrast: 0,
+
+	color: new Color( 0xFFFFFF ),
+	background: new Color( 0x000000 ),
+
+	seed: 0,
+};
+
+
+
+var perlinNoiseRaw = Fn( ([ position, scale, balance, contrast, color, background, seed ]) => {
+
+	var pos = position.mul( exp( scale ) ).add( seed );
+
+	var k = clamp( 0, 1, mx_noise_float( pos ).mul( 0.5, exp( contrast ) ).add( 0.5, balance ) );
+
+	return mix( background, color, k );
+
+} ).setLayout( {
+	name: 'perlinNoiseRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'balance', type: 'float' },
+		{ name: 'contrast', type: 'float' },
+		{ name: 'color', type: 'vec3' },
+		{ name: 'background', type: 'vec3' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
+
+
+
+function perlinNoise( params={} ) {
+
+	var { position, scale, balance, contrast, color, background, seed } = { ...defaults$v, ...params };
+
+	return perlinNoiseRaw( position, scale, balance, contrast, color, background, seed );
+
+}
+
+
+
+perlinNoise.defaults = defaults$v;
+
+var defaults$u = {
 	$name: 'Photosphere',
 
+	position: positionGeometry,
 	scale: 2,
 
 	color: new Color( 0xFFFF00 ),
@@ -1500,32 +1764,55 @@ var defaults$v = {
 
 
 
-var photosphere = TSLFn( ( params ) => {
+var photosphereRaw = Fn( ([ position, scale, color, background, seed ]) => {
 
-	params = convertToNodes( params, defaults$v );
-
-	var scale = exp( params.scale.add( 1 ) ).toVar( );
-	var pos = positionGeometry.toVar( );
+	var xscale = exp( scale.add( 1 ) ).toVar( );
+	var pos = position.toVar( );
 
 	var vec = vec3( pos ).toVar();
 
 	Loop( 6, () => {
 
-		vec.assign( applyEuler( vec, pos.mul( scale ) ) );
-		scale.mulAssign( params.seed.mul( scale ).sin().mul( 0.05 ).add( 1.1 ) );
+		vec.assign( rotate( vec, pos.mul( xscale ) ) );
+		xscale.mulAssign( seed.mul( xscale ).sin().mul( 0.05 ).add( 1.1 ) );
 
 	} );
 
 
 	var k = mx_noise_float( vec ).add( 1 ).div( 2 );
 
-	return mix( params.background, params.color, k );
+	return mix( background, color, k );
 
-}, defaults$v );
+} ).setLayout( {
+	name: 'photosphereRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'color', type: 'vec3' },
+		{ name: 'background', type: 'vec3' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
 
-var defaults$u = {
+
+
+function photosphere( params={} ) {
+
+	var { position, scale, color, background, seed } = { ...defaults$u, ...params };
+
+	return photosphereRaw( position, scale, color, background, seed );
+
+}
+
+
+
+photosphere.defaults = defaults$u;
+
+var defaults$t = {
 	$name: 'Planet',
 
+	position: positionGeometry,
 	scale: 2,
 
 	iterations: 5,
@@ -1549,29 +1836,27 @@ var defaults$u = {
 
 
 
-var planet = TSLFn( ( params )=>{
-
-	params = convertToNodes( params, defaults$u );
+var planetRaw = Fn( ([ position, scale, iterations, levelSea, levelMountain, balanceWater, balanceSand, balanceSnow, colorDeep, colorShallow, colorBeach, colorGrass, colorForest, colorSnow, seed ])=>{
 
 	var k = float( 0 ).toVar(),
 		sum = float( 0 ).toVar(),
-		scale = exp( params.scale.sub( 2 ) ).toVar(),
-		power = float( 2 ).toVar();
+		xscale = exp( scale.sub( 2 ) ).toVar(),
+		xpower = float( 2 ).toVar();
 
-	Loop( params.iterations.add( 10 ), ()=>{
+	Loop( iterations.add( 10 ), ()=>{
 
-		k.addAssign( mul( power, mx_noise_float( positionGeometry.mul( scale ).add( params.seed ) ) ) );
-		sum.addAssign( power );
-		scale.mulAssign( 1.5 );
-		power.mulAssign( 0.8 );
+		k.addAssign( mul( xpower, mx_noise_float( position.mul( xscale ).add( seed ) ) ) );
+		sum.addAssign( xpower );
+		xscale.mulAssign( 1.5 );
+		xpower.mulAssign( 0.8 );
 
 	} );
 
 	k.assign( mul( k, k, 0.5 ).div( sum ) );
 
-	var levelSea = params.levelSea.pow( 2 ).toVar();
-	var levelMountain = params.levelMountain.pow( 2 ).toVar();
-	var levelSand = mix( levelSea, levelMountain, params.balanceSand ).toVar();
+	var levelSea = levelSea.pow( 2 ).toVar();
+	var levelMountain = levelMountain.pow( 2 ).toVar();
+	var levelSand = mix( levelSea, levelMountain, balanceSand ).toVar();
 	var levelCoast = mix( levelSea, levelSand, 0.4 ).toVar();
 	var levelGrass = mix( levelSea, levelSand, 0.6 ).toVar();
 
@@ -1582,9 +1867,9 @@ var planet = TSLFn( ( params )=>{
 
 		// deep-shallow
 		color.assign( mix(
-			params.colorDeep,
-			params.colorShallow,
-			remap( k, 0, levelSea, 0, 1 ).pow( exp( params.balanceWater.mul( -8 ).add( 4 ) ) )
+			colorDeep,
+			colorShallow,
+			remap( k, 0, levelSea, 0, 1 ).pow( exp( balanceWater.mul( -8 ).add( 4 ) ) )
 		) );
 
 	} )
@@ -1592,8 +1877,8 @@ var planet = TSLFn( ( params )=>{
 
 			// shallow-sand
 			color.assign( mix(
-				params.colorShallow,
-				params.colorBeach,
+				colorShallow,
+				colorBeach,
 				remap( k, levelSea, levelCoast )
 			) );
 
@@ -1601,15 +1886,15 @@ var planet = TSLFn( ( params )=>{
 		.ElseIf( k.lessThan( levelGrass ), ()=>{
 
 			// sand
-			color.assign( params.colorBeach );
+			color.assign( colorBeach );
 
 		} )
 		.ElseIf( k.lessThan( levelSand ), ()=>{
 
 			// shallow-sand-grass
 			color.assign( mix(
-				params.colorBeach,
-				params.colorGrass,
+				colorBeach,
+				colorGrass,
 				remap( k, levelGrass, levelSand )
 			) );
 
@@ -1618,8 +1903,8 @@ var planet = TSLFn( ( params )=>{
 
 			// grass-forest
 			color.assign( mix(
-				params.colorGrass,
-				params.colorForest,
+				colorGrass,
+				colorForest,
 				remap( k, levelSand, levelMountain ).pow( 0.75 )
 			) );
 
@@ -1627,22 +1912,60 @@ var planet = TSLFn( ( params )=>{
 		.Else( ()=>{
 
 			// forest-snow
-			var levelSnow = mix( 1, levelMountain, params.balanceSnow );
+			var levelSnow = mix( 1, levelMountain, balanceSnow );
 			color.assign( mix(
-				params.colorForest,
-				params.colorSnow,
-				smoothstep( mix( levelSnow, levelMountain, params.balanceSnow.pow( 0.5 ) ), levelSnow, k )
+				colorForest,
+				colorSnow,
+				smoothstep( mix( levelSnow, levelMountain, balanceSnow.pow( 0.5 ) ), levelSnow, k )
 			) );
 
 		} );
 
 	return color;
 
-}, defaults$u );
+} ).setLayout( {
+	name: 'planetRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
 
-var defaults$t = {
+		{ name: 'iterations', type: 'int' },
+		{ name: 'levelSea', type: 'float' },
+		{ name: 'levelMountain', type: 'float' },
+		{ name: 'balanceWater', type: 'float' },
+		{ name: 'balanceSand', type: 'float' },
+		{ name: 'balanceSnow', type: 'float' },
+
+		{ name: 'colorDeep', type: 'vec3' },
+		{ name: 'colorShallow', type: 'vec3' },
+		{ name: 'colorBeach', type: 'vec3' },
+		{ name: 'colorGrass', type: 'vec3' },
+		{ name: 'colorForest', type: 'vec3' },
+		{ name: 'colorSnow', type: 'vec3' },
+
+		{ name: 'seed', type: 'float' },
+	] }
+);
+
+
+
+function planet( params={} ) {
+
+	var { position, scale, iterations, levelSea, levelMountain, balanceWater, balanceSand, balanceSnow, colorDeep, colorShallow, colorBeach, colorGrass, colorForest, colorSnow, seed } = { ...defaults$t, ...params };
+
+	return planetRaw( position, scale, iterations, levelSea, levelMountain, balanceWater, balanceSand, balanceSnow, colorDeep, colorShallow, colorBeach, colorGrass, colorForest, colorSnow, seed );
+
+}
+
+
+
+planet.defaults = defaults$t;
+
+var defaults$s = {
 	$name: 'Polka dots',
 
+	position: positionGeometry,
 	count: 2,
 	size: 0.5,
 	blur: 0.25,
@@ -1659,24 +1982,22 @@ var goldenRatio = ( 1+5**0.5 )/2;
 
 
 
-var polkaDots = TSLFn( ( params ) => {
-
-	params = convertToNodes( params, defaults$t );
+var polkaDotsRaw = Fn( ([ position, count, size, blur, color, background, xflat ]) => {
 
 	var dist = float( 1 ).toVar();
 
-	If( params.flat.equal( 1 ), ()=>{
+	If( xflat.equal( 1 ), ()=>{
 
-		var cnt = params.count.pow( 2 ).sub( 0.5 ).toVar();
-		var pos = positionGeometry.xy.mul( cnt ).mul( mat2( 1, 1, -1, 1 ) );
+		var cnt = count.pow( 2 ).sub( 0.5 ).toVar();
+		var pos = position.xy.mul( cnt ).mul( mat2( 1, 1, -1, 1 ) );
 		var posTo = pos.round().toVar();
 
 		dist.assign( pos.distance( posTo ).div( cnt ) );
 
 	} ).Else( ()=>{
 
-		var cnt = pow( 10, params.count ).toVar();
-		var vec = positionGeometry.normalize().toVar();
+		var cnt = pow( 10, count ).toVar();
+		var vec = position.normalize().toVar();
 
 		var besti = oneMinus( vec.y ).mul( cnt ).sub( 1 ).div( 2 );
 
@@ -1699,18 +2020,45 @@ var polkaDots = TSLFn( ( params ) => {
 
 	} ); // Else
 
-	var size = exp( params.size.mul( 5 ).sub( 5 ) ).toVar();
-	var blur = params.blur.pow( 4 ).toVar();
-	var k = smoothstep( size.sub( blur ), size.add( blur ), dist );
+	var xsize = exp( size.mul( 5 ).sub( 5 ) ).toVar();
+	var xblur = blur.pow( 4 ).toVar();
+	var k = smoothstep( xsize.sub( xblur ), xsize.add( xblur ), dist );
 
-	return mix( params.color, params.background, k );
+	return mix( color, background, k );
 
-}, defaults$t );
+} ).setLayout( {
+	name: 'polkaDotsRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'count', type: 'float' },
+		{ name: 'size', type: 'float' },
+		{ name: 'blur', type: 'float' },
+		{ name: 'color', type: 'vec3' },
+		{ name: 'background', type: 'vec3' },
+		{ name: 'xflat', type: 'int' },
+	] }
+);
 
-var defaults$s = {
+
+
+function polkaDots( params={} ) {
+
+	var { position, count, size, blur, color, background, flat } = { ...defaults$s, ...params };
+
+	return polkaDotsRaw( position, count, size, blur, color, background, flat );
+
+}
+
+
+
+polkaDots.defaults = defaults$s;
+
+var defaults$r = {
 	$name: 'Processed wood',
 	$width: 260,
 
+	position: positionGeometry,
 	scale: 2,
 	lengths: 4,
 	strength: 0.3,
@@ -1724,32 +2072,59 @@ var defaults$s = {
 
 
 
-var processedWood = TSLFn( ( params )=>{
+var processedWoodRaw = Fn( ([ position, scale, lengths, strength, angle, color, background, seed ])=>{
 
-	params = convertToNodes( params, defaults$s );
-
-	var angle = radians( params.angle ).toVar();
+	var angle = radians( angle ).toVar();
 	var posLocal = vec3(
-		sub( positionGeometry.x.mul( cos( angle ) ), positionGeometry.y.mul( sin( angle ) ) ),
-		add( positionGeometry.x.mul( sin( angle ) ), positionGeometry.y.mul( cos( angle ) ) ),
-		positionGeometry.z,
+		sub( position.x.mul( cos( angle ) ), position.y.mul( sin( angle ) ) ),
+		add( position.x.mul( sin( angle ) ), position.y.mul( cos( angle ) ) ),
+		position.z,
 	).toVar();
 
-	var scale = params.scale.div( 2 ).add( 1 ).toVar();
-	var pos = posLocal.mul( exp( scale ) ).add( params.seed ).toVar( );
+	var xscale = scale.div( 2 ).add( 1 ).toVar();
+	var pos = posLocal.mul( exp( scale ) ).add( seed ).toVar( );
 
-	var len = params.lengths.add( 5 ).reciprocal().toVar();
-	var k = mx_noise_float( pos.mul( scale, vec3( 1, len, len ) ) );
+	var len = lengths.add( 5 ).reciprocal().toVar();
+	var k = mx_noise_float( pos.mul( xscale, vec3( 1, len, len ) ) );
 	k = k.mul( mx_noise_float( pos.mul( vec3( 25, 1, 1 ) ) ).add( -1 ).mul( 0.2 ) );
-	k = k.add( params.strength.sub( 0.5 ) ).smoothstep( -0.3, 0.3 ).oneMinus();
+	k = k.add( strength.sub( 0.5 ) ).smoothstep( -0.3, 0.3 ).oneMinus();
 
-	return mix( params.color, params.background, k );
+	return mix( color, background, k );
 
-}, defaults$s );
+} ).setLayout( {
+	name: 'processedWoodRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'lengths', type: 'float' },
+		{ name: 'strength', type: 'float' },
+		{ name: 'angle', type: 'float' },
+		{ name: 'color', type: 'vec3' },
+		{ name: 'background', type: 'vec3' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
 
-var defaults$r = {
+
+
+function processedWood( params={} ) {
+
+	var { position, scale, lengths, strength, angle, color, background, seed } = { ...defaults$r, ...params };
+
+	return processedWoodRaw( position, scale, lengths, strength, angle, color, background, seed );
+
+}
+
+
+
+processedWood.defaults = defaults$r;
+
+var defaults$q = {
 	$name: 'Protozoa',
 
+	position: positionGeometry,
+	matcap: matcapUV,
 	scale: 1.5,
 	fat: 0.7,
 	amount: 0.4,
@@ -1767,17 +2142,22 @@ var pnoise = Fn( ([ pos, fat ])=>{
 
 	return mx_noise_float( pos ).mul( fat ).clamp( -3.14, 3.14 ).cos().add( 1 ).div( 2 );
 
-} );
+} ).setLayout( {
+	name: 'pnoise',
+	type: 'float',
+	inputs: [
+		{ name: 'pos', type: 'vec3' },
+		{ name: 'fat', type: 'float' },
+	] }
+);
 
 
 
-var protozoa = TSLFn( ( params )=>{
+var protozoaRaw = Fn( ([ position, matcap, scale, fat, amount, color, subcolor, background, seed ])=>{
 
-	params = convertToNodes( params, defaults$r );
+	var pos = position.mul( exp( scale.sub( 1 ) ) ).add( seed ).toVar( );
 
-	var pos = positionGeometry.mul( exp( params.scale.sub( 1 ) ) ).add( params.seed ).toVar( );
-
-	var matcap = vec3( matcapUV, matcapUV.length() ).toVar();
+	var xmatcap = vec3( matcap, matcap.length() ).toVar();
 
 	var rings1 = float( 0 ).toVar();
 	var rings2 = float( 0 ).toVar();
@@ -1785,18 +2165,18 @@ var protozoa = TSLFn( ( params )=>{
 	var n1 = float( 0 ).toVar();
 	var n2 = float( 0 ).toVar();
 
-	var fat = params.fat.add( 0.2 ).oneMinus().mul( 60 ).add( 30 ).toVar();
-	var scale = float( 2 ).toVar();
+	var fat = fat.add( 0.2 ).oneMinus().mul( 60 ).add( 30 ).toVar();
+	var xscale = float( 2 ).toVar();
 
-	var dPos = params.amount.div( 2 ).add( 0.5 ).exp().toVar();
+	var dPos = amount.div( 2 ).add( 0.5 ).exp().toVar();
 
 	Loop( 10, ()=>{
 
-		rings1.assign( pnoise( pos.xyz.add( matcap ), fat ) );
-		rings2.assign( pnoise( pos.yzx.add( matcap ), fat ) );
+		rings1.assign( pnoise( pos.xyz.add( xmatcap ), fat ) );
+		rings2.assign( pnoise( pos.yzx.add( xmatcap ), fat ) );
 
-		n1.addAssign( rings1.mul( rings2 ).mul( scale ) );
-		n2.addAssign( rings1.max( rings2 ).mul( scale ) );
+		n1.addAssign( rings1.mul( rings2 ).mul( xscale ) );
+		n2.addAssign( rings1.max( rings2 ).mul( xscale ) );
 
 		pos.assign( mix( pos.mul( dPos ), 0, 0.4 ) );
 
@@ -1804,16 +2184,44 @@ var protozoa = TSLFn( ( params )=>{
 
 	} );
 
-	return mix( params.background, mix( params.color, params.subcolor, n2.mul( 0.1 ) ), n1 );
+	return mix( background, mix( color, subcolor, n2.mul( 0.1 ) ), n1 );
 
-}, defaults$r );
+} ).setLayout( {
+	name: 'protozoaRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'matcap', type: 'vec2' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'fat', type: 'float' },
+		{ name: 'amount', type: 'float' },
+		{ name: 'color', type: 'vec3' },
+		{ name: 'subcolor', type: 'vec3' },
+		{ name: 'background', type: 'vec3' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
 
-var defaults$q = {
+
+
+function protozoa( params={} ) {
+
+	var { position, matcap, scale, fat, amount, color, subcolor, background, seed } = { ...defaults$q, ...params };
+
+	return protozoaRaw( position, matcap, scale, fat, amount, color, subcolor, background, seed );
+
+}
+
+
+
+protozoa.defaults = defaults$q;
+
+var defaults$p = {
 	$name: 'Rotator',
 	$positionNode: true,
 	$selectorPlanar: true,
 
-	angles: new Vector3( 0.4, -0.6, 0 ),
+	angles: new Vector3( -0.2, 0.7, 0 ),
 	center: new Vector3( 0, 0, 0 ),
 
 	selectorCenter: new Vector3( 0, 0, 0 ),
@@ -1824,56 +2232,101 @@ var defaults$q = {
 
 
 
-var surfacePos$6 = Fn( ([ pos, params ])=>{
+var surfacePos$6 = Fn( ([ pos, angles, center, selectorAngles, selectorCenter, selectorWidth ])=>{
 
-	var zone = selectPlanar( pos, params.selectorAngles, params.selectorCenter, params.selectorWidth );
+	var zone = selectPlanar( pos, selectorAngles, selectorCenter, selectorWidth );
 
-	var R = matRotYXZ( params.angles.mul( zone ) ),
-		T = matTrans( params.center ),
-		TN = matTrans( params.center.negate() );
+	return rotatePivot( pos, center, angles.mul( zone ) );
 
-	return T.mul( R ).mul( TN ).mul( vec4( pos, 1 ) ).xyz;
-
+} ).setLayout( {
+	name: 'surfacePos',
+	type: 'vec3',
+	inputs: [
+		{ name: 'pos', type: 'vec3' },
+		{ name: 'angles', type: 'vec3' },
+		{ name: 'center', type: 'vec3' },
+		{ name: 'selectorAngles', type: 'vec2' },
+		{ name: 'selectorCenter', type: 'vec3' },
+		{ name: 'selectorWidth', type: 'float' },
+	]
 } );
 
 
 
-var rotator = TSLFn( ( params )=>{
+var rotatorRaw = Fn( ([ angles, center, selectorAngles, selectorCenter, selectorWidth ])=>{
 
-	params = convertToNodes( params, defaults$q );
+	return surfacePos$6( positionGeometry, angles, center, selectorAngles, selectorCenter, selectorWidth );
 
-	return surfacePos$6( positionGeometry, params );
+} ).setLayout( {
+	name: 'rotatorRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'angles', type: 'vec3' },
+		{ name: 'center', type: 'vec3' },
+		{ name: 'selectorAngles', type: 'vec2' },
+		{ name: 'selectorCenter', type: 'vec3' },
+		{ name: 'selectorWidth', type: 'float' },
+	]
+} );
 
-}, defaults$q );
 
 
+var rotatorNormalRaw = Fn( ([ angles, center, selectorAngles, selectorCenter, selectorWidth ]) => {
 
-rotator.normal = TSLFn( ( params ) => {
-
-	params = convertToNodes( params, defaults$q );
-
-	var eps = 0.01;
+	const EPS = 0.01;
 
 	var position = positionGeometry,
 		normal = normalLocal.normalize().toVar(),
-		tangent = tangentLocal.normalize().mul( eps ).toVar(),
-		bitangent = cross( normal, tangent ).normalize().mul( eps ).toVar();
+		tangent = tangentLocal.normalize().mul( EPS ).toVar(),
+		bitangent = cross( normal, tangent ).normalize().mul( EPS ).toVar();
 
-	var pos = surfacePos$6( position, params );
-	var posU = surfacePos$6( position.add( tangent ), params );
-	var posV = surfacePos$6( position.add( bitangent ), params );
+	var pos = surfacePos$6( position, angles, center, selectorAngles, selectorCenter, selectorWidth );
+	var posU = surfacePos$6( position.add( tangent ), angles, center, selectorAngles, selectorCenter, selectorWidth );
+	var posV = surfacePos$6( position.add( bitangent ), angles, center, selectorAngles, selectorCenter, selectorWidth );
 
-	var dU = sub( posU, pos ),
-		dV = sub( posV, pos );
+	return approximateNormal( pos, posU, posV );
 
-	return transformNormalToView( cross( dU, dV ).normalize() );
+} ).setLayout( {
+	name: 'rotatorNormalRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'angles', type: 'vec3' },
+		{ name: 'center', type: 'vec3' },
+		{ name: 'selectorAngles', type: 'vec2' },
+		{ name: 'selectorCenter', type: 'vec3' },
+		{ name: 'selectorWidth', type: 'float' },
+	]
+} );
 
-}, defaults$q );
 
-var defaults$p = {
+
+function rotator( params={} ) {
+
+	var { angles, center, selectorAngles, selectorCenter, selectorWidth } = { ...defaults$p, ...params };
+
+	return rotatorRaw( angles, center, selectorAngles, selectorCenter, selectorWidth );
+
+}
+
+
+
+rotator.normal = function ( params={} ) {
+
+	var { angles, center, selectorAngles, selectorCenter, selectorWidth } = { ...defaults$p, ...params };
+
+	return rotatorNormalRaw( angles, center, selectorAngles, selectorCenter, selectorWidth );
+
+};
+
+
+
+rotator.defaults = defaults$p;
+
+var defaults$o = {
 	$name: 'Rough clay',
 	$normalNode: true,
 
+	position: positionGeometry,
 	scale: 2,
 	bump: 0.5,
 	curvature: 0.2,
@@ -1883,45 +2336,73 @@ var defaults$p = {
 
 
 
-var surfacePos$5 = Fn( ([ pos, normal, bump, curvature ]) => {
+var surfacePos$5 = Fn( ([ pos, normal, curvature ]) => {
 
 	var k1 = mx_worley_noise_float( pos.add( mx_noise_float( pos ).mul( curvature ) ) ).add( 0.8 ).pow( 5 ).toVar();
 	k1.addAssign( k1.pow( 0.5 ) );
-	//k1.addAssign( noise(pos.mul(noiseScale.add(8))).add(1).pow(2).mul(noiseBump) );
-	return pos.add( normal.mul( k1 ).mul( bump ) );
+	return pos.add( normal.mul( k1 ) );
 
-} );
-
-
-
-var roughClay = TSLFn( ( params ) => {
-
-	params = convertToNodes( params, defaults$p );
-
-	var eps = 0.001;
-
-	var bump = params.bump.div( 50 ).toVar();
-
-	var position = positionGeometry.mul( exp( params.scale.div( 2 ) ) ).add( params.seed.sin().mul( 10 ) ).toVar( ),
-		normal = normalLocal.normalize().toVar(),
-		tangent = tangentLocal.normalize().mul( eps ).toVar(),
-		bitangent = cross( normal, tangent ).normalize().mul( eps ).toVar();
-
-	var pos = surfacePos$5( position, normal, bump, params.curvature );
-	var posU = surfacePos$5( position.add( tangent ), normal, bump, params.curvature );
-	var posV = surfacePos$5( position.add( bitangent ), normal, bump, params.curvature );
-
-	var dU = sub( posU, pos ),
-		dV = sub( posV, pos );
-
-	return transformNormalToView( cross( dU, dV ).normalize() );
+} ).setLayout( {
+	name: 'surfacePos',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'normal', type: 'vec3' },
+		{ name: 'curvature', type: 'float' },
+	] }
+);
 
 
-}, defaults$p );
 
-var defaults$o = {
+var roughClayRaw = Fn( ([ position, normal, tangent, scale, bump, curvature, seed ]) => {
+
+	const EPS = 0.001;
+
+	var xposition = position.mul( exp( scale.div( 2 ) ) ).add( seed.sin().mul( 10 ) ).toVar( ),
+		xnormal = normal.normalize().toVar(),
+		xtangent = tangent.normalize().mul( EPS ).toVar(),
+		xbitangent = cross( xnormal, xtangent ).normalize().mul( EPS ).toVar();
+
+	xnormal.mulAssign( bump, 1/50 );
+
+	var pos = surfacePos$5( xposition, xnormal, curvature );
+	var posU = surfacePos$5( xposition.add( xtangent ), xnormal, curvature );
+	var posV = surfacePos$5( xposition.add( xbitangent ), xnormal, curvature );
+
+	return approximateNormal( pos, posU, posV );
+
+} ).setLayout( {
+	name: 'concreteRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'normal', type: 'vec3' },
+		{ name: 'tangent', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'bump', type: 'float' },
+		{ name: 'curvature', type: 'float' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
+
+
+
+function roughClay( params={} ) {
+
+	var { position, scale, bump, curvature, seed } = { ...defaults$o, ...params };
+
+	return roughClayRaw( position, normalLocal, tangentLocal, scale, bump, curvature, seed );
+
+}
+
+
+
+roughClay.defaults = defaults$o;
+
+var defaults$n = {
 	$name: 'Runny eggs',
 
+	position: positionGeometry,
 	scale: 1,
 
 	sizeYolk: 0.2,
@@ -1936,25 +2417,7 @@ var defaults$o = {
 
 
 
-var runnyEggs = TSLFn( ( params ) => {
-
-	params = convertToNodes( params, defaults$o );
-
-	var pos = positionGeometry.mul( exp( params.scale.div( 1 ) ) ).add( params.seed.sin().mul( 10 ) ).toVar( );
-
-	var sizeYolk = params.sizeYolk.oneMinus();
-	var sizeWhite = params.sizeWhite.oneMinus();
-
-	var n = mx_worley_noise_float( pos ).toVar();
-	var whites = n.add( sizeWhite ).pow( 8 ).oneMinus().clamp( -0.5, 1 );
-	var yolks = n.add( sizeYolk ).pow( 18 ).oneMinus().clamp( 0, 1 ).pow( 0.4 ).clamp( 0, 1 );
-
-	return mix( params.colorBackground, mix( params.colorWhite, params.colorYolk, yolks ), whites );
-
-}, defaults$o );
-
-
-var surfacePos$4 = Fn( ([ pos, normal, bump, sizeYolk, sizeWhite ]) => {
+var surfacePos$4 = Fn( ([ pos, normal, sizeYolk, sizeWhite ]) => {
 
 	var n = mx_worley_noise_float( pos ).toVar();
 	var whites = n.add( sizeWhite ).pow( 8 ).oneMinus();
@@ -1962,56 +2425,150 @@ var surfacePos$4 = Fn( ([ pos, normal, bump, sizeYolk, sizeWhite ]) => {
 
 	var k = mix( 0, mix( 0, 1, yolks ), whites );
 
-	return pos.add( normal.mul( k ).mul( bump ) );
+	return pos.add( normal.mul( k ) );
 
-} );
-
-
-runnyEggs.normal = TSLFn( ( params ) => {
-
-	params = convertToNodes( params, defaults$o );
-
-	var eps = 0.001;
-	var bump = 0.05;
-
-	var position = positionGeometry.mul( exp( params.scale.div( 1 ) ) ).add( params.seed.sin().mul( 10 ) ).toVar( ),
-		normal = normalLocal.normalize().toVar(),
-		tangent = tangentLocal.normalize().mul( eps ).toVar(),
-		bitangent = cross( normal, tangent ).normalize().mul( eps ).toVar();
-
-	var sizeYolk = params.sizeYolk.oneMinus();
-	var sizeWhite = params.sizeWhite.oneMinus();
-
-	var pos = surfacePos$4( position, normal, bump, sizeYolk, sizeWhite );
-	var posU = surfacePos$4( position.add( tangent ), normal, bump, sizeYolk, sizeWhite );
-	var posV = surfacePos$4( position.add( bitangent ), normal, bump, sizeYolk, sizeWhite );
-
-	var dU = sub( posU, pos ),
-		dV = sub( posV, pos );
-
-	return transformNormalToView( cross( dU, dV ).normalize() );
-
-}, defaults$o );
+} ).setLayout( {
+	name: 'surfacePos',
+	type: 'vec3',
+	inputs: [
+		{ name: 'pos', type: 'vec3' },
+		{ name: 'normal', type: 'vec3' },
+		{ name: 'sizeYolk', type: 'float' },
+		{ name: 'sizeWhite', type: 'float' },
+	] }
+);
 
 
-runnyEggs.roughness = TSLFn( ( params ) => {
 
-	params = convertToNodes( params, defaults$o );
+var runnyEggsRaw = Fn( ([ position, scale, sizeYolk, sizeWhite, colorYolk, colorWhite, colorBackground, seed ]) => {
 
-	var pos = positionGeometry.mul( exp( params.scale.div( 1 ) ) ).add( params.seed.sin().mul( 10 ) ).toVar( );
-
-	var sizeYolk = params.sizeYolk.oneMinus();
+	var pos = position.mul( exp( scale ) ).add( seed.sin().mul( 10 ) ).toVar( );
 
 	var n = mx_worley_noise_float( pos ).toVar();
-	var yolks = n.add( sizeYolk ).pow( 18 ).clamp( 0, 1 );
+	var whites = n.add( sizeWhite.oneMinus() ).pow( 8 ).oneMinus().clamp( -0.5, 1 );
+	var yolks = n.add( sizeYolk.oneMinus() ).pow( 18 ).oneMinus().clamp( 0, 1 ).pow( 0.4 ).clamp( 0, 1 );
+
+	return mix( colorBackground, mix( colorWhite, colorYolk, yolks ), whites );
+
+} ).setLayout( {
+	name: 'runnyEggsRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'pos', type: 'vec3' },
+		{ name: 'normal', type: 'vec3' },
+		{ name: 'sizeYolk', type: 'float' },
+		{ name: 'sizeWhite', type: 'float' },
+		{ name: 'colorYolk', type: 'vec3' },
+		{ name: 'colorWhite', type: 'vec3' },
+		{ name: 'colorBackground', type: 'vec3' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
+
+
+
+var runnyEggsNormalRaw = Fn( ([ position, normal, tangent, scale, sizeYolk, sizeWhite, /*colorYolk, colorWhite, colorBackground,*/ seed ]) => {
+
+	const EPS = 0.001;
+	const BUMP = 0.05;
+
+	var xposition = position.mul( exp( scale ) ).add( seed.sin().mul( 10 ) ).toVar( ),
+		xnormal = normal.normalize().toVar(),
+		xtangent = tangent.normalize().mul( EPS ).toVar(),
+		bitangent = cross( xnormal, xtangent ).normalize().mul( EPS ).toVar();
+
+	var xSizeYolk = sizeYolk.oneMinus();
+	var xSizeWhite = sizeWhite.oneMinus();
+
+	xnormal.mulAssign( BUMP );
+
+	var pos = surfacePos$4( xposition, xnormal, xSizeYolk, xSizeWhite );
+	var posU = surfacePos$4( xposition.add( xtangent ), xnormal, xSizeYolk, xSizeWhite );
+	var posV = surfacePos$4( xposition.add( bitangent ), xnormal, xSizeYolk, xSizeWhite );
+
+	return approximateNormal( pos, posU, posV );
+
+} ).setLayout( {
+	name: 'runnyEggsNormalRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'normal', type: 'vec3' },
+		{ name: 'tangent', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'sizeYolk', type: 'float' },
+		{ name: 'sizeWhite', type: 'float' },
+		/*{ name: 'colorYolk', type: 'vec3' },*/
+		/*{ name: 'colorWhite', type: 'vec3' },*/
+		/*{ name: 'colorBackground', type: 'vec3' },*/
+		{ name: 'seed', type: 'float' },
+	] }
+);
+
+
+
+var runnyEggsRoughnessRaw = Fn( ([ position, scale, sizeYolk, /*sizeWhite, colorYolk, colorWhite, colorBackground,*/ seed ]) => {
+
+	var pos = position.mul( exp( scale ) ).add( seed.sin().mul( 10 ) ).toVar( );
+
+	var n = mx_worley_noise_float( pos ).toVar();
+	var yolks = n.add( sizeYolk.oneMinus() ).pow( 18 ).clamp( 0, 1 );
 
 	return yolks;
 
-}, defaults$o );
+} ).setLayout( {
+	name: 'runnyEggsRoughnessRaw',
+	type: 'float',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'sizeYolk', type: 'float' },
+		/*{ name: 'sizeWhite', type: 'float' },*/
+		/*{ name: 'colorYolk', type: 'vec3' },*/
+		/*{ name: 'colorWhite', type: 'vec3' },*/
+		/*{ name: 'colorBackground', type: 'vec3' },*/
+		{ name: 'seed', type: 'float' },
+	] }
+);
 
-var defaults$n = {
+
+
+function runnyEggs( params={} ) {
+
+	var { position, scale, sizeYolk, sizeWhite, colorYolk, colorWhite, colorBackground, seed } = { ...defaults$n, ...params };
+
+	return runnyEggsRaw( position, scale, sizeYolk, sizeWhite, colorYolk, colorWhite, colorBackground, seed );
+
+}
+
+
+
+runnyEggs.normal = function ( params={} ) {
+
+	var { position, scale, sizeYolk, sizeWhite, /*colorYolk, colorWhite, colorBackground,*/ seed } = { ...defaults$n, ...params };
+
+	return runnyEggsNormalRaw( position, normalLocal, tangentLocal, scale, sizeYolk, sizeWhite, /*colorYolk, colorWhite, colorBackground,*/ seed );
+
+};
+
+
+
+runnyEggs.roughness = function ( params={} ) {
+
+	var { position, scale, sizeYolk, /*sizeWhite, colorYolk, colorWhite, colorBackground,*/ seed } = { ...defaults$n, ...params };
+
+	return runnyEggsRoughnessRaw( position, scale, sizeYolk, /*sizeWhite, colorYolk, colorWhite, colorBackground,*/ seed );
+
+};
+
+
+
+runnyEggs.defaults = defaults$n;
+
+var defaults$m = {
 	$name: 'rust',
 
+	position: positionGeometry,
 	scale: 2,
 	iterations: 8,
 	amount: -0.3,
@@ -2027,15 +2584,15 @@ var defaults$n = {
 
 
 
-var _rust = Fn( ( params )=>{
+var _rust = Fn( ([ position, scale, iterations, amount, seed ])=>{
 
-	var pos = positionGeometry.mul( exp( params.scale.div( 4 ).add( -1 ) ) ).add( params.seed ).toVar( );
+	var pos = position.mul( exp( scale.div( 4 ).add( -1 ) ) ).add( seed ).toVar( );
 
-	var amount = params.amount.mul( mx_noise_float( pos.mul( params.amount.div( 2 ).add( 4 ) ) ).add( 4 ) ).toVar();
+	var xamount = amount.mul( mx_noise_float( pos.mul( amount.div( 2 ).add( 4 ) ) ).add( 4 ) ).toVar();
 
 	var k = mx_noise_float( pos ).toVar();
 
-	Loop( params.iterations, ()=>{
+	Loop( iterations, ()=>{
 
 		pos.mulAssign( 2 );
 		k.addAssign( mx_noise_float( pos ) );
@@ -2044,42 +2601,104 @@ var _rust = Fn( ( params )=>{
 
 	k.subAssign( mx_noise_float( pos.mul( 2 ) ).abs() );
 
-	k.assign( k.sub( amount ).clamp( 0, 15 ) );
+	k.assign( k.sub( xamount ).clamp( 0, 15 ) );
 
 	return k;
 
-} );
+} ).setLayout( {
+	name: '_rust',
+	type: 'float',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'iterations', type: 'int' },
+		{ name: 'amount', type: 'float' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
 
 
-var rust = TSLFn( ( params )=>{
+var rustRaw = Fn( ([ position, scale, iterations, amount, /*opacity,*/xnoise, noiseScale, color, background, seed ])=>{
 
-	params = convertToNodes( params, defaults$n );
+	var k = _rust( position, scale, iterations, amount, seed ).mul( 1.25 ).pow( 0.5 );
 
-	var k = _rust( params ).mul( 1.25 ).pow( 0.5 );
+	var pos = position.mul( exp( scale.add( noiseScale.mul( 3 ), 2 ) ) );
 
-	var pos = positionGeometry.mul( exp( params.scale.add( params.noiseScale.mul( 3 ), 2 ) ) );
+	k.addAssign( xnoise.mul( mx_noise_float( pos ).abs().add( 0.1 ).pow( 2 ) ) );
 
-	k.addAssign( params.noise.mul( mx_noise_float( pos ).abs().add( 0.1 ).pow( 2 ) ) );
+	return mix( color, background, k );
 
-	return mix( params.color, params.background, k );
+} ).setLayout( {
+	name: 'rustRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'iterations', type: 'int' },
+		{ name: 'amount', type: 'float' },
+		/*{ name: 'opacity', type: 'float' },*/
+		{ name: 'xnoise', type: 'float' },
+		{ name: 'noiseScale', type: 'float' },
+		{ name: 'color', type: 'vec3' },
+		{ name: 'background', type: 'vec3' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
 
-}, defaults$n );
 
 
 
-rust.opacity = TSLFn( ( params )=>{
+var rustOpacityRaw = Fn( ([ position, scale, iterations, amount, opacity, /*xnoise, noiseScale, color, background,*/ seed ])=>{
 
-	params = convertToNodes( params, defaults$n );
-
-	var k = _rust( params ).mul( params.opacity.add( 0.2 ) );
+	var k = _rust( position, scale, iterations, amount, seed ).mul( opacity.add( 0.2 ) );
 
 	return k.oneMinus();
 
-}, defaults$n );
+} ).setLayout( {
+	name: 'rustOpacityRaw',
+	type: 'float',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'iterations', type: 'int' },
+		{ name: 'amount', type: 'float' },
+		{ name: 'opacity', type: 'float' },
+		/*{ name: 'xnoise', type: 'float' },*/
+		/*{ name: 'noiseScale', type: 'float' },*/
+		/*{ name: 'color', type: 'vec3' },*/
+		/*{ name: 'background', type: 'vec3' },*/
+		{ name: 'seed', type: 'float' },
+	] }
+);
 
-var defaults$m = {
+
+
+function rust( params={} ) {
+
+	var { position, scale, iterations, amount, /*opacity,*/ noise, noiseScale, color, background, seed } = { ...defaults$m, ...params };
+
+	return rustRaw( position, scale, iterations, amount, /*opacity,*/noise, noiseScale, color, background, seed );
+
+}
+
+
+
+rust.opacity = function ( params={} ) {
+
+	var { position, scale, iterations, amount, opacity, /*xnoise, noiseScale, color, background,*/ seed } = { ...defaults$m, ...params };
+
+	return rustOpacityRaw( position, scale, iterations, amount, opacity, /*xnoise, noiseScale, color, background,*/ seed );
+
+};
+
+
+
+rust.defaults = defaults$m;
+
+var defaults$l = {
 	$name: 'Satin',
 
+	position: positionGeometry,
 	scale: 2,
 
 	color: new Color( 0x7080FF ),
@@ -2090,42 +2709,48 @@ var defaults$m = {
 
 
 
-var satin = TSLFn( ( params ) => {
+var satinRaw = Fn( ([ position, scale, color, background, seed ]) => {
 
-	params = convertToNodes( params, defaults$m );
-
-	var pos = positionGeometry.toVar( );
-
-	var scale = exp( params.scale.div( 3 ) ).toVar();
+	var pos = position.toVar( 'pos' ),
+		scale = scale.div( 3 ).exp( ).toVar( 'xscale' );
 
 	var k = mx_noise_float(
 		vec3(
 			mx_noise_float( vec3( pos.x.mul( 2 ), pos.y, pos.z ).mul( scale ) ),
 			mx_noise_float( vec3( pos.x, pos.y.mul( 2 ), pos.z ).mul( scale ) ),
 			mx_noise_float( vec3( pos.x, pos.y, pos.z.mul( 2 ) ).mul( scale ) ),
-		).mul( scale ).add( params.seed )
-	);
+		).mul( scale ).add( seed )
+	).abs().pow( 3 ).mul( 20 ).toVar( 'k' );
 
-	k = pow( abs( k ), 3 ).mul( 20 );
+	return mix( background, color, k );
 
-	return mix( params.background, params.color, k );
+} ).setLayout( {
+	name: 'satinRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'color', type: 'vec3' },
+		{ name: 'background', type: 'vec3' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
 
-}, defaults$m );
+
+
+function satin( params={} ) {
+
+	var { position, scale, color, background, seed } = { ...defaults$l, ...params };
+
+	return satinRaw( position, scale, color, background, seed );
+
+}
 
 
 
-satin.defaults = {
-	$name: 'Satin',
+satin.defaults = defaults$l;
 
-	scale: 2,
-
-	color: new Color( 0x7080FF ),
-	background: new Color( 0x000050 ),
-
-	seed: 0,
-};
-
-var defaults$l = {
+var defaults$k = {
 	$name: 'Scaler',
 	$positionNode: true,
 	$selectorPlanar: true,
@@ -2141,54 +2766,91 @@ var defaults$l = {
 
 
 
-var surfacePos$3 = Fn( ([ pos, params ])=>{
+var surfacePos$3 = Fn( ([ pos, scales, center, selectorAngles, selectorCenter, selectorWidth ])=>{
 
-	var zone = selectPlanar( pos, params.selectorAngles, params.selectorCenter, params.selectorWidth );
+	var zone = selectPlanar( pos, selectorAngles, selectorCenter, selectorWidth );
 
-	var S = matScale( mix( vec3( 1, 1, 1 ), params.scales, zone ) ),
-		T = matTrans( params.center ),
-		TN = matTrans( params.center.negate() );
+	var S = mix( vec3( 1, 1, 1 ), scales, zone );
 
-	return T.mul( S ).mul( TN ).mul( vec4( pos, 1 ) ).xyz;
+	return pos.sub( center ).mul( S ).add( center );
 
 } );
 
 
 
-var scaler = TSLFn( ( params )=>{
+var scalerRaw = Fn( ([ scales, center, selectorAngles, selectorCenter, selectorWidth ])=>{
 
-	params = convertToNodes( params, defaults$l );
+	return surfacePos$3( positionGeometry, scales, center, selectorAngles, selectorCenter, selectorWidth );
 
-	return surfacePos$3( positionGeometry, params );
+} ).setLayout( {
+	name: 'scalerRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'scales', type: 'vec3' },
+		{ name: 'center', type: 'vec3' },
+		{ name: 'selectorAngles', type: 'vec2' },
+		{ name: 'selectorCenter', type: 'vec3' },
+		{ name: 'selectorWidth', type: 'float' },
+	]
+} );
 
-}, defaults$l );
 
 
+var scalerNormalRaw = Fn( ([ scales, center, selectorAngles, selectorCenter, selectorWidth ]) => {
 
-scaler.normal = TSLFn( ( params ) => {
-
-	params = convertToNodes( params, defaults$l );
-
-	var eps = 0.01;
+	var EPS = 0.01;
 
 	var position = positionGeometry,
 		normal = normalLocal.normalize().toVar(),
-		tangent = tangentLocal.normalize().mul( eps ).toVar(),
-		bitangent = cross( normal, tangent ).normalize().mul( eps ).toVar();
+		tangent = tangentLocal.normalize().mul( EPS ).toVar(),
+		bitangent = cross( normal, tangent ).normalize().mul( EPS ).toVar();
 
-	var pos = surfacePos$3( position, params );
-	var posU = surfacePos$3( position.add( tangent ), params );
-	var posV = surfacePos$3( position.add( bitangent ), params );
+	var pos = surfacePos$3( position, scales, center, selectorAngles, selectorCenter, selectorWidth );
+	var posU = surfacePos$3( position.add( tangent ), scales, center, selectorAngles, selectorCenter, selectorWidth );
+	var posV = surfacePos$3( position.add( bitangent ), scales, center, selectorAngles, selectorCenter, selectorWidth );
 
-	var dU = sub( posU, pos ),
-		dV = sub( posV, pos );
+	return approximateNormal( pos, posU, posV );
 
-	return transformNormalToView( cross( dU, dV ).normalize() );
+} ).setLayout( {
+	name: 'scalerNormalRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'scales', type: 'vec3' },
+		{ name: 'center', type: 'vec3' },
+		{ name: 'selectorAngles', type: 'vec2' },
+		{ name: 'selectorCenter', type: 'vec3' },
+		{ name: 'selectorWidth', type: 'float' },
+	]
+} );
 
-}, defaults$l );
 
-var defaults$k = {
+
+function scaler( params={} ) {
+
+	var { scales, center, selectorAngles, selectorCenter, selectorWidth } = { ...defaults$k, ...params };
+
+	return scalerRaw( scales, center, selectorAngles, selectorCenter, selectorWidth );
+
+}
+
+
+
+scaler.normal = function ( params={} ) {
+
+	var { scales, center, selectorAngles, selectorCenter, selectorWidth } = { ...defaults$k, ...params };
+
+	return scalerNormalRaw( scales, center, selectorAngles, selectorCenter, selectorWidth );
+
+};
+
+
+
+scaler.defaults = defaults$k;
+
+var defaults$j = {
 	$name: 'Scepter head',
+
+	position: positionGeometry,
 
 	xFactor: 10,
 	yFactor: 22,
@@ -2201,27 +2863,25 @@ var defaults$k = {
 
 
 
-var scepterHead = TSLFn( ( params ) => {
+var scepterHeadRaw = Fn( ([ position, xFactor, yFactor, zFactor, colorRim, colorA, colorB ]) => {
 
-	params = convertToNodes( params, defaults$k );
+	var pos = position.toVar( 'pos' );
 
-	var pos = positionGeometry;
+	var fx = pos.x.mul( remapExp( xFactor, 0, 100, 1.35, 30 ) ).toVar( 'fx' ),
+		fy = pos.y.mul( remapExp( yFactor, 0, 100, 1.35, 30 ) ).toVar( 'fy' ),
+		fz = pos.z.mul( remapExp( zFactor, 0, 100, 1.35, 30 ) ).toVar( 'fz' );
 
-	var fx = pos.x.mul( remapExp( params.xFactor, 0, 100, 1.35, 30 ) ).toVar( ),
-		fy = pos.y.mul( remapExp( params.yFactor, 0, 100, 1.35, 30 ) ).toVar( ),
-		fz = pos.z.mul( remapExp( params.zFactor, 0, 100, 1.35, 30 ) ).toVar( );
-
-	var cosX = cos( fx ).toVar(),
-		cosY = cos( fy ).toVar(),
-		cosZ = cos( fz ).toVar();
+	var cosX = cos( fx ),
+		cosY = cos( fy ),
+		cosZ = cos( fz );
 
 	var k = mx_noise_float( vec3( pos.x.div( cosX ), pos.y.div( cosY ), pos.z.div( cosZ ) ) );
 
 	k = sign( k ).mul( abs( k ).pow( 0.75 ) );
 
-	var dx = abs( mul( fx, tan( fx ) ).add( 1 ).div( cos( fx ) ) ),
-		dy = abs( mul( fy, tan( fy ) ).add( 1 ).div( cos( fy ) ) ),
-		dz = abs( mul( fz, tan( fz ) ).add( 1 ).div( cos( fz ) ) );
+	var dx = abs( mul( fx, tan( fx ) ).add( 1 ).div( cosX ) ),
+		dy = abs( mul( fy, tan( fy ) ).add( 1 ).div( cosY ) ),
+		dz = abs( mul( fz, tan( fz ) ).add( 1 ).div( cosZ ) );
 
 	var HSL = vec3().toVar();
 
@@ -2231,19 +2891,46 @@ var scepterHead = TSLFn( ( params ) => {
 
 	var index = mod( ( add( indexX, indexY, indexZ ) ), 2 );
 
-	HSL.assign( toHsl( mix( params.colorA, params.colorB, index ) ) );
-	var color1 = hsl( HSL.x, HSL.y, HSL.z.mul( k ) ).toVar();
+	HSL.assign( toHsl( mix( colorA, colorB, index ) ) );
+	var color1 = hsl( vec3( HSL.xy, HSL.z.mul( k ) ) ).toVar( 'color1' );
 
-	HSL.assign( toHsl( params.colorRim ) );
-	var color2 = hsl( HSL.x, HSL.y, mul( 2, k, HSL.z ) ).toVar();
+	HSL.assign( toHsl( colorRim ) );
+	var color2 = hsl( vec3( HSL.xy, mul( 2, k, HSL.z ) ) ).toVar( 'color2' );
 
 	return mix( color1, color2, remapClamp( max( dx, max( dy, dz ) ), 55-10, 55+10 ) );
 
-}, defaults$k );
+} ).setLayout( {
+	name: 'scepterHeadRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'xFactor', type: 'float' },
+		{ name: 'yFactor', type: 'float' },
+		{ name: 'zFactor', type: 'float' },
+		{ name: 'colorRim', type: 'vec3' },
+		{ name: 'colorA', type: 'vec3' },
+		{ name: 'colorB', type: 'vec3' },
+	] }
+);
 
-var defaults$j = {
+
+
+function scepterHead( params={} ) {
+
+	var { position, xFactor, yFactor, zFactor, colorRim, colorA, colorB } = { ...defaults$j, ...params };
+
+	return scepterHeadRaw( position, xFactor, yFactor, zFactor, colorRim, colorA, colorB );
+
+}
+
+
+
+scepterHead.defaults = defaults$j;
+
+var defaults$i = {
 	$name: 'Scream',
 
+	position: positionGeometry,
 	scale: 2,
 	variety: 1,
 
@@ -2255,70 +2942,53 @@ var defaults$j = {
 
 
 
-var scream = TSLFn( ( params ) => {
+var screamRaw = Fn( ([ position, scale, variety, color, background, seed ]) => {
 
-	params = convertToNodes( params, defaults$j );
-
-	var pos = positionGeometry.mul( exp( params.scale ) ).add( params.seed ).toVar( );
+	var pos = position.mul( exp( scale ) ).add( seed ).toVar( 'pos' );
 
 	var k = mx_noise_float( add( sin( pos.xyz ), cos( pos.yzx ) ) );
 
-	pos.assign( positionGeometry.mul( exp( params.scale ).mul( k ) ).add( params.seed ) );
+	pos.assign( position.mul( exp( scale ).mul( k ) ).add( seed ) );
 
 	var k = mx_noise_float( add( sin( pos.xyz ), cos( pos.yzx ) ).mul( 2 ) );
 
-	var col = mix( params.background, params.color, k ).toVar();
+	var col = mix( background, color, k ).toVar( 'col' );
 
-	var HSL = toHsl( col ).toVar();
+	var HSL = toHsl( col ).toVar( 'HSL' );
 
-	return hsl( add( HSL.x, params.variety.mul( sin( k.mul( Math.PI ) ) ).mul( 0.5 ) ), HSL.y, HSL.z );
+	return hsl( vec3( add( HSL.x, variety.mul( sin( k.mul( Math.PI ) ) ).mul( 0.5 ) ), HSL.yz ) );
 
-}, defaults$j );
-
-
-
-scream.defaults = {
-	$name: 'Scream',
-
-	scale: 2,
-	variety: 1,
-
-	color: new Color( 0xF0F060 ),
-	background: new Color( 0xD09090 ),
-
-	seed: 0,
-};
-
-var defaults$i = {
-	$name: 'Simplex noise',
-
-	scale: 2,
-	balance: 0,
-	contrast: 0,
-
-	color: new Color( 0xFFFFFF ),
-	background: new Color( 0x000000 ),
-
-	seed: 0,
-};
+} ).setLayout( {
+	name: 'satinRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'variety', type: 'float' },
+		{ name: 'color', type: 'vec3' },
+		{ name: 'background', type: 'vec3' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
 
 
 
-var simplexNoise = TSLFn( ( params ) => {
+function scream( params={} ) {
 
-	params = convertToNodes( params, defaults$i );
+	var { position, scale, variety, color, background, seed } = { ...defaults$i, ...params };
 
-	var pos = positionGeometry.mul( exp( params.scale ) ).add( params.seed );
+	return screamRaw( position, scale, variety, color, background, seed );
 
-	var k = clamp( 0, 1, mx_noise_float( pos ).mul( 0.5, exp( params.contrast ) ).add( 0.5, params.balance ) );
+}
 
-	return mix( params.background, params.color, k );
 
-}, defaults$i );
+
+scream.defaults = defaults$i;
 
 var defaults$h = {
 	$name: 'Stars',
 
+	position: positionGeometry,
 	scale: 2,
 	density: 2,
 	variation: 0,
@@ -2331,26 +3001,53 @@ var defaults$h = {
 
 
 
-var stars = TSLFn( ( params ) => {
+var starsRaw = Fn( ([ position, scale, density, variation, color, background, seed ]) => {
 
-	params = convertToNodes( params, defaults$h );
-
-	var pos = positionGeometry.mul( exp( params.scale.div( 2 ).add( 3 ) ) ).add( params.seed ).toVar( );
+	var pos = position.mul( exp( scale.div( 2 ).add( 3 ) ) ).add( seed ).toVar( );
 
 	var k = abs( mx_noise_float( pos ) ).pow( 10 ).mul( 10 );
 
-	k = k.mul( exp( params.density.sub( 2 ) ) );
+	k = k.mul( exp( density.sub( 2 ) ) );
 
-	var dS = select( k.greaterThan( 0.1 ), params.variation.mul( mx_noise_float( pos ) ), 0 );
+	var dS = select( k.greaterThan( 0.1 ), variation.mul( mx_noise_float( pos ) ), 0 );
 
-	var col = toHsl( mix( params.background, params.color, k ) );
+	var col = toHsl( mix( background, color, k ) );
 
-	return hsl( add( col.x, dS ), col.y, col.z );
+	return hsl( vec3( add( col.x, dS ), col.yz ) );
 
-}, defaults$h );
+} ).setLayout( {
+	name: 'starsRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'density', type: 'float' },
+		{ name: 'variation', type: 'float' },
+		{ name: 'color', type: 'vec3' },
+		{ name: 'background', type: 'vec3' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
+
+
+
+function stars( params={} ) {
+
+	var { position, scale, density, variation, color, background, seed } = { ...defaults$h, ...params };
+
+	return starsRaw( position, scale, density, variation, color, background, seed );
+
+}
+
+
+
+stars.defaults = defaults$h;
 
 var defaults$g = {
 	$name: 'Static noise',
+
+	position: screenCoordinate,
+	time: time,
 
 	scale: 2,
 	balance: 0,
@@ -2363,24 +3060,48 @@ var defaults$g = {
 
 
 
-var staticNoise = TSLFn( ( params ) => {
+var staticNoiseRaw = Fn( ([ position, time, scale, balance, contrast, delay, seed ]) => {
 
-	params = convertToNodes( params, defaults$g );
+	var pos = position.div( exp( scale ) ).add( seed );
 
-	var pos = screenCoordinate.div( exp( params.scale ) ).add( params.seed );
-
-	var speed = params.delay.sub( 1 ).mul( 5 ).exp(),
+	var speed = delay.sub( 1 ).mul( 5 ).exp(),
 		t = time.div( speed ).round().mul( speed );
 
 	var offset = vnoise( t.sin() ).mul( 1000 );
 
 	var k = clamp( 0, 1, mx_noise_float( pos.add( offset ) ) );
 
-	k = k.mul( 0.5, exp( params.contrast ) ).add( 0.5, params.balance );
+	k = k.mul( 0.5, exp( contrast ) ).add( 0.5, balance );
 
 	return vec3( k );
 
-}, defaults$g );
+} ).setLayout( {
+	name: 'staticNoiseRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec2' },
+		{ name: 'time', type: 'float' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'balance', type: 'float' },
+		{ name: 'contrast', type: 'float' },
+		{ name: 'delay', type: 'float' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
+
+
+
+function staticNoise( params={} ) {
+
+	var { position, time, scale, balance, contrast, delay, seed } = { ...defaults$g, ...params };
+
+	return staticNoiseRaw( position, time, scale, balance, contrast, delay, seed );
+
+}
+
+
+
+staticNoise.defaults = defaults$g;
 
 var defaults$f = {
 	$name: 'Supersphere',
@@ -2392,57 +3113,95 @@ var defaults$f = {
 
 
 
-var surfacePos$2 = Fn( ([ pos, params ])=>{
+var surfacePos$2 = Fn( ([ pos, exponent ])=>{
 
-	var exponent = float( 2 ).pow( params.exponent );
+	var xexponent = float( 2 ).pow( exponent );
 	var equPos = pos.div( pos.length() ).toVar();
+	var equPos2 = equPos.abs().pow( xexponent ).toVar();
 
-	var p = equPos.x.abs().pow( exponent )
-		.add( equPos.y.abs().pow( exponent ) )
-		.add( equPos.z.abs().pow( exponent ) )
-		.pow( float( 1 ).div( exponent ) );
+	var p = equPos2.x
+		.add( equPos2.y )
+		.add( equPos2.z )
+		.pow( xexponent.reciprocal( ) );
 
 	return equPos.div( p );
 
+} ).setLayout( {
+	name: 'surfacePos',
+	type: 'vec3',
+	inputs: [
+		{ name: 'pos', type: 'vec3' },
+		{ name: 'exponent', type: 'float' },
+	]
 } );
 
 
 
-var supersphere = TSLFn( ( params )=>{
+var supersphereRaw = Fn( ([ exponent ])=>{
 
-	params = convertToNodes( params, defaults$f );
+	return surfacePos$2( positionGeometry, exponent );
 
-	return surfacePos$2( positionGeometry, params );
+} ).setLayout( {
+	name: 'supersphereRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'exponent', type: 'float' },
+	]
+} );
 
-}, defaults$f );
 
 
+var supersphereNormalRaw = Fn( ([ exponent ]) => {
 
-supersphere.normal = TSLFn( ( params ) => {
-
-	params = convertToNodes( params, defaults$f );
-
-	var eps = 0.01;
+	const EPS = 0.01;
 
 	var position = positionGeometry,
 		normal = normalLocal.normalize().toVar(),
-		tangent = tangentLocal.normalize().mul( eps ).toVar(),
-		bitangent = cross( normal, tangent ).normalize().mul( eps ).toVar();
+		tangent = tangentLocal.normalize().mul( EPS ).toVar(),
+		bitangent = cross( normal, tangent ).normalize().mul( EPS ).toVar();
 
-	var pos = surfacePos$2( position, params );
-	var posU = surfacePos$2( position.add( tangent ), params );
-	var posV = surfacePos$2( position.add( bitangent ), params );
+	var pos = surfacePos$2( position, exponent );
+	var posU = surfacePos$2( position.add( tangent ), exponent );
+	var posV = surfacePos$2( position.add( bitangent ), exponent );
 
-	var dU = sub( posU, pos ),
-		dV = sub( posV, pos );
+	return approximateNormal( pos, posU, posV );
 
-	return transformNormalToView( cross( dU, dV ).normalize() );
+} ).setLayout( {
+	name: 'supersphereRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'exponent', type: 'float' },
+	]
+} );
 
-}, defaults$f );
+
+
+function supersphere( params={} ) {
+
+	var { exponent } = { ...defaults$f, ...params };
+
+	return supersphereRaw( exponent );
+
+}
+
+
+
+supersphere.normal = function ( params={} ) {
+
+	var { exponent } = { ...defaults$f, ...params };
+
+	return supersphereNormalRaw( exponent );
+
+};
+
+
+
+supersphere.defaults = defaults$f;
 
 var defaults$e = {
 	$name: 'Tiger fur',
 
+	position: positionGeometry,
 	scale: 2,
 	lengths: 4,
 	blur: 0.3,
@@ -2457,24 +3216,50 @@ var defaults$e = {
 
 
 
-var tigerFur = TSLFn( ( params )=>{
+var tigerFurRaw = Fn( ([ position, scale, lengths, blur, strength, hairs, color, bottomColor, seed ])=>{
 
-	params = convertToNodes( params, defaults$e );
+	var xscale = scale.div( 2 ).add( 1 ).toVar();
+	var pos = position.mul( exp( xscale ) ).add( seed ).toVar( );
 
-	var scale = params.scale.div( 2 ).add( 1 ).toVar();
-	var pos = positionGeometry.mul( exp( scale ) ).add( params.seed ).toVar( );
-
-	var len = params.lengths.add( 5 ).reciprocal().toVar();
-	var hairs = params.hairs.mul( 0.3 ).toVar();
-	var k = mx_noise_float( pos.mul( scale, vec3( 1, len, len ) ) );
+	var len = lengths.add( 5 ).reciprocal().toVar();
+	var hairs = hairs.mul( 0.3 ).toVar();
+	var k = mx_noise_float( pos.mul( xscale, vec3( 1, len, len ) ) );
 	k = k.add( mx_noise_float( pos.mul( vec3( 25, 1, 1 ) ) ).add( 1 ).mul( hairs ) );
-	k = k.add( params.strength.sub( 0.5 ) ).smoothstep( params.blur.negate(), params.blur ).oneMinus();
+	k = k.add( strength.sub( 0.5 ) ).smoothstep( blur.negate(), blur ).oneMinus();
 
-	var n = positionGeometry.y.add( hairs.sub( 0.5 ) ).smoothstep( -1, 0.5 );
+	var n = position.y.add( hairs.sub( 0.5 ) ).smoothstep( -1, 0.5 );
 
-	return mix( params.bottomColor, params.color, n ).mul( k );
+	return mix( bottomColor, color, n ).mul( k );
 
-}, defaults$e );
+} ).setLayout( {
+	name: 'tigerFurRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'lengths', type: 'float' },
+		{ name: 'blur', type: 'float' },
+		{ name: 'strength', type: 'float' },
+		{ name: 'hairs', type: 'float' },
+		{ name: 'color', type: 'vec3' },
+		{ name: 'bottomColor', type: 'vec3' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
+
+
+
+function tigerFur( params={} ) {
+
+	var { position, scale, lengths, blur, strength, hairs, color, bottomColor, seed } = { ...defaults$e, ...params };
+
+	return tigerFurRaw( position, scale, lengths, blur, strength, hairs, color, bottomColor, seed );
+
+}
+
+
+
+tigerFur.defaults = defaults$e;
 
 var defaults$d = {
 	$name: 'Translator',
@@ -2491,53 +3276,97 @@ var defaults$d = {
 
 
 
-var surfacePos$1 = Fn( ([ pos, params ])=>{
+var surfacePos$1 = Fn( ([ pos, distance, selectorAngles, selectorCenter, selectorWidth ])=>{
 
-	var zone = selectPlanar( pos, params.selectorAngles, params.selectorCenter, params.selectorWidth );
+	var zone = selectPlanar( pos, selectorAngles, selectorCenter, selectorWidth );
 
-	var T = matTrans( params.distance.mul( zone ) );
+	return pos.add( distance.mul( zone ) );
 
-	return T.mul( vec4( pos, 1 ) ).xyz;
-
+} ).setLayout( {
+	name: 'surfacePos',
+	type: 'vec3',
+	inputs: [
+		{ name: 'pos', type: 'vec3' },
+		{ name: 'distance', type: 'vec3' },
+		{ name: 'selectorAngles', type: 'vec2' },
+		{ name: 'selectorCenter', type: 'vec3' },
+		{ name: 'selectorWidth', type: 'float' },
+	]
 } );
 
 
 
-var translator = TSLFn( ( params )=>{
+var translatorRaw = Fn( ([ distance, selectorAngles, selectorCenter, selectorWidth ])=>{
 
-	params = convertToNodes( params, defaults$d );
+	return surfacePos$1( positionGeometry, distance, selectorAngles, selectorCenter, selectorWidth );
 
-	return surfacePos$1( positionGeometry, params );
+} ).setLayout( {
+	name: 'translatorRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'distance', type: 'vec3' },
+		{ name: 'selectorAngles', type: 'vec2' },
+		{ name: 'selectorCenter', type: 'vec3' },
+		{ name: 'selectorWidth', type: 'float' },
+	]
+} );
 
-}, defaults$d );
 
 
+var translatorNormalRaw = Fn( ([ distance, selectorAngles, selectorCenter, selectorWidth ])=>{
 
-translator.normal = TSLFn( ( params ) => {
-
-	params = convertToNodes( params, defaults$d );
-
-	var eps = 0.01;
+	var EPS = 0.01;
 
 	var position = positionGeometry,
 		normal = normalLocal.normalize().toVar(),
-		tangent = tangentLocal.normalize().mul( eps ).toVar(),
-		bitangent = cross( normal, tangent ).normalize().mul( eps ).toVar();
+		tangent = tangentLocal.normalize().mul( EPS ).toVar(),
+		bitangent = cross( normal, tangent ).normalize().mul( EPS ).toVar();
 
-	var pos = surfacePos$1( position, params );
-	var posU = surfacePos$1( position.add( tangent ), params );
-	var posV = surfacePos$1( position.add( bitangent ), params );
+	var pos = surfacePos$1( position, distance, selectorAngles, selectorCenter, selectorWidth );
+	var posU = surfacePos$1( position.add( tangent ), distance, selectorAngles, selectorCenter, selectorWidth );
+	var posV = surfacePos$1( position.add( bitangent ), distance, selectorAngles, selectorCenter, selectorWidth );
 
-	var dU = sub( posU, pos ),
-		dV = sub( posV, pos );
+	return approximateNormal( pos, posU, posV );
 
-	return transformNormalToView( cross( dU, dV ).normalize() );
+} ).setLayout( {
+	name: 'translatorNormalRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'distance', type: 'vec3' },
+		{ name: 'selectorAngles', type: 'vec2' },
+		{ name: 'selectorCenter', type: 'vec3' },
+		{ name: 'selectorWidth', type: 'float' },
+	]
+} );
 
-}, defaults$d );
+
+
+function translator( params={} ) {
+
+	var { distance, selectorAngles, selectorCenter, selectorWidth } = { ...defaults$d, ...params };
+
+	return translatorRaw( distance, selectorAngles, selectorCenter, selectorWidth );
+
+}
+
+
+
+translator.normal = function ( params={} ) {
+
+	var { distance, selectorAngles, selectorCenter, selectorWidth } = { ...defaults$d, ...params };
+
+	return translatorNormalRaw( distance, selectorAngles, selectorCenter, selectorWidth );
+
+};
+
+
+
+translator.defaults = defaults$d;
 
 var defaults$c = {
 	$name: 'Voronoi cells',
 
+	position: positionGeometry,
 	scale: 2,
 	variation: 0,
 	facet: 0,
@@ -2550,18 +3379,9 @@ var defaults$c = {
 
 
 
-var cellCenter = Fn( ([ cell ])=>{
+var voronoiCellsRaw = Fn( ([ position, scale, variation, facet, color, background, seed ])=>{
 
-	return cell.add( mx_noise_float( cell.mul( Math.PI ) ) );
-
-} );
-
-
-var voronoiCells = TSLFn( ( params )=>{
-
-	params = convertToNodes( params, defaults$c );
-
-	var pos = positionGeometry.mul( exp( params.scale.div( 2 ).add( 0.5 ) ) ).add( params.seed ).toVar( );
+	var pos = position.mul( exp( scale.div( 2 ).add( 0.5 ) ) ).add( seed ).toVar( );
 
 	var midCell = pos.round().toVar();
 
@@ -2571,15 +3391,17 @@ var voronoiCells = TSLFn( ( params )=>{
 	var cell = vec3().toVar();
 	var dist = float().toVar();
 
-	var i = float( 0 ).toVar();
+	var i=int( 0 ).toVar( 'i' ),
+		j=int( 0 ).toVar( 'j' ),
+		k=int( 0 ).toVar( 'k' );
 
-	Loop( 27, () => {
+	// Loop uses hard-coded i, j, k as indices
+	Loop( 3, 3, 3, () => {
 
-		var ix = i.mod( 3 ).sub( 1 );
-		var iy = i.div( 3 ).floor().mod( 3 ).sub( 1 );
-		var iz = i.div( 9 ).floor().sub( 1 );
-		cell.assign( midCell.add( vec3( ix, iy, iz ) ) );
-		dist.assign( pos.distance( cellCenter( cell ) ).add( mx_noise_float( pos ).div( 5 ) ) );
+		cell.assign( midCell.add( vec3( i, j, k ).sub( 1 ) ) );
+		//var cellCenter = cell.add( noise( cell.mul( Math.PI ) ) ); // too slow on WebGL2
+		var cellCenter = cell.add( vnoise( cell.mul( Math.PI*2 ) ).div( 2 ) );
+		dist.assign( pos.distance( cellCenter ) );
 
 		If( dist.lessThan( minDist ), ()=>{
 
@@ -2587,24 +3409,50 @@ var voronoiCells = TSLFn( ( params )=>{
 			minCell.assign( cell );
 
 		} );
-		i.addAssign( 1 );
 
 	} );
 
-
 	var n = mx_noise_float( minCell.mul( Math.PI ) ).toVar();
-	var k = mix( minDist, n.add( 1 ).div( 2 ), params.facet );
+	var m = mix( minDist, n.add( 1 ).div( 2 ), facet );
 
-	var color = mix( params.color, params.background, k ).toVar();
+	var color = mix( color, background, m ).toVar();
 	var randomColor = vec3( n.mul( 16.8 ), n.mul( 31.4159 ), n.mul( 27.1828 ) ).sin().add( 1 ).div( 2 );
 
-	return mix( color, mix( color, randomColor, params.variation ), params.variation );
+	return mix( color, mix( color, randomColor, variation ), variation );
 
-}, defaults$c );
+} ).setLayout( {
+	name: 'voronoiCellsRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'variation', type: 'float' },
+		{ name: 'facet', type: 'float' },
+		{ name: 'color', type: 'vec3' },
+		{ name: 'background', type: 'vec3' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
+
+
+
+function voronoiCells( params={} ) {
+
+	var { position, scale, variation, facet, color, background, seed } = { ...defaults$c, ...params };
+
+	return voronoiCellsRaw( position, scale, variation, facet, color, background, seed );
+
+}
+
+
+
+voronoiCells.defaults = defaults$c;
 
 var defaults$b = {
 	$name: 'Water Drops',
 	$normalNode: true,
+
+	position: positionGeometry,
 
 	scale: 1.4,
 	density: 0.5,
@@ -2615,45 +3463,80 @@ var defaults$b = {
 
 
 
-var surfacePos = Fn( ([ pos, normal, bump, density, seed ]) => {
+var surfacePos = Fn( ([ pos, normal, density ]) => {
 
-	var k = mx_noise_float( pos.add( seed ) ).add( density ).clamp( 0, 1 );
+	var k = mx_noise_float( pos, 1, density ).clamp( 0, 1 );
 	k = cos( k.mul( Math.PI ) ).add( 1 ).pow( 0.5 ).toVar();
 
-	return pos.add( k.mul( normal, bump ) );
+	return pos.add( normal.mul( k ) );
 
-} );
+} ).setLayout( {
+	name: 'surfacePos',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'normal', type: 'vec3' },
+		{ name: 'density', type: 'float' },
+	] }
+);
 
 
 
-var waterDrops = TSLFn( ( params ) => {
+var waterDropsRaw = Fn( ([ position, normal, tangent, scale, density, bump, seed ]) => {
 
-	params = convertToNodes( params, defaults$b );
+	var EPS = 0.001;
 
-	var eps = 0.001;
+	var seed3d = vec3( 1, 2, 3 ).mul( seed ).sin().mul( 100 ).toVar( );
 
-	var position = positionGeometry.mul( exp( params.scale.div( 1 ).add( 1 ) ) ).toVar( ),
-		normal = normalLocal.normalize().toVar(),
-		tangent = tangentLocal.normalize().mul( eps ).toVar(),
-		bitangent = cross( normal, tangent ).normalize().mul( eps ).toVar();
+	var xposition = position.mul( exp( scale.div( 1 ).add( 1 ) ) ).add( seed3d ).toVar( ),
+		xnormal = normal.normalize().toVar(),
+		xtangent = tangent.normalize().mul( EPS ).toVar(),
+		xbitangent = cross( xnormal, xtangent ).normalize().mul( EPS ).toVar();
 
-	var density = remap( params.density, 0, 1, 1.5, 0.7 ).toVar();
-	var seed = vec3( sin( params.seed ).mul( 100 ), cos( params.seed.div( 2 ) ).mul( 100 ), sin( params.seed.div( 3 ) ).mul( 100 ) ).toVar();
+	var xdensity = remap( density, 0, 1, 1.5, 0.7 ).toVar();
 
-	var pos = surfacePos( position, normal, params.bump, density, seed );
+	xnormal.mulAssign( bump );
 
-	var posU = surfacePos( position.add( tangent ), normal, params.bump, density, seed );
-	var posV = surfacePos( position.add( bitangent ), normal, params.bump, density, seed );
+	var pos = surfacePos( xposition, xnormal, xdensity ),
+		posU = surfacePos( xposition.add( xtangent ), xnormal, xdensity ),
+		posV = surfacePos( xposition.add( xbitangent ), xnormal, xdensity );
 
-	var dU = sub( posU, pos ),
-		dV = sub( posV, pos );
+	return approximateNormal( pos, posU, posV );
 
-	return transformNormalToView( cross( dU, dV ).normalize() );
+} ).setLayout( {
+	name: 'waterDropsRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'normal', type: 'vec3' },
+		{ name: 'tangent', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'density', type: 'float' },
+		{ name: 'bump', type: 'float' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
 
-}, defaults$b );
+
+
+function waterDrops( params={} ) {
+
+	var { position, scale, density, bump, seed } = { ...defaults$b, ...params };
+
+	return waterDropsRaw( position, normalLocal, tangentLocal, scale, density, bump, seed );
+
+}
+
+
+
+waterDrops.defaults = defaults$b;
 
 var defaults$a = {
 	$name: 'Watermelon',
+	$replaceExportUVS: screenUV,
+
+	position: positionGeometry,
+	uvs: equirectUV( positionGeometry.normalize() ),
 
 	scale: 2,
 	stripes: 12,
@@ -2663,83 +3546,108 @@ var defaults$a = {
 	color: new Color( 'yellowgreen' ),
 	background: new Color( 'darkgreen' ),
 
-	flat: 0,
-
 	seed: 0,
 };
 
 
 
-var watermelon = TSLFn( ( params )=>{
+var watermelonRaw = Fn( ([ position, uvs, scale, stripes, variation, xnoise, color, background, seed ])=>{
 
-	params = convertToNodes( params, defaults$a );
+	var pos = position.mul( exp( scale.div( 4 ).add( 2 ) ) ).add( seed ).toVar( );
 
-	var variation = select( params.flat, params.variation.mul( 0.85 ).add( 0.15 ), params.variation );
+	var a = uvs.x.mul( stripes, 2*Math.PI ).add( mx_noise_float( pos.mul( vec3( 1, 0.3, 1 ) ) ).mul( 2 ) );
 
-	var pos = positionGeometry.mul( exp( params.scale.div( 4 ).add( 2 ) ) ).add( params.seed ).toVar( );
-
-	var uv = select( params.flat, screenUV, equirectUV( positionGeometry.normalize() ) ).toVar(),
-		a = uv.x.mul( params.stripes.round(), select( params.flat, Math.PI, 2*Math.PI ) ).add( mx_noise_float( pos.mul( vec3( 1, 0.3, 1 ) ) ).mul( 2 ) );
-
-	var k = a.sin().add( 0.5 ).div( 2 ).mul( uv.y.remap( 0, 1, -Math.PI, Math.PI ).cos().add( 1.2 ).clamp( 0, 1 ) )
+	var k = a.sin().add( 0.5 ).div( 2 ).mul( uvs.y.remap( 0, 1, -Math.PI, Math.PI ).cos().add( 1.2 ).clamp( 0, 1 ) )
 		.add( variation.mul( 2, mx_noise_float( pos.mul( 1.5 ) ).div( 2 ) ) )
 		.add( variation.mul( 2, mx_noise_float( pos.mul( 4 ) ).div( 6 ) ) )
 		.toVar();
 
 	k.assign(
 		k.mix( k.round(), 0.75 )
-			.add( mx_noise_float( pos.mul( 2 ) ).mul( params.noise, 0.5 ) )
-			.add( mx_noise_float( pos.mul( 3 ) ).mul( params.noise, 1 ) )
-			.add( mx_noise_float( pos.mul( 15 ) ).mul( params.noise, 0.2 ) )
+			.add( mx_noise_float( pos.mul( 2 ) ).mul( xnoise, 0.5 ) )
+			.add( mx_noise_float( pos.mul( 3 ) ).mul( xnoise, 1 ) )
+			.add( mx_noise_float( pos.mul( 15 ) ).mul( xnoise, 0.2 ) )
 			.clamp( 0, 1 )
 	);
 
-	var color = mix( params.background, params.color, k ).toVar();
+	var color = mix( background, color, k ).toVar();
 
 	return color;
 
-}, defaults$a );
+} ).setLayout( {
+	name: 'watermelonRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'uvs', type: 'vec2' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'stripes', type: 'int' },
+		{ name: 'variation', type: 'float' },
+		{ name: 'xnoise', type: 'float' },
+		{ name: 'color', type: 'vec3' },
+		{ name: 'background', type: 'vec3' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
+
+
+
+function watermelon( params={} ) {
+
+	var { position, uvs, scale, stripes, variation, noise, color, background, seed } = { ...defaults$a, ...params };
+
+	return watermelonRaw( position, uvs, scale, stripes, variation, noise, color, background, seed );
+
+}
+
+
+
+watermelon.defaults = defaults$a;
 
 var defaults$9 = {
 	$name: 'Wood',
+
+	position: positionGeometry,
 	scale: 2.5,
+
 	rings: 4.5,
 	lengths: 1,
 	angle: 0,
+
 	fibers: 0.3,
 	fibersDensity: 10,
+
 	color: new Color( 0.8, 0.4, 0 ),
 	background: new Color( 0.4, 0.1, 0 ),
+
 	seed: 0,
 };
 
 
 
-var wood = TSLFn( ( params ) => {
+var woodRaw = Fn( ([ position, scale, rings, lengths, angle, fibers, fibersDensity, color, background, seed ]) => {
 
-	params = convertToNodes( params, defaults$9 );
-
-	var angle = radians( params.angle ).toVar();
+	var angle = radians( angle ).toVar();
 	var posLocal = vec3(
-		sub( positionGeometry.x.mul( cos( angle ) ), positionGeometry.y.mul( sin( angle ) ) ),
-		add( positionGeometry.x.mul( sin( angle ) ), positionGeometry.y.mul( cos( angle ) ) ),
-		positionGeometry.z,
+		sub( position.x.mul( cos( angle ) ), position.y.mul( sin( angle ) ) ),
+		add( position.x.mul( sin( angle ) ), position.y.mul( cos( angle ) ) ),
+		position.z,
 	).toVar();
 
 
 	// main pattern with rings
-	var pos = posLocal.mul( exp( params.scale.sub( 3 ) ).mul( vec3( reciprocal( params.lengths ), 4, reciprocal( params.lengths ) ) ) ).add( params.seed ).toVar( );
-	var k = mx_noise_float( pos ).add( 1 ).mul( 10 ).mul( params.rings );
+	var pos = posLocal.mul( exp( scale.sub( 3 ) ).mul( vec3( reciprocal( lengths ), 4, reciprocal( lengths ) ) ) ).add( seed ).toVar( );
+	var k = mx_noise_float( pos ).add( 1 ).mul( 10 ).mul( rings );
 	k = k.add( k.cos() ).cos().add( 1 ).div( 2 );
 
 	var kk = float( 0 ).toVar(),
 		sum = float( 0 ).toVar(),
-		scale = exp( params.scale.sub( 2 ) ).mul( vec3( 1, params.fibersDensity, 1 ) ).toVar(),
+		scale = exp( scale.sub( 2 ) ).mul( vec3( 1, fibersDensity, 1 ) ).toVar(),
 		power = float( 2 ).toVar();
 
 	Loop( 10, ()=>{
 
-		kk.addAssign( mul( power, mx_noise_float( posLocal.mul( scale ).add( params.seed ) ) ) );
+		kk.addAssign( mul( power, mx_noise_float( posLocal.mul( scale ).add( seed ) ) ) );
 		sum.addAssign( power );
 		scale.mulAssign( 1.8 );
 		power.mulAssign( 0.6 );
@@ -2748,13 +3656,43 @@ var wood = TSLFn( ( params ) => {
 
 	kk.assign( mul( kk, 5 ).div( sum ).mul( 10 ).sin().add( 1 ).div( 2 ) );
 
-	return mix( params.color, params.background, mix( k, kk, params.fibers ) );
+	return mix( color, background, mix( k, kk, fibers ) );
 
-}, defaults$9 );
+} ).setLayout( {
+	name: 'woodRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'rings', type: 'float' },
+		{ name: 'lengths', type: 'float' },
+		{ name: 'angle', type: 'float' },
+		{ name: 'fibers', type: 'float' },
+		{ name: 'fibersDensity', type: 'float' },
+		{ name: 'color', type: 'vec3' },
+		{ name: 'background', type: 'vec3' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
+
+
+
+function wood( params={} ) {
+
+	var { position, scale, rings, lengths, angle, fibers, fibersDensity, color, background, seed } = { ...defaults$9, ...params };
+
+	return woodRaw( position, scale, rings, lengths, angle, fibers, fibersDensity, color, background, seed );
+
+}
+
+
+
+wood.defaults = defaults$9;
 
 var defaults$8 = {
 	$name: 'Zebra lines',
 
+	position: positionGeometry,
 	scale: 2,
 	thinness: 0.5,
 	phi: 0,
@@ -2769,29 +3707,55 @@ var defaults$8 = {
 
 
 
-var zebraLines = TSLFn( ( params ) => {
+var zebraLinesRaw = Fn( ([ position, scale, thinness, phi, theta, color, background, xflat ]) => {
 
-	params = convertToNodes( params, defaults$8 );
+	var pos = select( xflat, position, position.normalize() ).toVar( );
 
-	var pos = select( params.flat, positionGeometry, positionGeometry.normalize() ).toVar( );
+	var dir = select( xflat, vec2( cos( phi ), sin( phi ) ), spherical( phi, theta ) ).toVar();
 
-	var dir = select( params.flat, vec2( cos( params.phi ), sin( params.phi ) ), spherical( params.phi, params.theta ) ).toVar();
+	var angle = select( xflat, clamp( dir.dot( pos ), -2, 2 ), acos( clamp( dir.dot( pos ), -1, 1 ) ) ).toVar();
 
-	var angle = select( params.flat, clamp( dir.dot( pos ), -2, 2 ), acos( clamp( dir.dot( pos ), -1, 1 ) ) ).toVar();
+	var scale = exp( scale.add( 1 ) ).toVar();
 
-	var scale = exp( params.scale.add( 1 ) ).toVar();
-
-	var k = sin( angle.mul( scale ) ).sub( params.thinness.sub( 0.5 ).mul( 2 ) );
+	var k = sin( angle.mul( scale ) ).sub( thinness.sub( 0.5 ).mul( 2 ) );
 
 	k = clamp( k.mul( 1000 ).div( scale ), -1, 1 ).mul( 0.5 ).add( 0.5 );
 
-	return mix( params.background, params.color, k );
+	return mix( background, color, k );
 
-}, defaults$8 );
+} ).setLayout( {
+	name: 'zebraLinesRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'thinness', type: 'float' },
+		{ name: 'phi', type: 'float' },
+		{ name: 'theta', type: 'float' },
+		{ name: 'color', type: 'vec3' },
+		{ name: 'background', type: 'vec3' },
+		{ name: 'xflat', type: 'int' },
+	] }
+);
+
+
+
+function zebraLines( params={} ) {
+
+	var { position, scale, thinness, phi, theta, color, background, flat } = { ...defaults$8, ...params };
+
+	return zebraLinesRaw( position, scale, thinness, phi, theta, color, background, flat );
+
+}
+
+
+
+zebraLines.defaults = defaults$8;
 
 var defaults$7 = {
 	$name: 'Circle decor',
 
+	position: positionGeometry,
 	scale: 2,
 	grains: 0.2,
 
@@ -2806,28 +3770,54 @@ var defaults$7 = {
 
 
 
-var circleDecor = TSLFn( ( params )=>{
+var circleDecorRaw = Fn( ([ position, scale, grains, complexity, blur, color, background, seed ])=>{
 
-	params = convertToNodes( params, defaults$7 );
-
-	var pos = positionGeometry.mul( exp( params.scale.div( 4 ) ) ).add( params.seed ).toVar( );
-	var subpos = pos.mul( 2 ).toVar( );
+	var pos = position.mul( exp( scale.div( 4 ) ) ).add( seed ).toVar( 'pos' );
+	var subpos = pos.mul( 2 ).toVar( 'subpos' );
 
 	var k1 = mx_worley_noise_float( pos );
 	var k2 = mx_worley_noise_float( subpos );
-	var k3 = mx_worley_noise_float( pos.mul( params.grains.mul( 4 ).add( 2 ) ) ).mul( 2 );
+	var k3 = mx_worley_noise_float( pos.mul( grains.mul( 4 ).add( 2 ) ) ).mul( 2 );
 
 	var compScale = mx_noise_float( pos ).div( 2 ).add( 1 );
 
-	var k = k1.min( k2, k3 ).clamp( 0, 1 ).mul( params.complexity.add( 2 ).exp(), compScale, Math.PI ).sin().smoothstep( params.blur.negate(), params.blur );
+	var k = k1.min( k2, k3 ).clamp( 0, 1 ).mul( complexity.add( 2 ).exp(), compScale, Math.PI ).sin().smoothstep( blur.negate(), blur );
 
-	return mix( params.color, params.background, k.oneMinus() );
+	return mix( color, background, k.oneMinus() );
 
-}, defaults$7 );
+} ).setLayout( {
+	name: 'camouflageRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'grains', type: 'float' },
+		{ name: 'complexity', type: 'float' },
+		{ name: 'blur', type: 'float' },
+		{ name: 'color', type: 'vec3' },
+		{ name: 'background', type: 'vec3' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
+
+
+
+function circleDecor( params={} ) {
+
+	var { position, scale, grains, complexity, blur, color, background, seed } = { ...defaults$7, ...params };
+
+	return circleDecorRaw( position, scale, grains, complexity, blur, color, background, seed );
+
+}
+
+
+
+circleDecor.defaults = defaults$7;
 
 var defaults$6 = {
 	$name: 'Reticular veins',
 
+	position: positionGeometry,
 	scale: 2,
 	reticulation: 5,
 	strength: 0.2,
@@ -2841,25 +3831,51 @@ var defaults$6 = {
 
 
 
-var reticularVeins = TSLFn( ( params )=>{
+var reticularVeinsRaw = Fn( ([ position, scale, reticulation, strength, organelles, color, background, seed ])=>{
 
-	params = convertToNodes( params, defaults$6 );
+	var pos = position.mul( exp( scale.div( 2 ).add( 0.5 ) ) ).add( seed ).toVar( );
 
-	var pos = positionGeometry.mul( exp( params.scale.div( 2 ).add( 0.5 ) ) ).add( params.seed ).toVar( );
-
-	var k1 = mx_worley_noise_float( pos.mul( 1 ) );
-	var k2 = mx_worley_noise_float( pos.add( 100 ).mul( params.reticulation ) ).mul( params.strength );
-	var dots = mx_noise_float( pos.mul( 100 ) ).mul( params.strength, params.organelles );
+	var k1 = mx_worley_noise_float( pos );
+	var k2 = mx_worley_noise_float( pos.add( 100 ).mul( reticulation ) ).mul( strength );
+	var dots = mx_noise_float( pos.mul( 100 ) ).mul( strength, organelles );
 
 	var k = k1.add( k2 ).add( dots );
 
-	return mix( params.background, params.color, k );
+	return mix( background, color, k );
 
-}, defaults$6 );
+} ).setLayout( {
+	name: 'reticularVeinsRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'reticulation', type: 'float' },
+		{ name: 'strength', type: 'float' },
+		{ name: 'organelles', type: 'float' },
+		{ name: 'color', type: 'vec3' },
+		{ name: 'background', type: 'vec3' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
+
+
+
+function reticularVeins( params={} ) {
+
+	var { position, scale, reticulation, strength, organelles, color, background, seed } = { ...defaults$6, ...params };
+
+	return reticularVeinsRaw( position, scale, reticulation, strength, organelles, color, background, seed );
+
+}
+
+
+
+reticularVeins.defaults = defaults$6;
 
 var defaults$5 = {
 	$name: 'Roman paving',
 
+	position: positionGeometry,
 	scale: 2,
 	depth: 0.5,
 
@@ -2868,22 +3884,44 @@ var defaults$5 = {
 
 
 
-var romanPaving = TSLFn( ( params )=>{
+var romanPavingRaw = Fn( ([ position, scale, depth, seed ])=>{
 
-	params = convertToNodes( params, defaults$5 );
-
-	var pos = positionGeometry.mul( exp( params.scale ) ).add( params.seed ).toVar( );
+	var pos = position.mul( exp( scale ) ).add( seed ).toVar( );
 
 	var k = mx_worley_noise_vec2( pos ).toVar();
 
-	return k.y.sub( k.x ).pow( params.depth.mul( 3 ).sub( 3 ).exp() ).smoothstep( 0, 1 );
+	return k.y.sub( k.x ).pow( depth.mul( 3 ).sub( 3 ).exp() ).smoothstep( 0, 1 );
 
-}, defaults$5 );
+} ).setLayout( {
+	name: 'romanPavingRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'depth', type: 'float' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
+
+
+
+function romanPaving( params={} ) {
+
+	var { position, scale, depth, seed } = { ...defaults$5, ...params };
+
+	return romanPavingRaw( position, scale, depth, seed );
+
+}
+
+
+
+romanPaving.defaults = defaults$5;
 
 var defaults$4 = {
 	$name: 'Crumpled fabric',
 	$width: 260,
 
+	position: positionGeometry,
 	scale: 2,
 	pinch: 0.5,
 
@@ -2896,35 +3934,60 @@ var defaults$4 = {
 
 
 
-var crumpledFabric = TSLFn( ( params )=>{
+var crumpledFabricRaw = Fn( ([ position, scale, pinch, color, subcolor, background, seed ])=>{
 
-	params = convertToNodes( params, defaults$4 );
-
-	var pos = positionGeometry.mul( exp( params.scale.sub( 0.5 ) ) ).add( params.seed ).toVar( );
+	var pos = position.mul( exp( scale.sub( 0.5 ) ) ).add( seed ).toVar( );
 
 	Loop( 4, ()=>{
 
-		var x = mx_noise_float( pos.xyz ).mul( params.pinch );
-		var y = mx_noise_float( pos.yzx ).mul( params.pinch );
-		var z = mx_noise_float( pos.zxy ).mul( params.pinch );
+		var x = mx_noise_float( pos.xyz );
+		var y = mx_noise_float( pos.yzx );
+		var z = mx_noise_float( pos.zxy );
 
-		pos.addAssign( vec3( x, y, z ) );
+		pos.addAssign( vec3( x, y, z ).mul( pinch ) );
 
 	} );
 
 	var k = mx_noise_float( pos ).add( 1 ).div( 2 ).clamp( 0, 1 );
 
-	var color1 = params.color.mul( k.mul( 2 ).sub( 1 ).abs().oneMinus() );
-	var color2 = params.subcolor.mul( k ).pow( 2 );
-	var color3 = params.background.mul( k.oneMinus().pow( 2 ) );
+	var color1 = color.mul( k.mul( 2 ).sub( 1 ).abs().oneMinus() );
+	var color2 = subcolor.mul( k ).pow( 2 );
+	var color3 = background.mul( k.oneMinus().pow( 2 ) );
 
 	return color1.add( color2 ).add( color3 );
 
-}, defaults$4 );
+} ).setLayout( {
+	name: 'crumpledFabricRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'pinch', type: 'float' },
+		{ name: 'color', type: 'vec3' },
+		{ name: 'subcolor', type: 'vec3' },
+		{ name: 'background', type: 'vec3' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
+
+
+
+function crumpledFabric( params={} ) {
+
+	var { position, scale, pinch, color, subcolor, background, seed } = { ...defaults$4, ...params };
+
+	return crumpledFabricRaw( position, scale, pinch, color, subcolor, background, seed );
+
+}
+
+
+
+crumpledFabric.defaults = defaults$4;
 
 var defaults$3 = {
 	$name: 'Isolayers',
 
+	position: positionGeometry,
 	scale: 2,
 	layers: 10,
 	edge: 0.5,
@@ -2938,49 +4001,74 @@ var defaults$3 = {
 
 
 
-var isolayers = TSLFn( ( params )=>{
+var isolayersRaw = Fn( ([ position, scale, layers, edge, darkness, color, background, seed ])=>{
 
-	params = convertToNodes( params, defaults$3 );
+	var pos = position.mul( exp( scale.sub( 1 ) ) ).add( seed ).toVar( );
 
-	var pos = positionGeometry.mul( exp( params.scale.sub( 1 ) ) ).add( params.seed ).toVar( );
+	var depth = edge.remap( 0, 1, 40, 10 );
 
-	var depth = params.edge.remap( 0, 1, 40, 10 );
+	var k = mx_noise_float( pos, 1.2, 1 ).div( 2 );
 
-	var k = mx_noise_float( pos ).mul( 1.2 ).add( 1 ).div( 2 );
-
-	var i = k.mul( params.layers ).round().div( params.layers ).clamp( 0, 1 );
-	var f = k.sub( float( 0.5+0.03 ).div( params.layers ) )
-		.mul( params.layers ).fract()
+	var i = k.mul( layers ).round().div( layers ).clamp( 0, 1 );
+	var f = k.sub( float( 0.5+0.03 ).div( layers ) )
+		.mul( layers ).fract()
 		.mul( float( 2 ).pow( depth.reciprocal() ) )
 		.pow( depth ).sub( 1 ).abs().oneMinus();
 
-	var hslColor = mix( toHsl( params.background ), toHsl( params.color ), i ).toVar();
-	hslColor.z.mulAssign( mix( 1, i.mul( 1.5 ), params.darkness ).clamp( 0, 1 ) );
+	var hslColor = mix( toHsl( background ), toHsl( color ), i ).toVar();
+	hslColor.z.mulAssign( mix( 1, i.mul( 1.5 ), darkness ).clamp( 0, 1 ) );
 
-	return hsl( hslColor.x, hslColor.y, hslColor.z ).sub( f );
+	return hsl( hslColor ).sub( f );
 
-}, defaults$3 );
+} ).setLayout( {
+	name: 'isolayersRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'layers', type: 'int' },
+		{ name: 'edge', type: 'float' },
+		{ name: 'darkness', type: 'float' },
+		{ name: 'color', type: 'vec3' },
+		{ name: 'background', type: 'vec3' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
+
+
+
+function isolayers( params={} ) {
+
+	var { position, scale, layers, edge, darkness, color, background, seed } = { ...defaults$3, ...params };
+
+	return isolayersRaw( position, scale, layers, edge, darkness, color, background, seed );
+
+}
+
+
+
+isolayers.defaults = defaults$3;
 
 var defaults$2 = {
 	$name: 'Turbulent smoke',
 	$width: 260,
 
+	position: positionGeometry,
 	scale: 2,
 	speed: 0,
 	details: 5,
+	time: time,
 
 	seed: 0,
 };
 
 
 
-var turbulentSmoke = TSLFn( ( params )=>{
+var turbulentSmokeRaw = Fn( ([ position, scale, speed, details, time, seed ])=>{
 
-	params = convertToNodes( params, defaults$2 );
+	var pos = position.mul( exp( scale.sub( 1 ) ) ).add( seed ).toVar( );
 
-	var pos = positionGeometry.mul( exp( params.scale.sub( 1 ) ) ).add( params.seed ).toVar( );
-
-	var t = time.mul( params.speed.sub( 1 ).exp() );
+	var t = time.mul( speed.sub( 1 ).exp() );
 
 	var q = pos.add( vec3(
 		mx_fractal_noise_float( pos.add( vec3( 1, t.sin(), -1 ) ) ),
@@ -2988,19 +4076,46 @@ var turbulentSmoke = TSLFn( ( params )=>{
 		mx_fractal_noise_float( pos.add( vec3( 1, -1, t.add( 4*Math.PI/3 ).sin() ) ) ),
 	) );
 
-	var p = mx_fractal_noise_vec3( q, params.details );
+	var p = mx_fractal_noise_vec3( q, details );
 
 	var k = mx_worley_noise_float( pos.add( p.div( 2 ) ) ).pow( 4 ).mul( 4 ).oneMinus();
 
 	return k;
 
-}, defaults$2 );
+} ).setLayout( {
+	name: 'turbulentSmokeRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'speed', type: 'float' },
+		{ name: 'details', type: 'int' },
+		{ name: 'time', type: 'float' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
+
+
+
+function turbulentSmoke( params={} ) {
+
+	var { position, scale, speed, details, time, seed } = { ...defaults$2, ...params };
+
+	return turbulentSmokeRaw( position, scale, speed, details, time, seed );
+
+}
+
+
+
+turbulentSmoke.defaults = defaults$2;
 
 var defaults$1 = {
 	$name: 'Caustics',
 
+	position: positionGeometry,
 	scale: 2,
 	speed: 0,
+	time: time,
 
 	color: new Color( 0x50A8C0 ),
 
@@ -3009,13 +4124,11 @@ var defaults$1 = {
 
 
 
-var caustics = TSLFn( ( params )=>{
+var causticsRaw = Fn( ([ position, scale, speed, time, color, seed ])=>{
 
-	params = convertToNodes( params, defaults$1 );
+	var pos = position.mul( exp( scale.sub( 1 ) ) ).add( seed ).toVar( );
 
-	var pos = positionGeometry.mul( exp( params.scale.sub( 1 ) ) ).add( params.seed ).toVar( );
-
-	var t = time.mul( params.speed.sub( 1 ).exp() )
+	var t = time.mul( speed.sub( 1 ).exp() )
 		.add( vec3( 0, 2*Math.PI/3, 4*Math.PI/3 ) )
 		.sin();
 
@@ -3028,13 +4141,39 @@ var caustics = TSLFn( ( params )=>{
 
 	var k = p.length().div( Math.sqrt( 3 ) );
 
-	return k.add( params.color.sub( 0.5 ).mul( 2 ) );
+	return k.add( color.sub( 0.5 ).mul( 2 ) );
 
-}, defaults$1 );
+} ).setLayout( {
+	name: 'causticsRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'speed', type: 'float' },
+		{ name: 'time', type: 'float' },
+		{ name: 'color', type: 'vec3' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
+
+
+
+function caustics( params={} ) {
+
+	var { position, scale, speed, time, color, seed } = { ...defaults$1, ...params };
+
+	return causticsRaw( position, scale, speed, time, color, seed );
+
+}
+
+
+
+caustics.defaults = defaults$1;
 
 var defaults = {
 	$name: 'Bricks',
 
+	position: positionGeometry,
 	scale: 2,
 
 	brickSize: new Vector3( 2, 1, 2 ),
@@ -3058,47 +4197,82 @@ var defaults = {
 	seed: 0,
 };
 
-// mortar joint
 
 
+var bricksRaw = Fn( ([ position, scale, brickSize, brickShift, jointSize, jointSpan, jointJitter, jointBlur, noiseSize, noiseStrength, colorShade, color, additional, background, seed ])=>{
 
-var bricks = TSLFn( ( params )=>{
+	var pos = position.mul( exp( scale ) ).add( seed ).toVar( );
 
-	params = convertToNodes( params, defaults );
+	var size = brickSize;
 
-
-	var pos = positionGeometry.mul( exp( params.scale ) ).add( params.seed ).toVar( );
-
-	var size = params.brickSize;
-
-	var floor = pos.div( size ).floor().div( params.brickShift );
+	var floor = pos.div( size ).floor().div( brickShift );
 
 	var offset = vec3( floor.y, 0, floor.y ).toVar();
 
 	var p = pos.div( size ).fract().add( offset ).fract().toVar();
 
-	var n = mx_fractal_noise_vec3( pos.mul( remapExp( params.jointSpan, 0, 1, 20, 0.2 ) ) ).div( remapExp( params.jointJitter, 0, 1, 500, 1 ) ).toVar();
+	var n = mx_fractal_noise_vec3( pos.mul( remapExp( jointSpan, 0, 1, 20, 0.2 ) ) ).div( remapExp( jointJitter, 0, 1, 500, 1 ) ).toVar();
 
 	var border = mul(
-		p.mul( size ).add( n.z ).smoothstep( size.y.sub( params.jointSize, params.jointBlur ), size.y.sub( params.jointSize ) ).y.oneMinus(),
-		p.mul( size ).add( n.y ).smoothstep( params.jointSize, params.jointSize.add( params.jointBlur ) ).y,
+		p.mul( size ).add( n.z ).smoothstep( size.y.sub( jointSize, jointBlur ), size.y.sub( jointSize ) ).y.oneMinus(),
+		p.mul( size ).add( n.y ).smoothstep( jointSize, jointSize.add( jointBlur ) ).y,
 
-		p.mul( size ).add( n.y ).smoothstep( size.x.sub( params.jointSize, params.jointBlur ), size.x.sub( params.jointSize ) ).x.oneMinus(),
-		p.mul( size ).add( n.x ).smoothstep( params.jointSize, params.jointSize.add( params.jointBlur ) ).x,
+		p.mul( size ).add( n.y ).smoothstep( size.x.sub( jointSize, jointBlur ), size.x.sub( jointSize ) ).x.oneMinus(),
+		p.mul( size ).add( n.x ).smoothstep( jointSize, jointSize.add( jointBlur ) ).x,
 
-		p.mul( size ).add( n.x ).smoothstep( size.z.sub( params.jointSize, params.jointBlur ), size.z.sub( params.jointSize ) ).z.oneMinus(),
-		p.mul( size ).add( n.z ).smoothstep( params.jointSize, params.jointSize.add( params.jointBlur ) ).z,
+		p.mul( size ).add( n.x ).smoothstep( size.z.sub( jointSize, jointBlur ), size.z.sub( jointSize ) ).z.oneMinus(),
+		p.mul( size ).add( n.z ).smoothstep( jointSize, jointSize.add( jointBlur ) ).z,
 	).clamp( 0, 1 );
 
-	var shade = mix( float( 1 ), mx_noise_float( mx_noise_float( pos.xyz.div( size ).add( offset ).floor().zxy.mul( 100 ).add( Math.PI ) ).mul( 10 ) ).add( 2 ).div( 2 ).pow( 4 ).clamp( 0, 1 ), params.colorShade );
+	var shade = mix( float( 1 ), mx_noise_float( mx_noise_float( pos.xyz.div( size ).add( offset ).floor().zxy.mul( 100 ).add( Math.PI ) ).mul( 10 ) ).add( 2 ).div( 2 ).pow( 4 ).clamp( 0, 1 ), colorShade );
 
-	var ns = mx_noise_float( pos.mul( remapExp( params.noiseSize, 0, 1, 5, 250 ) ) ).mul( params.noiseStrength ).add( 1 );
+	var ns = mx_noise_float( pos.mul( remapExp( noiseSize, 0, 1, 5, 250 ) ) ).mul( noiseStrength ).add( 1 );
 
 	var brickNoise = mx_noise_float( mx_noise_float( pos.xyz.div( size ).add( offset ).floor().zxy.mul( 200 ).add( Math.PI ) ).mul( 10 ) ).add( 1 ).div( 1 );
-	var brickColor = mix( params.color, params.additional, brickNoise.pow( 2 ) );
+	var brickColor = mix( color, additional, brickNoise.pow( 2 ) );
 
-	return mix( params.background, shade.mul( brickColor, border ), border ).mul( ns );
+	return mix( background, shade.mul( brickColor, border ), border ).mul( ns );
 
-}, defaults );
+} ).setLayout( {
+	name: 'bricksRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
 
-export { TSLFn, applyEuler, brain, bricks, camouflage, caustics, caveArt, circleDecor, circles, clouds, concrete, convertToNodes, cork, crumpledFabric, dalmatianSpots, darthMaul, dynamic, dysonSphere, entangled, fordite, gasGiant, grid, hideFallbackWarning, hsl, isolayers, isolines, karstRock, marble, matRotX, matRotY, matRotYXZ, matRotZ, matScale, matTrans, neonLights, noised, normalVector, overlayPlanar, photosphere, planet, polkaDots, processedWood, protozoa, remapExp, reticularVeins, romanPaving, rotator, roughClay, runnyEggs, rust, satin, scaler, scepterHead, scream, selectPlanar, showFallbackWarning, simplexNoise, spherical, stars, staticNoise, supersphere, tigerFur, toHsl, translator, turbulentSmoke, vnoise, voronoiCells, waterDrops, watermelon, wood, zebraLines };
+		{ name: 'brickSize', type: 'vec3' },
+		{ name: 'brickShift', type: 'float' },
+		{ name: 'jointSize', type: 'float' },
+		{ name: 'jointSpan', type: 'float' },
+		{ name: 'jointJitter', type: 'float' },
+		{ name: 'jointBlur', type: 'float' },
+		{ name: 'noiseSize', type: 'float' },
+		{ name: 'noiseStrength', type: 'float' },
+		{ name: 'colorShade', type: 'float' },
+
+		{ name: 'color', type: 'vec3' },
+		{ name: 'additional', type: 'vec3' },
+		{ name: 'background', type: 'vec3' },
+
+		{ name: 'seed', type: 'float' },
+	] }
+);
+
+
+
+function bricks( params={} ) {
+
+	var { position, scale, brickSize, brickShift, jointSize, jointSpan, jointJitter, jointBlur, noiseSize, noiseStrength, colorShade, color, additional, background, seed } = { ...defaults, ...params };
+
+	return bricksRaw( position, scale, brickSize, brickShift, jointSize, jointSpan, jointJitter, jointBlur, noiseSize, noiseStrength, colorShade, color, additional, background, seed );
+
+}
+
+
+
+bricks.defaults = defaults;
+
+window.__TSL_TEXTURES__ = 3.0;
+//export { aaa } from './aaa.js';
+
+export { approximateNormal, brain, bricks, camouflage, caustics, caveArt, circleDecor, circles, clouds, concrete, cork, crumpledFabric, dalmatianSpots, darthMaul, dysonSphere, entangled, fordite, gasGiant, grid, hideFallbackWarning, hsl, isolayers, isolines, karstRock, marble, neonLights, perlinNoise, photosphere, planet, polkaDots, processedWood, protozoa, remapExp, reticularVeins, romanPaving, rotatePivot, rotator, roughClay, runnyEggs, rust, satin, scaler, scepterHead, scream, selectPlanar, showFallbackWarning, spherical, stars, staticNoise, supersphere, tigerFur, toHsl, translator, turbulentSmoke, vnoise, voronoiCells, waterDrops, watermelon, wood, zebraLines };

@@ -4,8 +4,8 @@
 
 
 import { Color } from 'three';
-import { exp, float, If, Loop, mix, mul, positionGeometry, remap, smoothstep, vec3 } from 'three/tsl';
-import { convertToNodes, noise, TSLFn } from './tsl-utils.js';
+import { exp, float, Fn, If, Loop, mix, mul, positionGeometry, remap, smoothstep, vec3 } from 'three/tsl';
+import { noise } from './tsl-utils.js';
 
 
 
@@ -13,6 +13,7 @@ import { convertToNodes, noise, TSLFn } from './tsl-utils.js';
 var defaults = {
 	$name: 'Planet',
 
+	position: positionGeometry,
 	scale: 2,
 
 	iterations: 5,
@@ -36,29 +37,27 @@ var defaults = {
 
 
 
-var planet = TSLFn( ( params )=>{
-
-	params = convertToNodes( params, defaults );
+var planetRaw = Fn( ([ position, scale, iterations, levelSea, levelMountain, balanceWater, balanceSand, balanceSnow, colorDeep, colorShallow, colorBeach, colorGrass, colorForest, colorSnow, seed ])=>{
 
 	var k = float( 0 ).toVar(),
 		sum = float( 0 ).toVar(),
-		scale = exp( params.scale.sub( 2 ) ).toVar(),
-		power = float( 2 ).toVar();
+		xscale = exp( scale.sub( 2 ) ).toVar(),
+		xpower = float( 2 ).toVar();
 
-	Loop( params.iterations.add( 10 ), ()=>{
+	Loop( iterations.add( 10 ), ()=>{
 
-		k.addAssign( mul( power, noise( positionGeometry.mul( scale ).add( params.seed ) ) ) );
-		sum.addAssign( power );
-		scale.mulAssign( 1.5 );
-		power.mulAssign( 0.8 );
+		k.addAssign( mul( xpower, noise( position.mul( xscale ).add( seed ) ) ) );
+		sum.addAssign( xpower );
+		xscale.mulAssign( 1.5 );
+		xpower.mulAssign( 0.8 );
 
 	} );
 
 	k.assign( mul( k, k, 0.5 ).div( sum ) );
 
-	var levelSea = params.levelSea.pow( 2 ).toVar();
-	var levelMountain = params.levelMountain.pow( 2 ).toVar();
-	var levelSand = mix( levelSea, levelMountain, params.balanceSand ).toVar();
+	var levelSea = levelSea.pow( 2 ).toVar();
+	var levelMountain = levelMountain.pow( 2 ).toVar();
+	var levelSand = mix( levelSea, levelMountain, balanceSand ).toVar();
 	var levelCoast = mix( levelSea, levelSand, 0.4 ).toVar();
 	var levelGrass = mix( levelSea, levelSand, 0.6 ).toVar();
 
@@ -69,9 +68,9 @@ var planet = TSLFn( ( params )=>{
 
 		// deep-shallow
 		color.assign( mix(
-			params.colorDeep,
-			params.colorShallow,
-			remap( k, 0, levelSea, 0, 1 ).pow( exp( params.balanceWater.mul( -8 ).add( 4 ) ) )
+			colorDeep,
+			colorShallow,
+			remap( k, 0, levelSea, 0, 1 ).pow( exp( balanceWater.mul( -8 ).add( 4 ) ) )
 		) );
 
 	} )
@@ -79,8 +78,8 @@ var planet = TSLFn( ( params )=>{
 
 			// shallow-sand
 			color.assign( mix(
-				params.colorShallow,
-				params.colorBeach,
+				colorShallow,
+				colorBeach,
 				remap( k, levelSea, levelCoast )
 			) );
 
@@ -88,15 +87,15 @@ var planet = TSLFn( ( params )=>{
 		.ElseIf( k.lessThan( levelGrass ), ()=>{
 
 			// sand
-			color.assign( params.colorBeach );
+			color.assign( colorBeach );
 
 		} )
 		.ElseIf( k.lessThan( levelSand ), ()=>{
 
 			// shallow-sand-grass
 			color.assign( mix(
-				params.colorBeach,
-				params.colorGrass,
+				colorBeach,
+				colorGrass,
 				remap( k, levelGrass, levelSand )
 			) );
 
@@ -105,8 +104,8 @@ var planet = TSLFn( ( params )=>{
 
 			// grass-forest
 			color.assign( mix(
-				params.colorGrass,
-				params.colorForest,
+				colorGrass,
+				colorForest,
 				remap( k, levelSand, levelMountain ).pow( 0.75 )
 			) );
 
@@ -114,18 +113,55 @@ var planet = TSLFn( ( params )=>{
 		.Else( ()=>{
 
 			// forest-snow
-			var levelSnow = mix( 1, levelMountain, params.balanceSnow );
+			var levelSnow = mix( 1, levelMountain, balanceSnow );
 			color.assign( mix(
-				params.colorForest,
-				params.colorSnow,
-				smoothstep( mix( levelSnow, levelMountain, params.balanceSnow.pow( 0.5 ) ), levelSnow, k )
+				colorForest,
+				colorSnow,
+				smoothstep( mix( levelSnow, levelMountain, balanceSnow.pow( 0.5 ) ), levelSnow, k )
 			) );
 
 		} );
 
 	return color;
 
-}, defaults );
+} ).setLayout( {
+	name: 'planetRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+
+		{ name: 'iterations', type: 'int' },
+		{ name: 'levelSea', type: 'float' },
+		{ name: 'levelMountain', type: 'float' },
+		{ name: 'balanceWater', type: 'float' },
+		{ name: 'balanceSand', type: 'float' },
+		{ name: 'balanceSnow', type: 'float' },
+
+		{ name: 'colorDeep', type: 'vec3' },
+		{ name: 'colorShallow', type: 'vec3' },
+		{ name: 'colorBeach', type: 'vec3' },
+		{ name: 'colorGrass', type: 'vec3' },
+		{ name: 'colorForest', type: 'vec3' },
+		{ name: 'colorSnow', type: 'vec3' },
+
+		{ name: 'seed', type: 'float' },
+	] }
+);
+
+
+
+function planet( params={} ) {
+
+	var { position, scale, iterations, levelSea, levelMountain, balanceWater, balanceSand, balanceSnow, colorDeep, colorShallow, colorBeach, colorGrass, colorForest, colorSnow, seed } = { ...defaults, ...params };
+
+	return planetRaw( position, scale, iterations, levelSea, levelMountain, balanceWater, balanceSand, balanceSnow, colorDeep, colorShallow, colorBeach, colorGrass, colorForest, colorSnow, seed );
+
+}
+
+
+
+planet.defaults = defaults;
 
 
 

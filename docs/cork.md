@@ -45,6 +45,7 @@ model.material.colorNode = cork ( {
 
 ### Parameters
 
+* `position` &ndash; coordinates used to map texture, default is TSL `positionGeometry` node
 * `scale` &ndash; level of details of the pattern, higher value generates smaller cork pieces, [0, 4]
 * `staight` &ndash; straightness of cork pieces edges, [0, 3]
 * `noise` &ndash; amound of additional small particles, [0, 1]

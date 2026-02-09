@@ -4,15 +4,17 @@
 
 
 import { Color } from "three";
-import { abs, exp, oneMinus, positionGeometry, select, sqrt, vec3 } from 'three/tsl';
-import { convertToNodes, hsl, noise, toHsl, TSLFn } from './tsl-utils.js';
+import { abs, exp, Fn, oneMinus, positionGeometry, select, sqrt, vec3 } from 'three/tsl';
+import { hsl, noise, toHsl } from './tsl-utils.js';
 
 
 
 var defaults = {
 	$name: 'Neon Lights',
 
-	scale: 1.5,
+	position: positionGeometry,
+
+	scale: 2,
 	thinness: 0.8,
 	mode: 0, // 0=additive, 1=subtractive
 
@@ -26,53 +28,79 @@ var defaults = {
 
 
 
-var neonLights = TSLFn( ( params ) => {
+var neonLightsRaw = Fn( ([ position, scale, thinness, mode, colorA, colorB, colorC, background, seed ]) => {
 
-	params = convertToNodes( params, defaults );
+	var pos = position;
 
-	var pos = positionGeometry;//.mul( exp( params.scale ) ).add( params.seed ).toVar( );
+	var xscale = exp( scale.remap( 0, 4, -2, 2 ) ).toVar();
+	var xthinness = exp( thinness.remap( 0, 1, 1.5, 0 ) ).toVar();
 
-	var scale = exp( params.scale.remap( 0, 4, 2, -2 ) ).toVar();
-	var thinness = exp( params.thinness.remap( 0, 1, 1.5, 0 ) ).toVar();
-
-	var color = params.background.toVar();
+	var color = background.toVar();
 	var neon = vec3( 0 ).toVar();
 
 	var x = noise( pos.xyz ).toVar();
 	var y = noise( pos.yzx ).toVar();
 	var z = noise( pos.zxy ).toVar();
 
-	var k = noise( vec3( x, y, z ).mul( scale ).add( params.seed ) ).toVar();
+	var k = noise( vec3( x, y, z ).mul( xscale ).add( seed ) ).toVar();
 	k.assign( oneMinus( sqrt( abs( k ) ) ).pow( 3 ) );
 
-	neon.assign( params.colorA );
+	neon.assign( colorA );
 	var HSL = toHsl( neon );
-	neon.assign( hsl( HSL.x, HSL.y, HSL.z.mul( k ) ) );
+	neon.assign( hsl( vec3( HSL.xy, HSL.z.mul( k ) ) ) );
 
-	color.addAssign( select( params.mode.equal( 0 ), neon, neon.negate() ).mul( thinness ) );
+	color.addAssign( select( mode.equal( 0 ), neon, neon.negate() ).mul( xthinness ) );
 
-	k.assign( noise( vec3( y, z, x ).mul( scale ).sub( params.seed ) ) );
+	k.assign( noise( vec3( y, z, x ).mul( xscale ).sub( seed ) ) );
 	k.assign( oneMinus( sqrt( abs( k ) ) ).pow( 3 ) );
 
-	neon.assign( params.colorB );
+	neon.assign( colorB );
 	var HSL = toHsl( neon );
-	neon.assign( hsl( HSL.x, HSL.y, HSL.z.mul( k ) ) );
+	neon.assign( hsl( vec3( HSL.xy, HSL.z.mul( k ) ) ) );
 
-	color.addAssign( select( params.mode.equal( 0 ), neon, neon.negate() ).mul( thinness ) );
+	color.addAssign( select( mode.equal( 0 ), neon, neon.negate() ).mul( xthinness ) );
 
 
-	k.assign( noise( vec3( z, x, y.negate() ).mul( scale ).add( params.seed ) ) );
+	k.assign( noise( vec3( z, x, y.negate() ).mul( xscale ).add( seed ) ) );
 	k.assign( oneMinus( sqrt( abs( k ) ) ).pow( 3 ) );
 
-	neon.assign( params.colorC );
+	neon.assign( colorC );
 	var HSL = toHsl( neon );
-	neon.assign( hsl( HSL.x, HSL.y, HSL.z.mul( k ) ) );
+	neon.assign( hsl( vec3( HSL.xy, HSL.z.mul( k ) ) ) );
 
-	color.addAssign( select( params.mode.equal( 0 ), neon, neon.negate() ).mul( thinness ) );
+	color.addAssign( select( mode.equal( 0 ), neon, neon.negate() ).mul( xthinness ) );
 
 	return color;
 
-}, defaults );
+} ).setLayout( {
+	name: 'neonLightsRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'thinness', type: 'float' },
+		{ name: 'node', type: 'float' },
+		{ name: 'colorA', type: 'vec3' },
+		{ name: 'colorB', type: 'vec3' },
+		{ name: 'colorC', type: 'vec3' },
+		{ name: 'background', type: 'vec3' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
+
+
+
+function neonLights( params={} ) {
+
+	var { position, scale, thinness, mode, colorA, colorB, colorC, background, seed } = { ...defaults, ...params };
+
+	return neonLightsRaw( position, scale, thinness, mode, colorA, colorB, colorC, background, seed );
+
+}
+
+
+
+neonLights.defaults = defaults;
 
 
 

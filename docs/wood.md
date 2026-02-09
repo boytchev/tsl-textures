@@ -47,6 +47,7 @@ model.material.colorNode = wood ( {
 
 ### Parameters
 
+* `position` &ndash; coordinates used to map texture, default is TSL `positionGeometry` node
 * `scale` &ndash; level of details of the pattern, higher value generates finer details, [1, 4]
 * `rings` &ndash; number of nested rings, [1, 10]
 * `lengths` &ndash; lengths of the ring patterns, [1, 10]

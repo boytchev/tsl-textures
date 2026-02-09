@@ -47,6 +47,7 @@ model.material.colorNode = tigerFur ( {
 
 ### Parameters
 
+* `position` &ndash; coordinates used to map texture, default is TSL `positionGeometry` node
 * `scale` &ndash; level of details of the pattern, higher value generates finer details, [0, 4]
 * `lengths` &ndash; lengths of fur lines, [0,20]
 * `blur` &ndash; smoothness of lines edges, [0,1]

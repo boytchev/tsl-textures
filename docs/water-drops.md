@@ -45,6 +45,7 @@ model.material.normalNode = waterDrops ( {
 
 ### Parameters
 
+* `position` &ndash; coordinates used to map texture, default is TSL `positionGeometry` node
 * `scale` &ndash; level of details of the pattern, higher value generates smaller drops, [0, 4]
 * `density` &ndash; density of drops [0,1]
 * `bump` &ndash; bumpiness (height) of drops [0,1]

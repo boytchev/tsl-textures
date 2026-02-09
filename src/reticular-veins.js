@@ -4,14 +4,15 @@
 
 
 import { Color } from 'three';
-import { exp, mix, mx_worley_noise_float, positionGeometry } from 'three/tsl';
-import { convertToNodes, noise, TSLFn } from './tsl-utils.js';
+import { exp, Fn, mix, positionGeometry } from 'three/tsl';
+import { noise, voronoi } from './tsl-utils.js';
 
 
 
 var defaults = {
 	$name: 'Reticular veins',
 
+	position: positionGeometry,
 	scale: 2,
 	reticulation: 5,
 	strength: 0.2,
@@ -25,21 +26,46 @@ var defaults = {
 
 
 
-var reticularVeins = TSLFn( ( params )=>{
+var reticularVeinsRaw = Fn( ([ position, scale, reticulation, strength, organelles, color, background, seed ])=>{
 
-	params = convertToNodes( params, defaults );
+	var pos = position.mul( exp( scale.div( 2 ).add( 0.5 ) ) ).add( seed ).toVar( );
 
-	var pos = positionGeometry.mul( exp( params.scale.div( 2 ).add( 0.5 ) ) ).add( params.seed ).toVar( );
-
-	var k1 = mx_worley_noise_float( pos.mul( 1 ) );
-	var k2 = mx_worley_noise_float( pos.add( 100 ).mul( params.reticulation ) ).mul( params.strength );
-	var dots = noise( pos.mul( 100 ) ).mul( params.strength, params.organelles );
+	var k1 = voronoi( pos );
+	var k2 = voronoi( pos.add( 100 ).mul( reticulation ) ).mul( strength );
+	var dots = noise( pos.mul( 100 ) ).mul( strength, organelles );
 
 	var k = k1.add( k2 ).add( dots );
 
-	return mix( params.background, params.color, k );
+	return mix( background, color, k );
 
-}, defaults );
+} ).setLayout( {
+	name: 'reticularVeinsRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'reticulation', type: 'float' },
+		{ name: 'strength', type: 'float' },
+		{ name: 'organelles', type: 'float' },
+		{ name: 'color', type: 'vec3' },
+		{ name: 'background', type: 'vec3' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
+
+
+
+function reticularVeins( params={} ) {
+
+	var { position, scale, reticulation, strength, organelles, color, background, seed } = { ...defaults, ...params };
+
+	return reticularVeinsRaw( position, scale, reticulation, strength, organelles, color, background, seed );
+
+}
+
+
+
+reticularVeins.defaults = defaults;
 
 
 

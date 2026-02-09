@@ -4,14 +4,15 @@
 
 
 import { Color } from 'three';
-import { exp, If, positionGeometry, round, vec3 } from 'three/tsl';
-import { convertToNodes, noise, TSLFn } from './tsl-utils.js';
+import { Fn, If, positionGeometry } from 'three/tsl';
+import { noise } from './tsl-utils.js';
 
 
 
 var defaults = {
 	$name: 'Camouflage',
 
+	position: positionGeometry,
 	scale: 2,
 
 	colorA: new Color( 0xc2bea8 ),
@@ -24,42 +25,60 @@ var defaults = {
 
 
 
-var camouflage = TSLFn( ( params )=>{
+var camouflageRaw = Fn( ([ position, scale, colorA, colorB, colorC, colorD, seed ])=>{
 
-	params = convertToNodes( params, camouflage.defaults );
+	var pos = position.mul( scale.exp( ) ).add( seed ).toVar( 'pos' );
 
-	var pos = positionGeometry.mul( exp( params.scale ) ).add( params.seed ).toVar( );
+	var color = colorD.toVar( 'color' );
 
-	var color = vec3( 0, 0, 0 ).toVar( );
+	If( noise( pos ).greaterThanEqual( 0.3 ), () => {
 
-	If( round( noise( pos, 1, 0.2 ) ).greaterThanEqual( 1 ), () => {
-
-		color.assign( params.colorA );
+		color.assign( colorA );
 
 	}
 	)
-		.ElseIf( round( noise( pos.yzx, 1, 0.3 ) ).greaterThanEqual( 1 ), () => {
+		.ElseIf( noise( pos.yzx ).greaterThanEqual( 0.2 ), () => {
 
-			color.assign( params.colorB );
-
-		}
-		)
-		.ElseIf( round( noise( pos.zxy, 1, 0.4 ) ).greaterThanEqual( 1 ), () => {
-
-			color.assign( params.colorC );
+			color.assign( colorB );
 
 		}
 		)
-		.Else( () => {
+		.ElseIf( noise( pos.zxy ).greaterThanEqual( 0.1 ), () => {
 
-			color.assign( params.colorD );
+			color.assign( colorC );
 
 		}
 		);
 
 	return color;
 
-}, defaults );
+} ).setLayout( {
+	name: 'camouflageRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'colorA', type: 'vec3' },
+		{ name: 'colorB', type: 'vec3' },
+		{ name: 'colorC', type: 'vec3' },
+		{ name: 'colorD', type: 'vec3' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
+
+
+
+function camouflage( params={} ) {
+
+	var { position, scale, colorA, colorB, colorC, colorD, seed } = { ...defaults, ...params };
+
+	return camouflageRaw( position, scale, colorA, colorB, colorC, colorD, seed );
+
+}
+
+
+
+camouflage.defaults = defaults;
 
 
 

@@ -3,8 +3,8 @@
 
 
 
-import { exp, mx_fractal_noise_float, mx_fractal_noise_vec3, mx_worley_noise_float, positionGeometry, time, vec3 } from 'three/tsl';
-import { convertToNodes, TSLFn } from './tsl-utils.js';
+import { exp, Fn, positionGeometry, time, vec3 } from 'three/tsl';
+import { fractal, fractal3, voronoi } from './tsl-utils.js';
 
 
 
@@ -12,36 +12,61 @@ var defaults = {
 	$name: 'Turbulent smoke',
 	$width: 260,
 
+	position: positionGeometry,
 	scale: 2,
 	speed: 0,
 	details: 5,
+	time: time,
 
 	seed: 0,
 };
 
 
 
-var turbulentSmoke = TSLFn( ( params )=>{
+var turbulentSmokeRaw = Fn( ([ position, scale, speed, details, time, seed ])=>{
 
-	params = convertToNodes( params, defaults );
+	var pos = position.mul( exp( scale.sub( 1 ) ) ).add( seed ).toVar( );
 
-	var pos = positionGeometry.mul( exp( params.scale.sub( 1 ) ) ).add( params.seed ).toVar( );
-
-	var t = time.mul( params.speed.sub( 1 ).exp() );
+	var t = time.mul( speed.sub( 1 ).exp() );
 
 	var q = pos.add( vec3(
-		mx_fractal_noise_float( pos.add( vec3( 1, t.sin(), -1 ) ) ),
-		mx_fractal_noise_float( pos.add( vec3( t.add( 2*Math.PI/3 ).sin(), 1, -1 ) ) ),
-		mx_fractal_noise_float( pos.add( vec3( 1, -1, t.add( 4*Math.PI/3 ).sin() ) ) ),
+		fractal( pos.add( vec3( 1, t.sin(), -1 ) ) ),
+		fractal( pos.add( vec3( t.add( 2*Math.PI/3 ).sin(), 1, -1 ) ) ),
+		fractal( pos.add( vec3( 1, -1, t.add( 4*Math.PI/3 ).sin() ) ) ),
 	) );
 
-	var p = mx_fractal_noise_vec3( q, params.details );
+	var p = fractal3( q, details );
 
-	var k = mx_worley_noise_float( pos.add( p.div( 2 ) ) ).pow( 4 ).mul( 4 ).oneMinus();
+	var k = voronoi( pos.add( p.div( 2 ) ) ).pow( 4 ).mul( 4 ).oneMinus();
 
 	return k;
 
-}, defaults );
+} ).setLayout( {
+	name: 'turbulentSmokeRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'speed', type: 'float' },
+		{ name: 'details', type: 'int' },
+		{ name: 'time', type: 'float' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
+
+
+
+function turbulentSmoke( params={} ) {
+
+	var { position, scale, speed, details, time, seed } = { ...defaults, ...params };
+
+	return turbulentSmokeRaw( position, scale, speed, details, time, seed );
+
+}
+
+
+
+turbulentSmoke.defaults = defaults;
 
 
 

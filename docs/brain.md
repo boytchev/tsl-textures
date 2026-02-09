@@ -57,10 +57,12 @@ model.material.normalNode = brain ( {
 
 ### Parameters
 
+* `position` &ndash; coordinates used to map texture, default is TSL `positionGeometry` node
 * `scale` &ndash; level of details of the pattern, higher value generates finer details, [0, 4]
 * `smooth` &ndash; smoothness of wrinkles, [0,1]
 * `wave` &ndash; span of spark waves [0,1]
 * `speed` &ndash; speed of spark waves pulsation [0,10]
+* `time` &ndash; current time for brain wave animation, defaut is TSL's `time` node
 * `color` &ndash; main color of the texture
 * `background` &ndash; background color of tissue wrinkles
 * `seed` &ndash; number for the random generator, each value generates specific pattern

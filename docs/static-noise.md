@@ -45,6 +45,8 @@ model.material.colorNode = staticNoise ( {
 
 ### Parameters
 
+* `position` &ndash; spacial coordinates used to map texture, default is TSL `screenCoordinate` node
+* `time` &ndash; temporal coordinates used to map texture, default is TSL `time` node
 * `scale` &ndash; level of details of the pattern, higher value generates finer details, [0, 4]
 * `balance` &ndash; balance of color and background, [-3,3]
 * `contrast` &ndash; sharpness of contrast between color and background, [-2,2]

@@ -48,6 +48,7 @@ model.material.colorNode = isolayers ( {
 
 ### Parameters
 
+* `position` &ndash; coordinates used to map texture, default is TSL `positionGeometry` node
 * `scale` &ndash; level of details of the pattern, higher value generates finer details, [0, 4]
 * `layers` &ndash; number of layers, [3,30]
 * `edge` &ndash; thickness of contour shadows, [0,1]

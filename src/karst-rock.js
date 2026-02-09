@@ -4,14 +4,15 @@
 
 
 import { Color } from "three";
-import { exp, mix, positionGeometry } from 'three/tsl';
-import { convertToNodes, noise, TSLFn } from './tsl-utils.js';
+import { exp, Fn, mix, positionGeometry } from 'three/tsl';
+import { noise } from './tsl-utils.js';
 
 
 
 var defaults = {
 	$name: 'Karst rock',
 
+	position: positionGeometry,
 	scale: 2,
 
 	color: new Color( 0xFFF4F0 ),
@@ -22,11 +23,9 @@ var defaults = {
 
 
 
-var karstRock = TSLFn( ( params )=>{
+var karstRockRaw = Fn( ([ position, scale, color, background, seed ])=>{
 
-	params = convertToNodes( params, defaults );
-
-	var pos = positionGeometry.mul( exp( params.scale ) ).add( params.seed.sin().mul( 5 ) ).toVar( );
+	var pos = position.mul( exp( scale ) ).add( seed.sin().mul( 5 ) ).toVar( );
 
 	var pos2 = pos.add( noise( pos.mul( 2 ) ) ).toVar();
 
@@ -35,9 +34,33 @@ var karstRock = TSLFn( ( params )=>{
 	k.addAssign( noise( pos.mul( 100 ) ).div( 3 ) );
 	k.addAssign( noise( pos.mul( 2 ) ).div( 2 ) );
 
-	return mix( params.background, params.color, k ).mul( k.pow( 0.1 ) );
+	return mix( background, color, k ).mul( k.pow( 0.1 ) );
 
-}, defaults );
+} ).setLayout( {
+	name: 'karstRockRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'color', type: 'vec3' },
+		{ name: 'background', type: 'vec3' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
+
+
+
+function karstRock( params={} ) {
+
+	var { position, scale, color, background, seed } = { ...defaults, ...params };
+
+	return karstRockRaw( position, scale, color, background, seed );
+
+}
+
+
+
+karstRock.defaults = defaults;
 
 
 

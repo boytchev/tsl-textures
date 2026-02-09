@@ -1,6 +1,10 @@
 # TSL Textures
 
-## 2.5.3
+## 3.0.0
+* Improved and refactored 46 textures
+* TSLFn wrapper is not needed any more, pure Fn is used
+* Texture functions are reused, not multiplicated
+* User-defined position as external parameter
 * Fixed issue in exporting texture in Firefox
 * Added example "Texture binding"
 

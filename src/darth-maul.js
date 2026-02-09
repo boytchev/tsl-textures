@@ -4,14 +4,15 @@
 
 
 import { Color, Vector3 } from "three";
-import { exp, mix, positionGeometry, select, vec3 } from 'three/tsl';
-import { convertToNodes, noise, TSLFn } from './tsl-utils.js';
+import { exp, Fn, mix, positionGeometry, select, vec3 } from 'three/tsl';
+import { noise } from './tsl-utils.js';
 
 
 
 var defaults = {
 	$name: 'Darth Maul',
 
+	position: positionGeometry,
 	scale: 2,
 	shift: new Vector3( 0, 0, 0 ),
 	complexity: 0,
@@ -28,28 +29,55 @@ var defaults = {
 
 
 
-var darthMaul = TSLFn( ( params ) => {
+var darthMaulRaw = Fn( ([ position, scale, shift, complexity, angle, distance, color, background, balance, seed ]) => {
 
-	params = convertToNodes( params, defaults );
+	var xposition = position.add( shift ).mul( exp( scale.div( 1.5 ).sub( 1 ) ) ).sub( shift ).mul( vec3( 1, 1/2, 1/2 ) ).toVar( );
 
-	var position = positionGeometry.add( params.shift ).mul( exp( params.scale.div( 1.5 ).sub( 1 ) ) ).sub( params.shift ).mul( vec3( 1, 1/2, 1/2 ) ).toVar( );
-
-	var s = select( positionGeometry.y.mul( params.angle.radians().cos() ).add( positionGeometry.z.mul( params.angle.radians().sin() ) ).greaterThan( params.distance ), 1, 0 );
+	var s = select( position.y.mul( angle.radians().cos() ).add( position.z.mul( angle.radians().sin() ) ).greaterThan( distance ), 1, 0 );
 
 	// implement symmetry
-	position.x.assign( position.x.add( params.shift.x ).abs() );
-	position.y.addAssign( params.seed );
-	position.z.mulAssign( params.shift.z );
+	xposition.x.assign( xposition.x.add( shift.x ).abs() );
+	xposition.y.addAssign( seed );
+	xposition.z.mulAssign( shift.z );
 
-	var n = noise( position ).toVar();
+	var n = noise( xposition ).toVar();
 
-	var k = n.sin().mul( n.mul( params.complexity.mul( 2 ).add( 1 ).exp() ).sin() ).remap( 0, 0.2, 1, -1 ).greaterThan( params.balance ).select( 0, 1 );
+	var k = n.sin().mul( n.mul( complexity.mul( 2 ).add( 1 ).exp() ).sin() ).remap( 0, 0.2, 1, -1 ).greaterThan( balance ).select( 0, 1 );
 
-	var c = select( position.x.greaterThan( noise( position.mul( 2.3 ) ).abs().mul( 0.5 ).add( 0.02 )	), 1, 0 );
+	var c = select( xposition.x.greaterThan( noise( xposition.mul( 2.3 ) ).abs().mul( 0.5 ).add( 0.02 )	), 1, 0 );
 
-	return mix( params.background, params.color, k.mul( s ).mul( c ).clamp( 0, 1 ) );
+	return mix( background, color, k.mul( s ).mul( c ).clamp( 0, 1 ) );
 
-}, defaults );
+} ).setLayout( {
+	name: 'darthMaulRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'shift', type: 'vec3' },
+		{ name: 'complexity', type: 'float' },
+		{ name: 'angle', type: 'float' },
+		{ name: 'distance', type: 'float' },
+		{ name: 'color', type: 'vec3' },
+		{ name: 'background', type: 'vec3' },
+		{ name: 'balance', type: 'float' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
+
+
+
+function darthMaul( params={} ) {
+
+	var { position, scale, shift, complexity, angle, distance, color, background, balance, seed } = { ...defaults, ...params };
+
+	return darthMaulRaw( position, scale, shift, complexity, angle, distance, color, background, balance, seed );
+
+}
+
+
+
+darthMaul.defaults = defaults;
 
 
 

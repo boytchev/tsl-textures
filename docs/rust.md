@@ -63,6 +63,7 @@ model.material.opacityNode = rust.opacity ( {
 
 ### Parameters
 
+* `position` &ndash; coordinates used to map texture, default is TSL `positionGeometry` node
 * `scale` &ndash; level of details of the pattern, higher value generates finer details, [0, 14]
 * `iterations` &ndash; number of iteration of generation, higher value generates finer details, [4, 10]
 * `amount` &ndash; amount of rusty surface, [-1, 1]

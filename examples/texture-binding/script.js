@@ -310,7 +310,7 @@ function animationLoop( t ) {
 
 		model.rotation.y = 0.5*Math.sin( t )+Math.PI + model.position.x/10;
 		if ( model.children[ 1 ]) model.children[ 1 ].rotation.y = -model.rotation.y;
-		model.mixer.setTime( t + 0.3*( a++ ) );
+		model.mixer.setTime( t + 0.2*( a++ ) );
 
 	}
 

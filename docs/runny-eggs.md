@@ -53,6 +53,7 @@ model.material.roughnessNode = runnyEggs.roughness( options );
 
 ### Parameters
 
+* `position` &ndash; coordinates used to map texture, default is TSL `positionGeometry` node
 * `scale` &ndash; level of details of the pattern, higher value generates finer details, [0, 4]
 * `sizeYolk` &ndash; size of the eggs yolks, [0, 1]
 * `sizeWhite` &ndash; size of the eggs whites, [0, 1]

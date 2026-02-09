@@ -1,4 +1,5 @@
 ﻿
+window.__TSL_TEXTURES__ = 3.0;
 
 export * from './tsl-utils.js';
 
@@ -22,6 +23,7 @@ export { karstRock } from './karst-rock.js';
 export { marble } from './marble.js';
 //export { melter } from './melter.js';
 export { neonLights } from './neon-lights.js';
+export { perlinNoise } from './perlin-noise.js';
 export { photosphere } from './photosphere.js';
 export { planet } from './planet.js';
 export { polkaDots } from './polka-dots.js';
@@ -35,7 +37,6 @@ export { satin } from './satin.js';
 export { scaler } from './scaler.js';
 export { scepterHead } from './scepter-head.js';
 export { scream } from './scream.js';
-export { simplexNoise } from './simplex-noise.js';
 export { stars } from './stars.js';
 export { staticNoise } from './static-noise.js';
 export { supersphere } from './supersphere.js';

@@ -42,8 +42,9 @@ model.material.normalNode = roughClay ( {
 
 ### Parameters
 
+* `position` &ndash; coordinates used to map texture, default is TSL `positionGeometry` node
 * `scale` &ndash; level of details of the pattern, higher value generates finer details, [0, 4]
-* `bump` &ndash; bumpiness of the pattern, [0, 2]
+* `bump` &ndash; bumpiness of the pattern, [-2, 2]
 * `curvature` &ndash; curvature of clay strokes borders, [0, 1]
 * `seed` &ndash; number for the random generator, each value generates specific pattern
 

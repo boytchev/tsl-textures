@@ -55,6 +55,7 @@ model.material.colorNode = planet ( {
 
 ### Parameters
 
+* `position` &ndash; coordinates used to map texture, default is TSL `positionGeometry` node
 * `scale` &ndash; level of details of the pattern, higher value generates smaller but more numerous lands, [0, 4]
 * `iterations` &ndash; number of granulations of terrain, [0, 10]
 * `levelSea` &ndash; relative altitude for sea level, higer value generates more water [0, 1]

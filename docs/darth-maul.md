@@ -49,6 +49,7 @@ model.material.colorNode = darthMaul ( {
 
 ### Parameters
 
+* `position` &ndash; coordinates used to map texture, default is TSL `positionGeometry` node
 * `scale` &ndash; level of details of the pattern, higher value generates finer details, [0, 4]
 * `shift` &ndash; pattern shift in 3D, a vector, shift in X and Z directions appear as pan, shift in Y direction changes the variation of the pattern
 * `complexity` &ndash; pattern complexity [0,1]

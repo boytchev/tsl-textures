@@ -48,6 +48,7 @@ model.material.colorNode = zebraLines ( {
 
 ### Parameters
 
+* `position` &ndash; coordinates used to map texture, default is TSL `positionGeometry` node
 * `scale` &ndash; level of details of the pattern, higher value generates finer details, [0, 4]
 * `thinness` &ndash; thinness of lines, [0,1]
 * `phi` &ndash; vertical angle &phi; of zebra lines axis, [0, &pi;]

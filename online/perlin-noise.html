@@ -29,9 +29,9 @@
 	<script type="module">
 
 import { install, params } from "./online.js";
-import { simplexNoise } from "tsl-textures";
+import { perlinNoise } from "tsl-textures";
 
-var gui = install( simplexNoise );
+var gui = install( perlinNoise );
 
 gui.add( params, 'scale' )
 	.min( 0 ).max( 4 )

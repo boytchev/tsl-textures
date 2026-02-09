@@ -3,14 +3,16 @@
 
 
 
-import { abs, cos, cross, exp, Fn, normalLocal, positionGeometry, pow, remap, sin, sub, tangentLocal, transformNormalToView, vec3 } from 'three/tsl';
-import { convertToNodes, noise, TSLFn } from './tsl-utils.js';
+import { cross, exp, Fn, normalLocal, positionGeometry, remap, tangentLocal, vec3 } from 'three/tsl';
+import { approximateNormal, noise } from './tsl-utils.js';
 
 
 
 var defaults = {
 	$name: 'Concrete',
 	$normalNode: true,
+
+	position: positionGeometry,
 
 	scale: 2,
 	density: 0.5,
@@ -21,40 +23,72 @@ var defaults = {
 
 
 
-var surfacePos = Fn( ([ pos, normal, bump, density, seed ]) => {
+var surfacePos = Fn( ([ position, normal, density ]) => {
 
-	var k = noise( pos.add( seed ) ).mul( 0.5 ).add( 0.5 );
-	k = bump.mul( pow( abs( k ), density ) );
+	var k = noise( position, 0.5, 0.5 ).abs().pow( density );
 
-	return pos.add( k.mul( normal ) );
+	return position.add( normal.mul( k ) );
 
-} );
+} ).setLayout( {
+	name: 'surfacePos',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'normal', type: 'vec3' },
+		{ name: 'density', type: 'float' },
+	] }
+);
 
 
-var concrete = TSLFn( ( params ) => {
 
-	params = convertToNodes( params, defaults );
+var concreteRaw = Fn( ([ position, normal, tangent, scale, density, bump, seed ]) => {
 
-	var eps = 0.001;
+	const EPS = 0.001;
 
-	var position = positionGeometry.mul( exp( params.scale.div( 2 ).add( 2 ) ) ).toVar( ),
-		normal = normalLocal.normalize().toVar(),
-		tangent = tangentLocal.normalize().mul( eps ).toVar(),
-		bitangent = cross( normal, tangent ).normalize().mul( eps ).toVar();
+	var seed3d = vec3( 1, 2, 3 ).mul( seed ).sin().mul( 100 ).toVar( 'seed3d' );
 
-	var density = remap( params.density, 0, 1, 10, 0.5 ).toVar();
-	var seed = vec3( sin( params.seed ).mul( 100 ), cos( params.seed.div( 2 ) ).mul( 100 ), sin( params.seed.div( 3 ) ).mul( 100 ) ).toVar();
+	var xposition = position.mul( exp( scale.div( 2 ).add( 2 ) ) ).add( seed3d ).toVar( 'xposition' ),
+		xnormal = normal.normalize().toVar( 'xnormal' ),
+		xtangent = tangent.normalize().mul( EPS ).toVar( 'xtangent' ),
+		xbitangent = cross( xnormal, xtangent ).normalize().mul( EPS ).toVar( 'xbitangent' );
 
-	var pos = surfacePos( position, normal, params.bump, density, seed );
-	var posU = surfacePos( position.add( tangent ), normal, params.bump, density, seed );
-	var posV = surfacePos( position.add( bitangent ), normal, params.bump, density, seed );
+	var xdensity = remap( density, 0, 1, 10, 0.5 ).toVar( 'xdensity' );
 
-	var dU = sub( posU, pos ),
-		dV = sub( posV, pos );
+	xnormal.mulAssign( bump );
 
-	return transformNormalToView( cross( dU, dV ).normalize() );
+	var pos = surfacePos( xposition, xnormal, xdensity ).toVar( 'pos' ),
+		posU = surfacePos( xposition.add( xtangent ), xnormal, xdensity ).toVar( 'posU' ),
+		posV = surfacePos( xposition.add( xbitangent ), xnormal, xdensity ).toVar( 'posV' );
 
-}, defaults );
+	return approximateNormal( pos, posU, posV );
+
+} ).setLayout( {
+	name: 'concreteRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'normal', type: 'vec3' },
+		{ name: 'tangent', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'density', type: 'float' },
+		{ name: 'bump', type: 'float' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
+
+
+
+function concrete( params={} ) {
+
+	var { position, scale, density, bump, seed } = { ...defaults, ...params };
+
+	return concreteRaw( position, normalLocal, tangentLocal, scale, density, bump, seed );
+
+}
+
+
+
+concrete.defaults = defaults;
 
 
 

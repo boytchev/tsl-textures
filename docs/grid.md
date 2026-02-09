@@ -43,9 +43,12 @@ model.material.colorNode = grid ( {
 
 ### Parameters
 
+* `uvs` &ndash; normalized 2D coordinates used to map texture, default is TSL `equirectUV( positionGeometry.normalize() )` node, but for flat surfaces `screenUV` would be better
 * `countU` &ndash; number of horizontal grid cells, [6,100]
 * `countV` &ndash; number of vertical grid cells, [3,50]
+* `aspect` &ndash; aspect of widths of horizontal and vertical lines, [-4,4]
 * `thinness` &ndash; relative width of lines, [0,1]
+* `equirectangular` &ndash; whether grid texture has consisten widths if used as rectangular (0) or as equirectangular (1)
 * `color` &ndash; color of lines
 * `background` &ndash; color of background
 * `flat` &ndash; secret flag, if 0 the texture is for a sphere, if 1 the texture is for a plane

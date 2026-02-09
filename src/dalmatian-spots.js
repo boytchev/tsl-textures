@@ -1,17 +1,19 @@
 ﻿
-//	TSL-Textures: Dalmatian coat
+//	TSL-Textures: Dalmatian spots
 
 
 
 import { Color } from "three";
-import { exp, float, Loop, mix, positionGeometry } from 'three/tsl';
-import { convertToNodes, noise, TSLFn } from './tsl-utils.js';
+import { float, Fn, Loop, mix, positionGeometry } from 'three/tsl';
+import { noise } from './tsl-utils.js';
 
 
 
 var defaults = {
 	$name: 'Dalmatian spots',
 	$width: 260,
+
+	position: positionGeometry,
 
 	scale: 2,
 	density: 0.6,
@@ -24,16 +26,14 @@ var defaults = {
 
 
 
-var dalmatianSpots = TSLFn( ( params )=>{
+var dalmatianSpotsRaw = Fn( ([ position, scale, density, color, background, seed ])=>{
 
-	params = convertToNodes( params, defaults );
+	var pos = position.mul( scale.exp( ) ).add( seed ).sub( 1000 ).toVar( 'pos' );
 
-	var pos = positionGeometry.mul( exp( params.scale ) ).add( params.seed ).sub( 1000 ).toVar( );
+	var k = float( 1 ).toVar( 'k' );
 
-	var k = float( 1 ).toVar();
-
-	var d = float( 1.5 ).sub( params.density ).mul( 2 ).toVar();
-	var count = params.density.mul( 5 ).add( 5 ).toVar();
+	var d = float( 1.5 ).sub( density ).mul( 2 ).toVar( 'd' );
+	var count = density.mul( 5 ).add( 5 ).toVar( 'count' );
 
 	Loop( count, ()=> {
 
@@ -46,9 +46,34 @@ var dalmatianSpots = TSLFn( ( params )=>{
 
 	} );
 
-	return mix( params.background, params.color, k.clamp( 0, 1 ) );
+	return mix( background, color, k.clamp( 0, 1 ) );
 
-}, defaults );
+} ).setLayout( {
+	name: 'dalmatianSpotsRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'density', type: 'float' },
+		{ name: 'color', type: 'vec3' },
+		{ name: 'background', type: 'vec3' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
+
+
+
+function dalmatianSpots( params={} ) {
+
+	var { position, scale, density, color, background, seed } = { ...defaults, ...params };
+
+	return dalmatianSpotsRaw( position, scale, density, color, background, seed );
+
+}
+
+
+
+dalmatianSpots.defaults = defaults;
 
 
 

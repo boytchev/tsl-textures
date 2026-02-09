@@ -4,14 +4,15 @@
 
 
 import { Color } from "three";
-import { exp, mix, positionGeometry, vec3 } from 'three/tsl';
-import { convertToNodes, noise, TSLFn } from './tsl-utils.js';
+import { exp, Fn, mix, positionGeometry, vec3 } from 'three/tsl';
+import { noise } from './tsl-utils.js';
 
 
 
 var defaults = {
 	$name: 'Tiger fur',
 
+	position: positionGeometry,
 	scale: 2,
 	lengths: 4,
 	blur: 0.3,
@@ -26,24 +27,50 @@ var defaults = {
 
 
 
-var tigerFur = TSLFn( ( params )=>{
+var tigerFurRaw = Fn( ([ position, scale, lengths, blur, strength, hairs, color, bottomColor, seed ])=>{
 
-	params = convertToNodes( params, defaults );
+	var xscale = scale.div( 2 ).add( 1 ).toVar();
+	var pos = position.mul( exp( xscale ) ).add( seed ).toVar( );
 
-	var scale = params.scale.div( 2 ).add( 1 ).toVar();
-	var pos = positionGeometry.mul( exp( scale ) ).add( params.seed ).toVar( );
-
-	var len = params.lengths.add( 5 ).reciprocal().toVar();
-	var hairs = params.hairs.mul( 0.3 ).toVar();
-	var k = noise( pos.mul( scale, vec3( 1, len, len ) ) );
+	var len = lengths.add( 5 ).reciprocal().toVar();
+	var hairs = hairs.mul( 0.3 ).toVar();
+	var k = noise( pos.mul( xscale, vec3( 1, len, len ) ) );
 	k = k.add( noise( pos.mul( vec3( 25, 1, 1 ) ) ).add( 1 ).mul( hairs ) );
-	k = k.add( params.strength.sub( 0.5 ) ).smoothstep( params.blur.negate(), params.blur ).oneMinus();
+	k = k.add( strength.sub( 0.5 ) ).smoothstep( blur.negate(), blur ).oneMinus();
 
-	var n = positionGeometry.y.add( hairs.sub( 0.5 ) ).smoothstep( -1, 0.5 );
+	var n = position.y.add( hairs.sub( 0.5 ) ).smoothstep( -1, 0.5 );
 
-	return mix( params.bottomColor, params.color, n ).mul( k );
+	return mix( bottomColor, color, n ).mul( k );
 
-}, defaults );
+} ).setLayout( {
+	name: 'tigerFurRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'lengths', type: 'float' },
+		{ name: 'blur', type: 'float' },
+		{ name: 'strength', type: 'float' },
+		{ name: 'hairs', type: 'float' },
+		{ name: 'color', type: 'vec3' },
+		{ name: 'bottomColor', type: 'vec3' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
+
+
+
+function tigerFur( params={} ) {
+
+	var { position, scale, lengths, blur, strength, hairs, color, bottomColor, seed } = { ...defaults, ...params };
+
+	return tigerFurRaw( position, scale, lengths, blur, strength, hairs, color, bottomColor, seed );
+
+}
+
+
+
+tigerFur.defaults = defaults;
 
 
 

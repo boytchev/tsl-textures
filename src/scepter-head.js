@@ -4,13 +4,15 @@
 
 
 import { Color } from "three";
-import { abs, add, cos, floor, max, mix, mod, mul, positionGeometry, remapClamp, sign, tan, vec3 } from 'three/tsl';
-import { convertToNodes, hsl, noise, remapExp, toHsl, TSLFn } from './tsl-utils.js';
+import { abs, add, cos, floor, Fn, max, mix, mod, mul, positionGeometry, remapClamp, sign, tan, vec3 } from 'three/tsl';
+import { hsl, noise, remapExp, toHsl } from './tsl-utils.js';
 
 
 
 var defaults = {
 	$name: 'Scepter head',
+
+	position: positionGeometry,
 
 	xFactor: 10,
 	yFactor: 22,
@@ -23,27 +25,25 @@ var defaults = {
 
 
 
-var scepterHead = TSLFn( ( params ) => {
+var scepterHeadRaw = Fn( ([ position, xFactor, yFactor, zFactor, colorRim, colorA, colorB ]) => {
 
-	params = convertToNodes( params, defaults );
+	var pos = position.toVar( 'pos' );
 
-	var pos = positionGeometry;
+	var fx = pos.x.mul( remapExp( xFactor, 0, 100, 1.35, 30 ) ).toVar( 'fx' ),
+		fy = pos.y.mul( remapExp( yFactor, 0, 100, 1.35, 30 ) ).toVar( 'fy' ),
+		fz = pos.z.mul( remapExp( zFactor, 0, 100, 1.35, 30 ) ).toVar( 'fz' );
 
-	var fx = pos.x.mul( remapExp( params.xFactor, 0, 100, 1.35, 30 ) ).toVar( ),
-		fy = pos.y.mul( remapExp( params.yFactor, 0, 100, 1.35, 30 ) ).toVar( ),
-		fz = pos.z.mul( remapExp( params.zFactor, 0, 100, 1.35, 30 ) ).toVar( );
-
-	var cosX = cos( fx ).toVar(),
-		cosY = cos( fy ).toVar(),
-		cosZ = cos( fz ).toVar();
+	var cosX = cos( fx ),
+		cosY = cos( fy ),
+		cosZ = cos( fz );
 
 	var k = noise( vec3( pos.x.div( cosX ), pos.y.div( cosY ), pos.z.div( cosZ ) ) );
 
 	k = sign( k ).mul( abs( k ).pow( 0.75 ) );
 
-	var dx = abs( mul( fx, tan( fx ) ).add( 1 ).div( cos( fx ) ) ),
-		dy = abs( mul( fy, tan( fy ) ).add( 1 ).div( cos( fy ) ) ),
-		dz = abs( mul( fz, tan( fz ) ).add( 1 ).div( cos( fz ) ) );
+	var dx = abs( mul( fx, tan( fx ) ).add( 1 ).div( cosX ) ),
+		dy = abs( mul( fy, tan( fy ) ).add( 1 ).div( cosY ) ),
+		dz = abs( mul( fz, tan( fz ) ).add( 1 ).div( cosZ ) );
 
 	var HSL = vec3().toVar();
 
@@ -53,15 +53,41 @@ var scepterHead = TSLFn( ( params ) => {
 
 	var index = mod( ( add( indexX, indexY, indexZ ) ), 2 );
 
-	HSL.assign( toHsl( mix( params.colorA, params.colorB, index ) ) );
-	var color1 = hsl( HSL.x, HSL.y, HSL.z.mul( k ) ).toVar();
+	HSL.assign( toHsl( mix( colorA, colorB, index ) ) );
+	var color1 = hsl( vec3( HSL.xy, HSL.z.mul( k ) ) ).toVar( 'color1' );
 
-	HSL.assign( toHsl( params.colorRim ) );
-	var color2 = hsl( HSL.x, HSL.y, mul( 2, k, HSL.z ) ).toVar();
+	HSL.assign( toHsl( colorRim ) );
+	var color2 = hsl( vec3( HSL.xy, mul( 2, k, HSL.z ) ) ).toVar( 'color2' );
 
 	return mix( color1, color2, remapClamp( max( dx, max( dy, dz ) ), 55-10, 55+10 ) );
 
-}, defaults );
+} ).setLayout( {
+	name: 'scepterHeadRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'xFactor', type: 'float' },
+		{ name: 'yFactor', type: 'float' },
+		{ name: 'zFactor', type: 'float' },
+		{ name: 'colorRim', type: 'vec3' },
+		{ name: 'colorA', type: 'vec3' },
+		{ name: 'colorB', type: 'vec3' },
+	] }
+);
+
+
+
+function scepterHead( params={} ) {
+
+	var { position, xFactor, yFactor, zFactor, colorRim, colorA, colorB } = { ...defaults, ...params };
+
+	return scepterHeadRaw( position, xFactor, yFactor, zFactor, colorRim, colorA, colorB );
+
+}
+
+
+
+scepterHead.defaults = defaults;
 
 
 

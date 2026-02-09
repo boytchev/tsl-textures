@@ -43,6 +43,7 @@ model.material.colorNode = fordite ( {
 
 ### Parameters
 
+* `position` &ndash; coordinates used to map texture, default is TSL `positionGeometry` node
 * `scale` &ndash; level of details of the pattern, higher value generates finer details, [0, 4]
 * `color` &ndash; color added to the texture, this may shift the hue of the patter
 * `seed` &ndash; number for the random generator, each value generates specific pattern

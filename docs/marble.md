@@ -44,6 +44,7 @@ model.material.colorNode = marble ( {
 
 ### Parameters
 
+* `position` &ndash; coordinates used to map texture, default is TSL `positionGeometry` node
 * `scale` &ndash; level of details of the pattern, higher value generates finer details, [0, 4]
 * `thinness` &ndash; thinness of threads, [0,10]
 * `noise` &ndash; noise of background [0,1]

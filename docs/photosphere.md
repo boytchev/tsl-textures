@@ -43,6 +43,7 @@ model.material.colorNode = photosphere ( {
 
 ### Parameters
 
+* `position` &ndash; coordinates used to map texture, default is TSL `positionGeometry` node
 * `scale` &ndash; level of details of the pattern, higher value generates finer details, [0, 4]
 * `color` &ndash; color of hot areas
 * `background` &ndash; color of background

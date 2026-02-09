@@ -3,8 +3,8 @@
 
 
 
-import { cross, float, Fn, normalLocal, positionGeometry, sub, tangentLocal, transformNormalToView } from 'three/tsl';
-import { convertToNodes, TSLFn } from './tsl-utils.js';
+import { cross, float, Fn, normalLocal, positionGeometry, tangentLocal } from 'three/tsl';
+import { approximateNormal } from './tsl-utils.js';
 
 
 
@@ -18,53 +18,90 @@ var defaults = {
 
 
 
-var surfacePos = Fn( ([ pos, params ])=>{
+var surfacePos = Fn( ([ pos, exponent ])=>{
 
-	var exponent = float( 2 ).pow( params.exponent );
+	var xexponent = float( 2 ).pow( exponent );
 	var equPos = pos.div( pos.length() ).toVar();
+	var equPos2 = equPos.abs().pow( xexponent ).toVar();
 
-	var p = equPos.x.abs().pow( exponent )
-		.add( equPos.y.abs().pow( exponent ) )
-		.add( equPos.z.abs().pow( exponent ) )
-		.pow( float( 1 ).div( exponent ) );
+	var p = equPos2.x
+		.add( equPos2.y )
+		.add( equPos2.z )
+		.pow( xexponent.reciprocal( ) );
 
 	return equPos.div( p );
 
+} ).setLayout( {
+	name: 'surfacePos',
+	type: 'vec3',
+	inputs: [
+		{ name: 'pos', type: 'vec3' },
+		{ name: 'exponent', type: 'float' },
+	]
 } );
 
 
 
-var supersphere = TSLFn( ( params )=>{
+var supersphereRaw = Fn( ([ exponent ])=>{
 
-	params = convertToNodes( params, defaults );
+	return surfacePos( positionGeometry, exponent );
 
-	return surfacePos( positionGeometry, params );
+} ).setLayout( {
+	name: 'supersphereRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'exponent', type: 'float' },
+	]
+} );
 
-}, defaults );
 
 
+var supersphereNormalRaw = Fn( ([ exponent ]) => {
 
-supersphere.normal = TSLFn( ( params ) => {
-
-	params = convertToNodes( params, defaults );
-
-	var eps = 0.01;
+	const EPS = 0.01;
 
 	var position = positionGeometry,
 		normal = normalLocal.normalize().toVar(),
-		tangent = tangentLocal.normalize().mul( eps ).toVar(),
-		bitangent = cross( normal, tangent ).normalize().mul( eps ).toVar();
+		tangent = tangentLocal.normalize().mul( EPS ).toVar(),
+		bitangent = cross( normal, tangent ).normalize().mul( EPS ).toVar();
 
-	var pos = surfacePos( position, params );
-	var posU = surfacePos( position.add( tangent ), params );
-	var posV = surfacePos( position.add( bitangent ), params );
+	var pos = surfacePos( position, exponent );
+	var posU = surfacePos( position.add( tangent ), exponent );
+	var posV = surfacePos( position.add( bitangent ), exponent );
 
-	var dU = sub( posU, pos ),
-		dV = sub( posV, pos );
+	return approximateNormal( pos, posU, posV );
 
-	return transformNormalToView( cross( dU, dV ).normalize() );
+} ).setLayout( {
+	name: 'supersphereRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'exponent', type: 'float' },
+	]
+} );
 
-}, defaults );
+
+
+function supersphere( params={} ) {
+
+	var { exponent } = { ...defaults, ...params };
+
+	return supersphereRaw( exponent );
+
+}
+
+
+
+supersphere.normal = function ( params={} ) {
+
+	var { exponent } = { ...defaults, ...params };
+
+	return supersphereNormalRaw( exponent );
+
+};
+
+
+
+supersphere.defaults = defaults;
 
 
 

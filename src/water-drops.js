@@ -3,14 +3,16 @@
 
 
 
-import { cos, cross, exp, Fn, normalLocal, positionGeometry, remap, sin, sub, tangentLocal, transformNormalToView, vec3 } from 'three/tsl';
-import { convertToNodes, noise, TSLFn } from './tsl-utils.js';
+import { cos, cross, exp, Fn, normalLocal, positionGeometry, remap, tangentLocal, vec3 } from 'three/tsl';
+import { approximateNormal, noise } from './tsl-utils.js';
 
 
 
 var defaults = {
 	$name: 'Water Drops',
 	$normalNode: true,
+
+	position: positionGeometry,
 
 	scale: 1.4,
 	density: 0.5,
@@ -21,42 +23,73 @@ var defaults = {
 
 
 
-var surfacePos = Fn( ([ pos, normal, bump, density, seed ]) => {
+var surfacePos = Fn( ([ pos, normal, density ]) => {
 
-	var k = noise( pos.add( seed ) ).add( density ).clamp( 0, 1 );
+	var k = noise( pos, 1, density ).clamp( 0, 1 );
 	k = cos( k.mul( Math.PI ) ).add( 1 ).pow( 0.5 ).toVar();
 
-	return pos.add( k.mul( normal, bump ) );
+	return pos.add( normal.mul( k ) );
 
-} );
+} ).setLayout( {
+	name: 'surfacePos',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'normal', type: 'vec3' },
+		{ name: 'density', type: 'float' },
+	] }
+);
 
 
 
-var waterDrops = TSLFn( ( params ) => {
+var waterDropsRaw = Fn( ([ position, normal, tangent, scale, density, bump, seed ]) => {
 
-	params = convertToNodes( params, defaults );
+	var EPS = 0.001;
 
-	var eps = 0.001;
+	var seed3d = vec3( 1, 2, 3 ).mul( seed ).sin().mul( 100 ).toVar( );
 
-	var position = positionGeometry.mul( exp( params.scale.div( 1 ).add( 1 ) ) ).toVar( ),
-		normal = normalLocal.normalize().toVar(),
-		tangent = tangentLocal.normalize().mul( eps ).toVar(),
-		bitangent = cross( normal, tangent ).normalize().mul( eps ).toVar();
+	var xposition = position.mul( exp( scale.div( 1 ).add( 1 ) ) ).add( seed3d ).toVar( ),
+		xnormal = normal.normalize().toVar(),
+		xtangent = tangent.normalize().mul( EPS ).toVar(),
+		xbitangent = cross( xnormal, xtangent ).normalize().mul( EPS ).toVar();
 
-	var density = remap( params.density, 0, 1, 1.5, 0.7 ).toVar();
-	var seed = vec3( sin( params.seed ).mul( 100 ), cos( params.seed.div( 2 ) ).mul( 100 ), sin( params.seed.div( 3 ) ).mul( 100 ) ).toVar();
+	var xdensity = remap( density, 0, 1, 1.5, 0.7 ).toVar();
 
-	var pos = surfacePos( position, normal, params.bump, density, seed );
+	xnormal.mulAssign( bump );
 
-	var posU = surfacePos( position.add( tangent ), normal, params.bump, density, seed );
-	var posV = surfacePos( position.add( bitangent ), normal, params.bump, density, seed );
+	var pos = surfacePos( xposition, xnormal, xdensity ),
+		posU = surfacePos( xposition.add( xtangent ), xnormal, xdensity ),
+		posV = surfacePos( xposition.add( xbitangent ), xnormal, xdensity );
 
-	var dU = sub( posU, pos ),
-		dV = sub( posV, pos );
+	return approximateNormal( pos, posU, posV );
 
-	return transformNormalToView( cross( dU, dV ).normalize() );
+} ).setLayout( {
+	name: 'waterDropsRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'normal', type: 'vec3' },
+		{ name: 'tangent', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'density', type: 'float' },
+		{ name: 'bump', type: 'float' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
 
-}, defaults );
+
+
+function waterDrops( params={} ) {
+
+	var { position, scale, density, bump, seed } = { ...defaults, ...params };
+
+	return waterDropsRaw( position, normalLocal, tangentLocal, scale, density, bump, seed );
+
+}
+
+
+
+waterDrops.defaults = defaults;
 
 
 

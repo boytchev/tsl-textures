@@ -4,14 +4,15 @@
 
 
 import { Color } from "three";
-import { acos, add, distance, exp, float, If, Loop, mat2, max, min, mix, mod, mul, oneMinus, positionGeometry, pow, smoothstep, } from 'three/tsl';
-import { convertToNodes, spherical, TSLFn } from './tsl-utils.js';
+import { acos, add, distance, exp, float, Fn, If, Loop, mat2, max, min, mix, mod, mul, oneMinus, positionGeometry, pow, smoothstep, } from 'three/tsl';
+import { spherical } from './tsl-utils.js';
 
 
 
 var defaults = {
 	$name: 'Polka dots',
 
+	position: positionGeometry,
 	count: 2,
 	size: 0.5,
 	blur: 0.25,
@@ -28,24 +29,22 @@ var goldenRatio = ( 1+5**0.5 )/2;
 
 
 
-var polkaDots = TSLFn( ( params ) => {
-
-	params = convertToNodes( params, defaults );
+var polkaDotsRaw = Fn( ([ position, count, size, blur, color, background, xflat ]) => {
 
 	var dist = float( 1 ).toVar();
 
-	If( params.flat.equal( 1 ), ()=>{
+	If( xflat.equal( 1 ), ()=>{
 
-		var cnt = params.count.pow( 2 ).sub( 0.5 ).toVar();
-		var pos = positionGeometry.xy.mul( cnt ).mul( mat2( 1, 1, -1, 1 ) );
+		var cnt = count.pow( 2 ).sub( 0.5 ).toVar();
+		var pos = position.xy.mul( cnt ).mul( mat2( 1, 1, -1, 1 ) );
 		var posTo = pos.round().toVar();
 
 		dist.assign( pos.distance( posTo ).div( cnt ) );
 
 	} ).Else( ()=>{
 
-		var cnt = pow( 10, params.count ).toVar();
-		var vec = positionGeometry.normalize().toVar();
+		var cnt = pow( 10, count ).toVar();
+		var vec = position.normalize().toVar();
 
 		var besti = oneMinus( vec.y ).mul( cnt ).sub( 1 ).div( 2 );
 
@@ -68,13 +67,39 @@ var polkaDots = TSLFn( ( params ) => {
 
 	} ); // Else
 
-	var size = exp( params.size.mul( 5 ).sub( 5 ) ).toVar();
-	var blur = params.blur.pow( 4 ).toVar();
-	var k = smoothstep( size.sub( blur ), size.add( blur ), dist );
+	var xsize = exp( size.mul( 5 ).sub( 5 ) ).toVar();
+	var xblur = blur.pow( 4 ).toVar();
+	var k = smoothstep( xsize.sub( xblur ), xsize.add( xblur ), dist );
 
-	return mix( params.color, params.background, k );
+	return mix( color, background, k );
 
-}, defaults );
+} ).setLayout( {
+	name: 'polkaDotsRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'count', type: 'float' },
+		{ name: 'size', type: 'float' },
+		{ name: 'blur', type: 'float' },
+		{ name: 'color', type: 'vec3' },
+		{ name: 'background', type: 'vec3' },
+		{ name: 'xflat', type: 'int' },
+	] }
+);
+
+
+
+function polkaDots( params={} ) {
+
+	var { position, count, size, blur, color, background, flat } = { ...defaults, ...params };
+
+	return polkaDotsRaw( position, count, size, blur, color, background, flat );
+
+}
+
+
+
+polkaDots.defaults = defaults;
 
 
 

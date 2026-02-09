@@ -45,7 +45,10 @@ gui.add( params, 'countV' )
 
 gui.add( params, 'thinness' )
 	.min( 0 ).max( 1 )
-	.name( '<right>thinness</right>' )
+	.name( '<right>thinness</right>' );
+
+gui.add( params, 'equirectangular' )
+	.name( '<right>equirectangular</right>' )
 	.$input.classList.add( 'bottom' );
 
 gui.addColor( params, 'color' )

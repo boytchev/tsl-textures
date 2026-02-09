@@ -4,14 +4,15 @@
 
 
 import { Color } from "three";
-import { abs, add, exp, mix, positionGeometry, select } from 'three/tsl';
-import { convertToNodes, hsl, noise, toHsl, TSLFn } from './tsl-utils.js';
+import { abs, add, exp, Fn, mix, positionGeometry, select, vec3 } from 'three/tsl';
+import { hsl, noise, toHsl } from './tsl-utils.js';
 
 
 
 var defaults = {
 	$name: 'Stars',
 
+	position: positionGeometry,
 	scale: 2,
 	density: 2,
 	variation: 0,
@@ -24,23 +25,47 @@ var defaults = {
 
 
 
-var stars = TSLFn( ( params ) => {
+var starsRaw = Fn( ([ position, scale, density, variation, color, background, seed ]) => {
 
-	params = convertToNodes( params, defaults );
-
-	var pos = positionGeometry.mul( exp( params.scale.div( 2 ).add( 3 ) ) ).add( params.seed ).toVar( );
+	var pos = position.mul( exp( scale.div( 2 ).add( 3 ) ) ).add( seed ).toVar( );
 
 	var k = abs( noise( pos ) ).pow( 10 ).mul( 10 );
 
-	k = k.mul( exp( params.density.sub( 2 ) ) );
+	k = k.mul( exp( density.sub( 2 ) ) );
 
-	var dS = select( k.greaterThan( 0.1 ), params.variation.mul( noise( pos ) ), 0 );
+	var dS = select( k.greaterThan( 0.1 ), variation.mul( noise( pos ) ), 0 );
 
-	var col = toHsl( mix( params.background, params.color, k ) );
+	var col = toHsl( mix( background, color, k ) );
 
-	return hsl( add( col.x, dS ), col.y, col.z );
+	return hsl( vec3( add( col.x, dS ), col.yz ) );
 
-}, defaults );
+} ).setLayout( {
+	name: 'starsRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'density', type: 'float' },
+		{ name: 'variation', type: 'float' },
+		{ name: 'color', type: 'vec3' },
+		{ name: 'background', type: 'vec3' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
+
+
+
+function stars( params={} ) {
+
+	var { position, scale, density, variation, color, background, seed } = { ...defaults, ...params };
+
+	return starsRaw( position, scale, density, variation, color, background, seed );
+
+}
+
+
+
+stars.defaults = defaults;
 
 
 

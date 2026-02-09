@@ -3,14 +3,15 @@
 
 
 
-import { exp, mx_worley_noise_vec2, positionGeometry } from 'three/tsl';
-import { convertToNodes, TSLFn } from './tsl-utils.js';
+import { exp, Fn, positionGeometry } from 'three/tsl';
+import { voronoi2 } from './tsl-utils.js';
 
 
 
 var defaults = {
 	$name: 'Roman paving',
 
+	position: positionGeometry,
 	scale: 2,
 	depth: 0.5,
 
@@ -19,17 +20,38 @@ var defaults = {
 
 
 
-var romanPaving = TSLFn( ( params )=>{
+var romanPavingRaw = Fn( ([ position, scale, depth, seed ])=>{
 
-	params = convertToNodes( params, defaults );
+	var pos = position.mul( exp( scale ) ).add( seed ).toVar( );
 
-	var pos = positionGeometry.mul( exp( params.scale ) ).add( params.seed ).toVar( );
+	var k = voronoi2( pos ).toVar();
 
-	var k = mx_worley_noise_vec2( pos ).toVar();
+	return k.y.sub( k.x ).pow( depth.mul( 3 ).sub( 3 ).exp() ).smoothstep( 0, 1 );
 
-	return k.y.sub( k.x ).pow( params.depth.mul( 3 ).sub( 3 ).exp() ).smoothstep( 0, 1 );
+} ).setLayout( {
+	name: 'romanPavingRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'depth', type: 'float' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
 
-}, defaults );
+
+
+function romanPaving( params={} ) {
+
+	var { position, scale, depth, seed } = { ...defaults, ...params };
+
+	return romanPavingRaw( position, scale, depth, seed );
+
+}
+
+
+
+romanPaving.defaults = defaults;
 
 
 

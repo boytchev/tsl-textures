@@ -4,8 +4,8 @@
 
 
 import { Vector2, Vector3 } from "three";
-import { cross, Fn, normalLocal, positionGeometry, sub, tangentLocal, transformNormalToView, vec4 } from 'three/tsl';
-import { convertToNodes, matTrans, selectPlanar, TSLFn } from './tsl-utils.js';
+import { cross, Fn, normalLocal, positionGeometry, tangentLocal } from 'three/tsl';
+import { approximateNormal, selectPlanar } from './tsl-utils.js';
 
 
 
@@ -24,49 +24,92 @@ var defaults = {
 
 
 
-var surfacePos = Fn( ([ pos, params ])=>{
+var surfacePos = Fn( ([ pos, distance, selectorAngles, selectorCenter, selectorWidth ])=>{
 
-	var zone = selectPlanar( pos, params.selectorAngles, params.selectorCenter, params.selectorWidth );
+	var zone = selectPlanar( pos, selectorAngles, selectorCenter, selectorWidth );
 
-	var T = matTrans( params.distance.mul( zone ) );
+	return pos.add( distance.mul( zone ) );
 
-	return T.mul( vec4( pos, 1 ) ).xyz;
-
+} ).setLayout( {
+	name: 'surfacePos',
+	type: 'vec3',
+	inputs: [
+		{ name: 'pos', type: 'vec3' },
+		{ name: 'distance', type: 'vec3' },
+		{ name: 'selectorAngles', type: 'vec2' },
+		{ name: 'selectorCenter', type: 'vec3' },
+		{ name: 'selectorWidth', type: 'float' },
+	]
 } );
 
 
 
-var translator = TSLFn( ( params )=>{
+var translatorRaw = Fn( ([ distance, selectorAngles, selectorCenter, selectorWidth ])=>{
 
-	params = convertToNodes( params, defaults );
+	return surfacePos( positionGeometry, distance, selectorAngles, selectorCenter, selectorWidth );
 
-	return surfacePos( positionGeometry, params );
+} ).setLayout( {
+	name: 'translatorRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'distance', type: 'vec3' },
+		{ name: 'selectorAngles', type: 'vec2' },
+		{ name: 'selectorCenter', type: 'vec3' },
+		{ name: 'selectorWidth', type: 'float' },
+	]
+} );
 
-}, defaults );
 
 
+var translatorNormalRaw = Fn( ([ distance, selectorAngles, selectorCenter, selectorWidth ])=>{
 
-translator.normal = TSLFn( ( params ) => {
-
-	params = convertToNodes( params, defaults );
-
-	var eps = 0.01;
+	var EPS = 0.01;
 
 	var position = positionGeometry,
 		normal = normalLocal.normalize().toVar(),
-		tangent = tangentLocal.normalize().mul( eps ).toVar(),
-		bitangent = cross( normal, tangent ).normalize().mul( eps ).toVar();
+		tangent = tangentLocal.normalize().mul( EPS ).toVar(),
+		bitangent = cross( normal, tangent ).normalize().mul( EPS ).toVar();
 
-	var pos = surfacePos( position, params );
-	var posU = surfacePos( position.add( tangent ), params );
-	var posV = surfacePos( position.add( bitangent ), params );
+	var pos = surfacePos( position, distance, selectorAngles, selectorCenter, selectorWidth );
+	var posU = surfacePos( position.add( tangent ), distance, selectorAngles, selectorCenter, selectorWidth );
+	var posV = surfacePos( position.add( bitangent ), distance, selectorAngles, selectorCenter, selectorWidth );
 
-	var dU = sub( posU, pos ),
-		dV = sub( posV, pos );
+	return approximateNormal( pos, posU, posV );
 
-	return transformNormalToView( cross( dU, dV ).normalize() );
+} ).setLayout( {
+	name: 'translatorNormalRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'distance', type: 'vec3' },
+		{ name: 'selectorAngles', type: 'vec2' },
+		{ name: 'selectorCenter', type: 'vec3' },
+		{ name: 'selectorWidth', type: 'float' },
+	]
+} );
 
-}, defaults );
+
+
+function translator( params={} ) {
+
+	var { distance, selectorAngles, selectorCenter, selectorWidth } = { ...defaults, ...params };
+
+	return translatorRaw( distance, selectorAngles, selectorCenter, selectorWidth );
+
+}
+
+
+
+translator.normal = function ( params={} ) {
+
+	var { distance, selectorAngles, selectorCenter, selectorWidth } = { ...defaults, ...params };
+
+	return translatorNormalRaw( distance, selectorAngles, selectorCenter, selectorWidth );
+
+};
+
+
+
+translator.defaults = defaults;
 
 
 
