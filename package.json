@@ -1,6 +1,6 @@
 {
   "name": "tsl-textures",
-  "version": "2.5.1",
+  "version": "3.0.0",
   "description": "A collection of Three.js Shading Language (TSL) textures ",
   "main": "./src/tsl-textures.js",
   "module": "./src/tsl-textures.js",
