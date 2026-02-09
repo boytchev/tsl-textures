@@ -23,11 +23,11 @@ Different values for the `exponent` parameter define different shapes of the sup
 <p class="gallery">
 
 	<a class="style-block nocaption" href="../online/supersphere.html?exponent=-0.4">
-		<img src="images/supersphere-2.png">
+		<img src="images/supersphere-1.png">
 	</a>
 
 	<a class="style-block nocaption" href="../online/supersphere.html?exponent=1">
-		<img src="images/supersphere-1.png">
+		<img src="images/supersphere-2.png">
 	</a>
 
 	<a class="style-block nocaption" href="../online/supersphere.html?exponent=3">

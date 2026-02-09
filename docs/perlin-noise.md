@@ -4,7 +4,7 @@
 # TSL Textures
 
 
-## perlin noise
+## Perlin noise
 This texture renders [Perlin noise](https://en.wikipedia.org/wiki/Perlin_noise)
 pattern. Click on a snapshot to open it online.
 

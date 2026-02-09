@@ -20,7 +20,7 @@ Hint: use the `show` checkbox of the online generator to visualize the layer.
 
 <p class="gallery">
 
-	<a class="style-block nocaption" href="../online/rotator.html?angles=0,1.26,0&center=0,0,0&selectorCenter=0,0,0&selectorAngles=0,0&selectorWidth=2">
+	<a class="style-block nocaption" href="../online/rotator.html?angles=0,-1.26,0&center=0,0,0&selectorCenter=0,0,0&selectorAngles=0,0&selectorWidth=2">
 		<img src="images/rotator-1.png">
 	</a>
 
@@ -28,7 +28,7 @@ Hint: use the `show` checkbox of the online generator to visualize the layer.
 		<img src="images/rotator-2.png">
 	</a>
 
-	<a class="style-block nocaption" href="../online/rotator.html?angles=0,0,-3.14&center=1,0,0&selectorCenter=0,0,0&selectorAngles=0,0&selectorWidth=2">
+	<a class="style-block nocaption" href="../online/rotator.html?angles=0,0,3.14&center=1,0,0&selectorCenter=0,0,0&selectorAngles=0,0&selectorWidth=2">
 		<img src="images/rotator-3.png">
 	</a>
 
