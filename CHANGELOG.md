@@ -1,5 +1,8 @@
 # TSL Textures
 
+## 3.0.1
+* Upgraded to Three.js r183
+
 ## 3.0.0
 * Improved and refactored 46 textures
 * TSLFn wrapper is not needed any more, pure Fn is used
