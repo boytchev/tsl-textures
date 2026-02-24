@@ -1,5 +1,8 @@
 # TSL Textures
 
+## 3.0.2
+* Added "Waves" in *waves.js*
+
 ## 3.0.1
 * Upgraded to Three.js r183
 

@@ -45,6 +45,7 @@ export { translator } from './translator.js';
 export { voronoiCells } from './voronoi-cells.js';
 export { waterDrops } from './water-drops.js';
 export { watermelon } from './watermelon.js';
+export { waves } from './waves.js';
 export { wood } from './wood.js';
 export { zebraLines } from './zebra-lines.js';
 export { circleDecor } from './circle-decor.js';

@@ -1,7 +1,7 @@
-// TSL Textures v3.0.0
+// TSL Textures v3.0.1
 
 import { Fn, vec3, sub, transformNormalToView, cross, remap, pow, mul, log2, min, max, float, add, If, select, sin, cos, rotate, smoothstep, mx_fractal_noise_float, mix, mx_noise_float, time, positionGeometry, or, acos, clamp, exp, normalLocal, tangentLocal, int, Loop, oneMinus, abs, equirectUV, screenSize, exp2, div, round, remapClamp, screenUV, sqrt, mat2, mod, distance, radians, matcapUV, mx_worley_noise_float, sign, tan, floor, screenCoordinate, reciprocal, vec2, mx_worley_noise_vec2, mx_fractal_noise_vec3, mx_worley_noise_vec3 } from 'three/tsl';
-export { mx_fractal_noise_float as fractal, mx_fractal_noise_vec3 as fractal3, mx_noise_float as noise, mx_worley_noise_float as voronoi, mx_worley_noise_vec2 as voronoi2, mx_worley_noise_vec3 as voronoi3 } from 'three/tsl';
+export { mx_fractal_noise_float as fractal, mx_fractal_noise_vec3 as fractal3, mx_noise_float as noise, mx_noise_vec3 as noise3, mx_worley_noise_float as voronoi, mx_worley_noise_vec2 as voronoi2, mx_worley_noise_vec3 as voronoi3 } from 'three/tsl';
 import { Color, Vector3, Vector2 } from 'three';
 
 // simple vector noise, vec3->float[-1,1]
@@ -295,7 +295,7 @@ const selectPlanar = Fn( ([ pos, selAngles, selCenter, selWidth ])=>{
 	]
 } );
 
-var defaults$N = {
+var defaults$O = {
 	$name: 'Brain',
 
 	position: positionGeometry,
@@ -377,7 +377,7 @@ var brainNormalRaw = Fn( ([ position, scale, xsmooth, wave, speed, time, /*color
 
 function brain( params={} ) {
 
-	var { position, scale, smooth, /*wave, speed, time,*/ color, background, seed } = { ...defaults$N, ...params };
+	var { position, scale, smooth, /*wave, speed, time,*/ color, background, seed } = { ...defaults$O, ...params };
 
 	return brainRaw( position, scale, smooth, /*wave, speed, time,*/ color, background, seed );
 
@@ -387,7 +387,7 @@ function brain( params={} ) {
 
 brain.normal = function ( params={} ) {
 
-	var { position, scale, smooth, wave, speed, time, /*color, background,*/ seed } = { ...defaults$N, ...params };
+	var { position, scale, smooth, wave, speed, time, /*color, background,*/ seed } = { ...defaults$O, ...params };
 
 	return brainNormalRaw( position, scale, smooth, wave, speed, time, /*color, background,*/ seed );
 
@@ -395,9 +395,9 @@ brain.normal = function ( params={} ) {
 
 
 
-brain.defaults = defaults$N;
+brain.defaults = defaults$O;
 
-var defaults$M = {
+var defaults$N = {
 	$name: 'Camouflage',
 
 	position: positionGeometry,
@@ -458,7 +458,7 @@ var camouflageRaw = Fn( ([ position, scale, colorA, colorB, colorC, colorD, seed
 
 function camouflage( params={} ) {
 
-	var { position, scale, colorA, colorB, colorC, colorD, seed } = { ...defaults$M, ...params };
+	var { position, scale, colorA, colorB, colorC, colorD, seed } = { ...defaults$N, ...params };
 
 	return camouflageRaw( position, scale, colorA, colorB, colorC, colorD, seed );
 
@@ -466,9 +466,9 @@ function camouflage( params={} ) {
 
 
 
-camouflage.defaults = defaults$M;
+camouflage.defaults = defaults$N;
 
-var defaults$L = {
+var defaults$M = {
 	$name: 'Cave art',
 
 	position: positionGeometry,
@@ -527,7 +527,7 @@ var caveArtRaw = Fn( ([ position, scale, thinness, xnoise, color, background, se
 
 function caveArt( params={} ) {
 
-	var { position, scale, thinness, noise, color, background, seed } = { ...defaults$L, ...params };
+	var { position, scale, thinness, noise, color, background, seed } = { ...defaults$M, ...params };
 
 	return caveArtRaw( position, scale, thinness, noise, color, background, seed );
 
@@ -535,9 +535,9 @@ function caveArt( params={} ) {
 
 
 
-caveArt.defaults = defaults$L;
+caveArt.defaults = defaults$M;
 
-var defaults$K = {
+var defaults$L = {
 	$name: 'Circles',
 
 	position: positionGeometry,
@@ -596,7 +596,7 @@ var circlesRaw = Fn( ([ position, scale, variety, color, seed ]) => {
 
 function circles( params={} ) {
 
-	var { position, scale, variety, color, seed } = { ...defaults$K, ...params };
+	var { position, scale, variety, color, seed } = { ...defaults$L, ...params };
 
 	return circlesRaw( position, scale, variety, color, seed );
 
@@ -604,9 +604,9 @@ function circles( params={} ) {
 
 
 
-circles.defaults = defaults$K;
+circles.defaults = defaults$L;
 
-var defaults$J = {
+var defaults$K = {
 	$name: 'Clouds',
 
 	position: positionGeometry,
@@ -686,7 +686,7 @@ var cloudsOpacityRaw = Fn( ([ position, scale, density, opacity, /*color,subcolo
 
 function clouds( params={} ) {
 
-	var { position, scale, density, /*opacity,*/color, subcolor, seed } = { ...defaults$J, ...params };
+	var { position, scale, density, /*opacity,*/color, subcolor, seed } = { ...defaults$K, ...params };
 
 	return cloudsRaw( position, scale, density, /*opacity,*/color, subcolor, seed );
 
@@ -696,7 +696,7 @@ function clouds( params={} ) {
 
 clouds.opacity = function ( params={} ) {
 
-	var { position, scale, density, opacity, /*color,subcolor,*/seed } = { ...defaults$J, ...params };
+	var { position, scale, density, opacity, /*color,subcolor,*/seed } = { ...defaults$K, ...params };
 
 	return cloudsOpacityRaw( position, scale, density, opacity, /*color,subcolor,*/seed );
 
@@ -704,9 +704,9 @@ clouds.opacity = function ( params={} ) {
 
 
 
-clouds.defaults = defaults$J;
+clouds.defaults = defaults$K;
 
-var defaults$I = {
+var defaults$J = {
 	$name: 'Concrete',
 	$normalNode: true,
 
@@ -778,7 +778,7 @@ var concreteRaw = Fn( ([ position, normal, tangent, scale, density, bump, seed ]
 
 function concrete( params={} ) {
 
-	var { position, scale, density, bump, seed } = { ...defaults$I, ...params };
+	var { position, scale, density, bump, seed } = { ...defaults$J, ...params };
 
 	return concreteRaw( position, normalLocal, tangentLocal, scale, density, bump, seed );
 
@@ -786,9 +786,9 @@ function concrete( params={} ) {
 
 
 
-concrete.defaults = defaults$I;
+concrete.defaults = defaults$J;
 
-var defaults$H = {
+var defaults$I = {
 	$name: 'Cork',
 
 	position: positionGeometry,
@@ -868,7 +868,7 @@ var corkRaw = Fn( ([ position, scale, straight, xnoise, color, background, seed 
 
 function cork( params={} ) {
 
-	var { position, scale, straight, noise, color, background, seed } = { ...defaults$H, ...params };
+	var { position, scale, straight, noise, color, background, seed } = { ...defaults$I, ...params };
 
 	return corkRaw( position, scale, straight, noise, color, background, seed );
 
@@ -876,9 +876,9 @@ function cork( params={} ) {
 
 
 
-cork.defaults = defaults$H;
+cork.defaults = defaults$I;
 
-var defaults$G = {
+var defaults$H = {
 	$name: 'Dalmatian spots',
 	$width: 260,
 
@@ -934,7 +934,7 @@ var dalmatianSpotsRaw = Fn( ([ position, scale, density, color, background, seed
 
 function dalmatianSpots( params={} ) {
 
-	var { position, scale, density, color, background, seed } = { ...defaults$G, ...params };
+	var { position, scale, density, color, background, seed } = { ...defaults$H, ...params };
 
 	return dalmatianSpotsRaw( position, scale, density, color, background, seed );
 
@@ -942,9 +942,9 @@ function dalmatianSpots( params={} ) {
 
 
 
-dalmatianSpots.defaults = defaults$G;
+dalmatianSpots.defaults = defaults$H;
 
-var defaults$F = {
+var defaults$G = {
 	$name: 'Darth Maul',
 
 	position: positionGeometry,
@@ -1004,7 +1004,7 @@ var darthMaulRaw = Fn( ([ position, scale, shift, complexity, angle, distance, c
 
 function darthMaul( params={} ) {
 
-	var { position, scale, shift, complexity, angle, distance, color, background, balance, seed } = { ...defaults$F, ...params };
+	var { position, scale, shift, complexity, angle, distance, color, background, balance, seed } = { ...defaults$G, ...params };
 
 	return darthMaulRaw( position, scale, shift, complexity, angle, distance, color, background, balance, seed );
 
@@ -1012,9 +1012,9 @@ function darthMaul( params={} ) {
 
 
 
-darthMaul.defaults = defaults$F;
+darthMaul.defaults = defaults$G;
 
-var defaults$E = {
+var defaults$F = {
 	$name: 'Dyson sphere',
 
 	position: positionGeometry,
@@ -1135,7 +1135,7 @@ var dysonSphereRaw = Fn( ([ position, scale, complexity, color, background, seed
 
 function dysonSphere( params={} ) {
 
-	var { position, scale, complexity, color, background, seed } = { ...defaults$E, ...params };
+	var { position, scale, complexity, color, background, seed } = { ...defaults$F, ...params };
 
 	return dysonSphereRaw( position, scale, complexity, color, background, seed );
 
@@ -1143,9 +1143,9 @@ function dysonSphere( params={} ) {
 
 
 
-dysonSphere.defaults = defaults$E;
+dysonSphere.defaults = defaults$F;
 
-var defaults$D = {
+var defaults$E = {
 	$name: 'Entangled',
 
 	position: positionGeometry,
@@ -1196,7 +1196,7 @@ var entangledRaw = Fn( ([ position, scale, density, color, background, seed ]) =
 
 function entangled( params={} ) {
 
-	var { position, scale, density, color, background, seed } = { ...defaults$D, ...params };
+	var { position, scale, density, color, background, seed } = { ...defaults$E, ...params };
 
 	return entangledRaw( position, scale, density, color, background, seed );
 
@@ -1204,9 +1204,9 @@ function entangled( params={} ) {
 
 
 
-entangled.defaults = defaults$D;
+entangled.defaults = defaults$E;
 
-var defaults$C = {
+var defaults$D = {
 	$name: 'Fordite',
 
 	position: positionGeometry,
@@ -1251,7 +1251,7 @@ var forditeRaw = Fn( ([ position, scale, color, seed ]) => {
 
 function fordite( params={} ) {
 
-	var { position, scale, color, seed } = { ...defaults$C, ...params };
+	var { position, scale, color, seed } = { ...defaults$D, ...params };
 
 	return forditeRaw( position, scale, color, seed );
 
@@ -1259,9 +1259,9 @@ function fordite( params={} ) {
 
 
 
-fordite.defaults = defaults$C;
+fordite.defaults = defaults$D;
 
-var defaults$B = {
+var defaults$C = {
 	$name: 'Gas giant',
 
 	position: positionGeometry,
@@ -1331,7 +1331,7 @@ var gasGiantRaw = Fn( ([ position, scale, turbulence, blur, colorA, colorB, colo
 
 function gasGiant( params={} ) {
 
-	var { position, scale, turbulence, blur, colorA, colorB, colorC, seed } = { ...defaults$B, ...params };
+	var { position, scale, turbulence, blur, colorA, colorB, colorC, seed } = { ...defaults$C, ...params };
 
 	return gasGiantRaw( position, scale, turbulence, blur, colorA, colorB, colorC, seed );
 
@@ -1339,9 +1339,9 @@ function gasGiant( params={} ) {
 
 
 
-gasGiant.defaults = defaults$B;
+gasGiant.defaults = defaults$C;
 
-var defaults$A = {
+var defaults$B = {
 	$name: 'Grid',
 	$replaceExportUVS: screenUV,
 	$replaceExportASP: screenSize.x.div( screenSize.y ).log2(),
@@ -1402,7 +1402,7 @@ var gridRaw = Fn( ([ uvs, countU, countV, aspect, thinness, equirectangular, col
 
 function grid( params={} ) {
 
-	var { uvs, countU, countV, aspect, thinness, equirectangular, color, background } = { ...defaults$A, ...params };
+	var { uvs, countU, countV, aspect, thinness, equirectangular, color, background } = { ...defaults$B, ...params };
 
 	return gridRaw( uvs, countU, countV, aspect, thinness, equirectangular, color, background );
 
@@ -1410,9 +1410,9 @@ function grid( params={} ) {
 
 
 
-grid.defaults = defaults$A;
+grid.defaults = defaults$B;
 
-var defaults$z = {
+var defaults$A = {
 	$name: 'Isolines',
 
 	position: positionGeometry,
@@ -1460,7 +1460,7 @@ var isolinesRaw = Fn( ([ position, scale, density, blur, thinness, color, backgr
 
 function isolines( params={} ) {
 
-	var { position, scale, density, blur, thinness, color, background, seed } = { ...defaults$z, ...params };
+	var { position, scale, density, blur, thinness, color, background, seed } = { ...defaults$A, ...params };
 
 	return isolinesRaw( position, scale, density, blur, thinness, color, background, seed );
 
@@ -1468,9 +1468,9 @@ function isolines( params={} ) {
 
 
 
-isolines.defaults = defaults$z;
+isolines.defaults = defaults$A;
 
-var defaults$y = {
+var defaults$z = {
 	$name: 'Karst rock',
 
 	position: positionGeometry,
@@ -1513,7 +1513,7 @@ var karstRockRaw = Fn( ([ position, scale, color, background, seed ])=>{
 
 function karstRock( params={} ) {
 
-	var { position, scale, color, background, seed } = { ...defaults$y, ...params };
+	var { position, scale, color, background, seed } = { ...defaults$z, ...params };
 
 	return karstRockRaw( position, scale, color, background, seed );
 
@@ -1521,9 +1521,9 @@ function karstRock( params={} ) {
 
 
 
-karstRock.defaults = defaults$y;
+karstRock.defaults = defaults$z;
 
-var defaults$x = {
+var defaults$y = {
 	$name: 'Marble',
 
 	position: positionGeometry,
@@ -1595,7 +1595,7 @@ var marbleRaw = Fn( ([ position, scale, thinness, xnoise, color, background, see
 
 function marble( params={} ) {
 
-	var { position, scale, thinness, noise, color, background, seed } = { ...defaults$x, ...params };
+	var { position, scale, thinness, noise, color, background, seed } = { ...defaults$y, ...params };
 
 	return marbleRaw( position, scale, thinness, noise, color, background, seed );
 
@@ -1603,9 +1603,9 @@ function marble( params={} ) {
 
 
 
-marble.defaults = defaults$x;
+marble.defaults = defaults$y;
 
-var defaults$w = {
+var defaults$x = {
 	$name: 'Neon Lights',
 
 	position: positionGeometry,
@@ -1688,7 +1688,7 @@ var neonLightsRaw = Fn( ([ position, scale, thinness, mode, colorA, colorB, colo
 
 function neonLights( params={} ) {
 
-	var { position, scale, thinness, mode, colorA, colorB, colorC, background, seed } = { ...defaults$w, ...params };
+	var { position, scale, thinness, mode, colorA, colorB, colorC, background, seed } = { ...defaults$x, ...params };
 
 	return neonLightsRaw( position, scale, thinness, mode, colorA, colorB, colorC, background, seed );
 
@@ -1696,9 +1696,9 @@ function neonLights( params={} ) {
 
 
 
-neonLights.defaults = defaults$w;
+neonLights.defaults = defaults$x;
 
-var defaults$v = {
+var defaults$w = {
 	$name: 'Perlin noise',
 
 	position: positionGeometry,
@@ -1740,7 +1740,7 @@ var perlinNoiseRaw = Fn( ([ position, scale, balance, contrast, color, backgroun
 
 function perlinNoise( params={} ) {
 
-	var { position, scale, balance, contrast, color, background, seed } = { ...defaults$v, ...params };
+	var { position, scale, balance, contrast, color, background, seed } = { ...defaults$w, ...params };
 
 	return perlinNoiseRaw( position, scale, balance, contrast, color, background, seed );
 
@@ -1748,9 +1748,9 @@ function perlinNoise( params={} ) {
 
 
 
-perlinNoise.defaults = defaults$v;
+perlinNoise.defaults = defaults$w;
 
-var defaults$u = {
+var defaults$v = {
 	$name: 'Photosphere',
 
 	position: positionGeometry,
@@ -1799,7 +1799,7 @@ var photosphereRaw = Fn( ([ position, scale, color, background, seed ]) => {
 
 function photosphere( params={} ) {
 
-	var { position, scale, color, background, seed } = { ...defaults$u, ...params };
+	var { position, scale, color, background, seed } = { ...defaults$v, ...params };
 
 	return photosphereRaw( position, scale, color, background, seed );
 
@@ -1807,9 +1807,9 @@ function photosphere( params={} ) {
 
 
 
-photosphere.defaults = defaults$u;
+photosphere.defaults = defaults$v;
 
-var defaults$t = {
+var defaults$u = {
 	$name: 'Planet',
 
 	position: positionGeometry,
@@ -1952,7 +1952,7 @@ var planetRaw = Fn( ([ position, scale, iterations, levelSea, levelMountain, bal
 
 function planet( params={} ) {
 
-	var { position, scale, iterations, levelSea, levelMountain, balanceWater, balanceSand, balanceSnow, colorDeep, colorShallow, colorBeach, colorGrass, colorForest, colorSnow, seed } = { ...defaults$t, ...params };
+	var { position, scale, iterations, levelSea, levelMountain, balanceWater, balanceSand, balanceSnow, colorDeep, colorShallow, colorBeach, colorGrass, colorForest, colorSnow, seed } = { ...defaults$u, ...params };
 
 	return planetRaw( position, scale, iterations, levelSea, levelMountain, balanceWater, balanceSand, balanceSnow, colorDeep, colorShallow, colorBeach, colorGrass, colorForest, colorSnow, seed );
 
@@ -1960,9 +1960,9 @@ function planet( params={} ) {
 
 
 
-planet.defaults = defaults$t;
+planet.defaults = defaults$u;
 
-var defaults$s = {
+var defaults$t = {
 	$name: 'Polka dots',
 
 	position: positionGeometry,
@@ -2044,7 +2044,7 @@ var polkaDotsRaw = Fn( ([ position, count, size, blur, color, background, xflat 
 
 function polkaDots( params={} ) {
 
-	var { position, count, size, blur, color, background, flat } = { ...defaults$s, ...params };
+	var { position, count, size, blur, color, background, flat } = { ...defaults$t, ...params };
 
 	return polkaDotsRaw( position, count, size, blur, color, background, flat );
 
@@ -2052,9 +2052,9 @@ function polkaDots( params={} ) {
 
 
 
-polkaDots.defaults = defaults$s;
+polkaDots.defaults = defaults$t;
 
-var defaults$r = {
+var defaults$s = {
 	$name: 'Processed wood',
 	$width: 260,
 
@@ -2110,7 +2110,7 @@ var processedWoodRaw = Fn( ([ position, scale, lengths, strength, angle, color, 
 
 function processedWood( params={} ) {
 
-	var { position, scale, lengths, strength, angle, color, background, seed } = { ...defaults$r, ...params };
+	var { position, scale, lengths, strength, angle, color, background, seed } = { ...defaults$s, ...params };
 
 	return processedWoodRaw( position, scale, lengths, strength, angle, color, background, seed );
 
@@ -2118,9 +2118,9 @@ function processedWood( params={} ) {
 
 
 
-processedWood.defaults = defaults$r;
+processedWood.defaults = defaults$s;
 
-var defaults$q = {
+var defaults$r = {
 	$name: 'Protozoa',
 
 	position: positionGeometry,
@@ -2206,7 +2206,7 @@ var protozoaRaw = Fn( ([ position, matcap, scale, fat, amount, color, subcolor, 
 
 function protozoa( params={} ) {
 
-	var { position, matcap, scale, fat, amount, color, subcolor, background, seed } = { ...defaults$q, ...params };
+	var { position, matcap, scale, fat, amount, color, subcolor, background, seed } = { ...defaults$r, ...params };
 
 	return protozoaRaw( position, matcap, scale, fat, amount, color, subcolor, background, seed );
 
@@ -2214,9 +2214,9 @@ function protozoa( params={} ) {
 
 
 
-protozoa.defaults = defaults$q;
+protozoa.defaults = defaults$r;
 
-var defaults$p = {
+var defaults$q = {
 	$name: 'Rotator',
 	$positionNode: true,
 	$selectorPlanar: true,
@@ -2302,7 +2302,7 @@ var rotatorNormalRaw = Fn( ([ angles, center, selectorAngles, selectorCenter, se
 
 function rotator( params={} ) {
 
-	var { angles, center, selectorAngles, selectorCenter, selectorWidth } = { ...defaults$p, ...params };
+	var { angles, center, selectorAngles, selectorCenter, selectorWidth } = { ...defaults$q, ...params };
 
 	return rotatorRaw( angles, center, selectorAngles, selectorCenter, selectorWidth );
 
@@ -2312,7 +2312,7 @@ function rotator( params={} ) {
 
 rotator.normal = function ( params={} ) {
 
-	var { angles, center, selectorAngles, selectorCenter, selectorWidth } = { ...defaults$p, ...params };
+	var { angles, center, selectorAngles, selectorCenter, selectorWidth } = { ...defaults$q, ...params };
 
 	return rotatorNormalRaw( angles, center, selectorAngles, selectorCenter, selectorWidth );
 
@@ -2320,9 +2320,9 @@ rotator.normal = function ( params={} ) {
 
 
 
-rotator.defaults = defaults$p;
+rotator.defaults = defaults$q;
 
-var defaults$o = {
+var defaults$p = {
 	$name: 'Rough clay',
 	$normalNode: true,
 
@@ -2389,7 +2389,7 @@ var roughClayRaw = Fn( ([ position, normal, tangent, scale, bump, curvature, see
 
 function roughClay( params={} ) {
 
-	var { position, scale, bump, curvature, seed } = { ...defaults$o, ...params };
+	var { position, scale, bump, curvature, seed } = { ...defaults$p, ...params };
 
 	return roughClayRaw( position, normalLocal, tangentLocal, scale, bump, curvature, seed );
 
@@ -2397,9 +2397,9 @@ function roughClay( params={} ) {
 
 
 
-roughClay.defaults = defaults$o;
+roughClay.defaults = defaults$p;
 
-var defaults$n = {
+var defaults$o = {
 	$name: 'Runny eggs',
 
 	position: positionGeometry,
@@ -2535,7 +2535,7 @@ var runnyEggsRoughnessRaw = Fn( ([ position, scale, sizeYolk, /*sizeWhite, color
 
 function runnyEggs( params={} ) {
 
-	var { position, scale, sizeYolk, sizeWhite, colorYolk, colorWhite, colorBackground, seed } = { ...defaults$n, ...params };
+	var { position, scale, sizeYolk, sizeWhite, colorYolk, colorWhite, colorBackground, seed } = { ...defaults$o, ...params };
 
 	return runnyEggsRaw( position, scale, sizeYolk, sizeWhite, colorYolk, colorWhite, colorBackground, seed );
 
@@ -2545,7 +2545,7 @@ function runnyEggs( params={} ) {
 
 runnyEggs.normal = function ( params={} ) {
 
-	var { position, scale, sizeYolk, sizeWhite, /*colorYolk, colorWhite, colorBackground,*/ seed } = { ...defaults$n, ...params };
+	var { position, scale, sizeYolk, sizeWhite, /*colorYolk, colorWhite, colorBackground,*/ seed } = { ...defaults$o, ...params };
 
 	return runnyEggsNormalRaw( position, normalLocal, tangentLocal, scale, sizeYolk, sizeWhite, /*colorYolk, colorWhite, colorBackground,*/ seed );
 
@@ -2555,7 +2555,7 @@ runnyEggs.normal = function ( params={} ) {
 
 runnyEggs.roughness = function ( params={} ) {
 
-	var { position, scale, sizeYolk, /*sizeWhite, colorYolk, colorWhite, colorBackground,*/ seed } = { ...defaults$n, ...params };
+	var { position, scale, sizeYolk, /*sizeWhite, colorYolk, colorWhite, colorBackground,*/ seed } = { ...defaults$o, ...params };
 
 	return runnyEggsRoughnessRaw( position, scale, sizeYolk, /*sizeWhite, colorYolk, colorWhite, colorBackground,*/ seed );
 
@@ -2563,9 +2563,9 @@ runnyEggs.roughness = function ( params={} ) {
 
 
 
-runnyEggs.defaults = defaults$n;
+runnyEggs.defaults = defaults$o;
 
-var defaults$m = {
+var defaults$n = {
 	$name: 'rust',
 
 	position: positionGeometry,
@@ -2675,7 +2675,7 @@ var rustOpacityRaw = Fn( ([ position, scale, iterations, amount, opacity, /*xnoi
 
 function rust( params={} ) {
 
-	var { position, scale, iterations, amount, /*opacity,*/ noise, noiseScale, color, background, seed } = { ...defaults$m, ...params };
+	var { position, scale, iterations, amount, /*opacity,*/ noise, noiseScale, color, background, seed } = { ...defaults$n, ...params };
 
 	return rustRaw( position, scale, iterations, amount, /*opacity,*/noise, noiseScale, color, background, seed );
 
@@ -2685,7 +2685,7 @@ function rust( params={} ) {
 
 rust.opacity = function ( params={} ) {
 
-	var { position, scale, iterations, amount, opacity, /*xnoise, noiseScale, color, background,*/ seed } = { ...defaults$m, ...params };
+	var { position, scale, iterations, amount, opacity, /*xnoise, noiseScale, color, background,*/ seed } = { ...defaults$n, ...params };
 
 	return rustOpacityRaw( position, scale, iterations, amount, opacity, /*xnoise, noiseScale, color, background,*/ seed );
 
@@ -2693,9 +2693,9 @@ rust.opacity = function ( params={} ) {
 
 
 
-rust.defaults = defaults$m;
+rust.defaults = defaults$n;
 
-var defaults$l = {
+var defaults$m = {
 	$name: 'Satin',
 
 	position: positionGeometry,
@@ -2740,7 +2740,7 @@ var satinRaw = Fn( ([ position, scale, color, background, seed ]) => {
 
 function satin( params={} ) {
 
-	var { position, scale, color, background, seed } = { ...defaults$l, ...params };
+	var { position, scale, color, background, seed } = { ...defaults$m, ...params };
 
 	return satinRaw( position, scale, color, background, seed );
 
@@ -2748,9 +2748,9 @@ function satin( params={} ) {
 
 
 
-satin.defaults = defaults$l;
+satin.defaults = defaults$m;
 
-var defaults$k = {
+var defaults$l = {
 	$name: 'Scaler',
 	$positionNode: true,
 	$selectorPlanar: true,
@@ -2827,7 +2827,7 @@ var scalerNormalRaw = Fn( ([ scales, center, selectorAngles, selectorCenter, sel
 
 function scaler( params={} ) {
 
-	var { scales, center, selectorAngles, selectorCenter, selectorWidth } = { ...defaults$k, ...params };
+	var { scales, center, selectorAngles, selectorCenter, selectorWidth } = { ...defaults$l, ...params };
 
 	return scalerRaw( scales, center, selectorAngles, selectorCenter, selectorWidth );
 
@@ -2837,7 +2837,7 @@ function scaler( params={} ) {
 
 scaler.normal = function ( params={} ) {
 
-	var { scales, center, selectorAngles, selectorCenter, selectorWidth } = { ...defaults$k, ...params };
+	var { scales, center, selectorAngles, selectorCenter, selectorWidth } = { ...defaults$l, ...params };
 
 	return scalerNormalRaw( scales, center, selectorAngles, selectorCenter, selectorWidth );
 
@@ -2845,9 +2845,9 @@ scaler.normal = function ( params={} ) {
 
 
 
-scaler.defaults = defaults$k;
+scaler.defaults = defaults$l;
 
-var defaults$j = {
+var defaults$k = {
 	$name: 'Scepter head',
 
 	position: positionGeometry,
@@ -2917,7 +2917,7 @@ var scepterHeadRaw = Fn( ([ position, xFactor, yFactor, zFactor, colorRim, color
 
 function scepterHead( params={} ) {
 
-	var { position, xFactor, yFactor, zFactor, colorRim, colorA, colorB } = { ...defaults$j, ...params };
+	var { position, xFactor, yFactor, zFactor, colorRim, colorA, colorB } = { ...defaults$k, ...params };
 
 	return scepterHeadRaw( position, xFactor, yFactor, zFactor, colorRim, colorA, colorB );
 
@@ -2925,9 +2925,9 @@ function scepterHead( params={} ) {
 
 
 
-scepterHead.defaults = defaults$j;
+scepterHead.defaults = defaults$k;
 
-var defaults$i = {
+var defaults$j = {
 	$name: 'Scream',
 
 	position: positionGeometry,
@@ -2975,7 +2975,7 @@ var screamRaw = Fn( ([ position, scale, variety, color, background, seed ]) => {
 
 function scream( params={} ) {
 
-	var { position, scale, variety, color, background, seed } = { ...defaults$i, ...params };
+	var { position, scale, variety, color, background, seed } = { ...defaults$j, ...params };
 
 	return screamRaw( position, scale, variety, color, background, seed );
 
@@ -2983,9 +2983,9 @@ function scream( params={} ) {
 
 
 
-scream.defaults = defaults$i;
+scream.defaults = defaults$j;
 
-var defaults$h = {
+var defaults$i = {
 	$name: 'Stars',
 
 	position: positionGeometry,
@@ -3033,7 +3033,7 @@ var starsRaw = Fn( ([ position, scale, density, variation, color, background, se
 
 function stars( params={} ) {
 
-	var { position, scale, density, variation, color, background, seed } = { ...defaults$h, ...params };
+	var { position, scale, density, variation, color, background, seed } = { ...defaults$i, ...params };
 
 	return starsRaw( position, scale, density, variation, color, background, seed );
 
@@ -3041,9 +3041,9 @@ function stars( params={} ) {
 
 
 
-stars.defaults = defaults$h;
+stars.defaults = defaults$i;
 
-var defaults$g = {
+var defaults$h = {
 	$name: 'Static noise',
 
 	position: screenCoordinate,
@@ -3093,7 +3093,7 @@ var staticNoiseRaw = Fn( ([ position, time, scale, balance, contrast, delay, see
 
 function staticNoise( params={} ) {
 
-	var { position, time, scale, balance, contrast, delay, seed } = { ...defaults$g, ...params };
+	var { position, time, scale, balance, contrast, delay, seed } = { ...defaults$h, ...params };
 
 	return staticNoiseRaw( position, time, scale, balance, contrast, delay, seed );
 
@@ -3101,9 +3101,9 @@ function staticNoise( params={} ) {
 
 
 
-staticNoise.defaults = defaults$g;
+staticNoise.defaults = defaults$h;
 
-var defaults$f = {
+var defaults$g = {
 	$name: 'Supersphere',
 	$positionNode: true,
 
@@ -3178,7 +3178,7 @@ var supersphereNormalRaw = Fn( ([ exponent ]) => {
 
 function supersphere( params={} ) {
 
-	var { exponent } = { ...defaults$f, ...params };
+	var { exponent } = { ...defaults$g, ...params };
 
 	return supersphereRaw( exponent );
 
@@ -3188,7 +3188,7 @@ function supersphere( params={} ) {
 
 supersphere.normal = function ( params={} ) {
 
-	var { exponent } = { ...defaults$f, ...params };
+	var { exponent } = { ...defaults$g, ...params };
 
 	return supersphereNormalRaw( exponent );
 
@@ -3196,9 +3196,9 @@ supersphere.normal = function ( params={} ) {
 
 
 
-supersphere.defaults = defaults$f;
+supersphere.defaults = defaults$g;
 
-var defaults$e = {
+var defaults$f = {
 	$name: 'Tiger fur',
 
 	position: positionGeometry,
@@ -3251,7 +3251,7 @@ var tigerFurRaw = Fn( ([ position, scale, lengths, blur, strength, hairs, color,
 
 function tigerFur( params={} ) {
 
-	var { position, scale, lengths, blur, strength, hairs, color, bottomColor, seed } = { ...defaults$e, ...params };
+	var { position, scale, lengths, blur, strength, hairs, color, bottomColor, seed } = { ...defaults$f, ...params };
 
 	return tigerFurRaw( position, scale, lengths, blur, strength, hairs, color, bottomColor, seed );
 
@@ -3259,9 +3259,9 @@ function tigerFur( params={} ) {
 
 
 
-tigerFur.defaults = defaults$e;
+tigerFur.defaults = defaults$f;
 
-var defaults$d = {
+var defaults$e = {
 	$name: 'Translator',
 	$positionNode: true,
 	$selectorPlanar: true,
@@ -3343,7 +3343,7 @@ var translatorNormalRaw = Fn( ([ distance, selectorAngles, selectorCenter, selec
 
 function translator( params={} ) {
 
-	var { distance, selectorAngles, selectorCenter, selectorWidth } = { ...defaults$d, ...params };
+	var { distance, selectorAngles, selectorCenter, selectorWidth } = { ...defaults$e, ...params };
 
 	return translatorRaw( distance, selectorAngles, selectorCenter, selectorWidth );
 
@@ -3353,7 +3353,7 @@ function translator( params={} ) {
 
 translator.normal = function ( params={} ) {
 
-	var { distance, selectorAngles, selectorCenter, selectorWidth } = { ...defaults$d, ...params };
+	var { distance, selectorAngles, selectorCenter, selectorWidth } = { ...defaults$e, ...params };
 
 	return translatorNormalRaw( distance, selectorAngles, selectorCenter, selectorWidth );
 
@@ -3361,9 +3361,9 @@ translator.normal = function ( params={} ) {
 
 
 
-translator.defaults = defaults$d;
+translator.defaults = defaults$e;
 
-var defaults$c = {
+var defaults$d = {
 	$name: 'Voronoi cells',
 
 	position: positionGeometry,
@@ -3438,7 +3438,7 @@ var voronoiCellsRaw = Fn( ([ position, scale, variation, facet, color, backgroun
 
 function voronoiCells( params={} ) {
 
-	var { position, scale, variation, facet, color, background, seed } = { ...defaults$c, ...params };
+	var { position, scale, variation, facet, color, background, seed } = { ...defaults$d, ...params };
 
 	return voronoiCellsRaw( position, scale, variation, facet, color, background, seed );
 
@@ -3446,9 +3446,9 @@ function voronoiCells( params={} ) {
 
 
 
-voronoiCells.defaults = defaults$c;
+voronoiCells.defaults = defaults$d;
 
-var defaults$b = {
+var defaults$c = {
 	$name: 'Water Drops',
 	$normalNode: true,
 
@@ -3521,7 +3521,7 @@ var waterDropsRaw = Fn( ([ position, normal, tangent, scale, density, bump, seed
 
 function waterDrops( params={} ) {
 
-	var { position, scale, density, bump, seed } = { ...defaults$b, ...params };
+	var { position, scale, density, bump, seed } = { ...defaults$c, ...params };
 
 	return waterDropsRaw( position, normalLocal, tangentLocal, scale, density, bump, seed );
 
@@ -3529,9 +3529,9 @@ function waterDrops( params={} ) {
 
 
 
-waterDrops.defaults = defaults$b;
+waterDrops.defaults = defaults$c;
 
-var defaults$a = {
+var defaults$b = {
 	$name: 'Watermelon',
 	$replaceExportUVS: screenUV,
 
@@ -3594,7 +3594,7 @@ var watermelonRaw = Fn( ([ position, uvs, scale, stripes, variation, xnoise, col
 
 function watermelon( params={} ) {
 
-	var { position, uvs, scale, stripes, variation, noise, color, background, seed } = { ...defaults$a, ...params };
+	var { position, uvs, scale, stripes, variation, noise, color, background, seed } = { ...defaults$b, ...params };
 
 	return watermelonRaw( position, uvs, scale, stripes, variation, noise, color, background, seed );
 
@@ -3602,7 +3602,144 @@ function watermelon( params={} ) {
 
 
 
-watermelon.defaults = defaults$a;
+watermelon.defaults = defaults$b;
+
+var defaults$a = {
+	$name: 'Waves',
+
+	position: positionGeometry,
+	scale: 2,
+	speed: 0,
+	time: time,
+	level: -0.4,
+	rough: 10,
+	height: 0.5,
+
+	foamSize: 0.2,
+	foamEdge: 0.5,
+
+	color: new Color( 0xFFFFFF ),
+	background: new Color( 0x2060FF ),
+
+	seed: 0,
+};
+
+
+
+var waves_core = Fn( ([ position, scale, speed, time, level, rough, height, foamSize, /*foamEdge,*/ seed ]) => {
+
+	const xscale = exp( scale.sub( 1 ) ).toVar();
+	const pos = position.mul( xscale ).add( seed ).toVar( 'pos' );
+	const xtime = time.mul( speed.exp() );
+
+	var posXZ = vec3( pos.x, 0, pos.z ).div( 3 );
+
+	const xfoamSize = foamSize.mul( mx_fractal_noise_float( pos, rough.div( 2 ) ).div( 2 ).add( 1 ).div( 2 ) );
+
+	var xheight = height.div( xscale, 0.8 ).toVar();
+
+	var wave = position.y.sub( level )
+		.add( mx_fractal_noise_float( posXZ, 1 ).mul( 2*3.14 ).add( xtime ).sin().div( 2 ).mul( xheight ) )
+		.sub( mx_fractal_noise_float( pos, rough ).mul( 2*3.14 ).add( xtime.mul( 2 ) ).sin().sub( 1 ).div( 5 ).mul( xheight ) )
+		.smoothstep( float( 0.5 ).sub( xfoamSize ), float( 0.5 ).add( xfoamSize ) )
+		.toVar();
+
+	return wave;
+
+} ).setLayout( {
+	name: 'waves_core',
+	type: 'float',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'speed', type: 'float' },
+		{ name: 'time', type: 'float' },
+		{ name: 'level', type: 'float' },
+		{ name: 'rough', type: 'float' },
+		{ name: 'height', type: 'float' },
+		{ name: 'foamSize', type: 'float' },
+		/*{ name: 'foamEdge', type: 'float' },*/
+		{ name: 'seed', type: 'float' },
+	] }
+);
+
+
+
+var wavesRaw = Fn( ([ position, scale, speed, time, level, rough, height, foamSize, /*foamEdge,*/ color, background, seed ]) => {
+
+	var k = waves_core( position, scale, speed, time, level, rough, height, foamSize, /*foamEdge,*/ seed );
+	return mix( background, color, k.clamp( 0, 1 ) );
+
+
+} ).setLayout( {
+	name: 'wavesRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'speed', type: 'float' },
+		{ name: 'time', type: 'float' },
+		{ name: 'level', type: 'float' },
+		{ name: 'rough', type: 'float' },
+		{ name: 'height', type: 'float' },
+		{ name: 'foamSize', type: 'float' },
+		/*{ name: 'foamEdge', type: 'float' },*/
+		{ name: 'color', type: 'vec3' },
+		{ name: 'background', type: 'vec3' },
+		{ name: 'seed', type: 'float' },
+	] }
+);
+
+
+
+var wavesOpacityRaw = Fn( ([ position, scale, speed, time, level, rough, height, foamSize, foamEdge, /*color,background,*/ seed ]) => {
+
+	var k = waves_core( position, scale, speed, time, level, rough, height, foamSize, /*foamEdge,*/ seed ).oneMinus();
+
+	return k.smoothstep( 0, foamEdge.oneMinus().div( 10 ) );
+
+} ).setLayout( {
+	name: 'wavesOpacityRaw',
+	type: 'float',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'speed', type: 'float' },
+		{ name: 'time', type: 'float' },
+		{ name: 'level', type: 'float' },
+		{ name: 'rough', type: 'float' },
+		{ name: 'height', type: 'float' },
+		{ name: 'foamSize', type: 'float' },
+		{ name: 'foamEdge', type: 'float' },
+		/*{ name: 'color', type: 'vec3' },*/
+		/*{ name: 'subcolor', type: 'vec3' },*/
+		{ name: 'seed', type: 'float' },
+	] }
+);
+
+
+
+function waves( params={} ) {
+
+	var { position, scale, speed, time, level, rough, height, foamSize, /*foamEdge,*/ color, background, seed } = { ...defaults$a, ...params };
+
+	return wavesRaw( position, scale, speed, time, level, rough, height, foamSize, /*foamEdge,*/ color, background, seed );
+
+}
+
+
+
+waves.opacity = function ( params={} ) {
+
+	var { position, scale, speed, time, level, rough, height, foamSize, foamEdge, /*color,background,*/seed } = { ...defaults$a, ...params };
+
+	return wavesOpacityRaw( position, scale, speed, time, level, rough, height, foamSize, foamEdge, /*color,background,*/seed );
+
+};
+
+
+
+waves.defaults = defaults$a;
 
 var defaults$9 = {
 	$name: 'Wood',
@@ -4275,4 +4412,4 @@ bricks.defaults = defaults;
 window.__TSL_TEXTURES__ = 3.0;
 //export { aaa } from './aaa.js';
 
-export { approximateNormal, brain, bricks, camouflage, caustics, caveArt, circleDecor, circles, clouds, concrete, cork, crumpledFabric, dalmatianSpots, darthMaul, dysonSphere, entangled, fordite, gasGiant, grid, hideFallbackWarning, hsl, isolayers, isolines, karstRock, marble, neonLights, perlinNoise, photosphere, planet, polkaDots, processedWood, protozoa, remapExp, reticularVeins, romanPaving, rotatePivot, rotator, roughClay, runnyEggs, rust, satin, scaler, scepterHead, scream, selectPlanar, showFallbackWarning, spherical, stars, staticNoise, supersphere, tigerFur, toHsl, translator, turbulentSmoke, vnoise, voronoiCells, waterDrops, watermelon, wood, zebraLines };
+export { approximateNormal, brain, bricks, camouflage, caustics, caveArt, circleDecor, circles, clouds, concrete, cork, crumpledFabric, dalmatianSpots, darthMaul, dysonSphere, entangled, fordite, gasGiant, grid, hideFallbackWarning, hsl, isolayers, isolines, karstRock, marble, neonLights, perlinNoise, photosphere, planet, polkaDots, processedWood, protozoa, remapExp, reticularVeins, romanPaving, rotatePivot, rotator, roughClay, runnyEggs, rust, satin, scaler, scepterHead, scream, selectPlanar, showFallbackWarning, spherical, stars, staticNoise, supersphere, tigerFur, toHsl, translator, turbulentSmoke, vnoise, voronoiCells, waterDrops, watermelon, waves, wood, zebraLines };

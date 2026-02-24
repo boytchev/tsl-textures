@@ -334,6 +334,7 @@ export
 export
 {
 	mx_noise_float as noise,
+	mx_noise_vec3 as noise3,
 	mx_fractal_noise_float as fractal,
 	mx_fractal_noise_vec3 as fractal3,
 	mx_worley_noise_float as voronoi,
