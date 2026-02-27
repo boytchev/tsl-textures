@@ -1,0 +1,89 @@
+﻿<!DOCTYPE html>
+
+
+<html>
+
+
+<head>
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+	<link rel="shortcut icon" type="image/png" href="../assets/logo/logo.png"/>
+	<link rel="stylesheet" href="styles.css">
+
+	<script type="importmap">
+	  {
+		"imports": {
+			"three": "https://cdn.jsdelivr.net/npm/three@0.183.0/build/three.webgpu.min.js",
+			"three/webgpu": "https://cdn.jsdelivr.net/npm/three@0.183.0/build/three.webgpu.min.js",
+			"three/tsl": "https://cdn.jsdelivr.net/npm/three@0.183.0/build/three.tsl.min.js",
+			"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.183.0/examples/jsm/",
+			"tsl-textures": "../src/tsl-textures.js"
+		}
+	  }
+	</script>
+</head>
+
+
+<body>
+
+	<script type="module">
+
+import * as THREE from "three";
+import {vec4,vec3} from "three/tsl";
+import { install, params, model,USE_HEAD, ADD_AUTOROTATION, scene, light } from "./online.js";
+import { halftone } from "tsl-textures";
+
+
+
+var gui = install( halftone, USE_HEAD, ADD_AUTOROTATION, setBlackColor );
+
+gui.add( params, 'scale' )
+	.min( 0 ).max( 4 )
+	.name( 'Halftone <right>scale</right>' )
+	.$input.classList.add( 'top' );
+
+gui.add( params, 'radius' )
+	.min( 0 ).max( 2 )
+	.name( '<right>radius</right>' )
+
+gui.add( params, 'pattern', {
+		'horizontal':8,
+		'vertical':7,
+		'grid':0,
+		'grid/x':4,
+		'grid/xn':9,
+		'diagonal':1,
+		'diagonal/x':3,
+		'diagonal/xn':10,
+		'checkerboard':2,
+		'square':5,
+		'square/n':6,
+	 } )
+	.name( '<right>pattern</right>' )
+	.$select.classList.add( 'bottom' );
+
+gui.add( params, 'attenuation', {
+		'off':0,
+		'on':1,
+	 } )
+	.name( 'Attenuation' )
+	.$select.classList.add( 'top' );
+
+gui.add( params, 'far' )
+	.min( 0 ).max( 20 )
+	.name( '<right>far</right>' )
+
+gui.add( params, 'near' )
+	.min( 0 ).max( 20 )
+	.name( '<right>near</right>' )
+	.$input.classList.add( 'bottom' );
+
+
+function setBlackColor( model ) {
+	var oldColorNode = model.material.colorNode;
+	model.material.colorNode = oldColorNode.mul(0);
+}
+
+	</script>
+</body>
+</html>

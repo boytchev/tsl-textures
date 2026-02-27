@@ -170,7 +170,7 @@ function dynamic( params ) {
 
 
 
-function install( tslTexture, useGeometry=USE_BALL, addFeature=ADD_NOTHING ) {
+function install( tslTexture, useGeometry=USE_BALL, addFeature=ADD_NOTHING, callback=null ) {
 
 	// adjust camera
 	if ( useGeometry == USE_BALL ) {
@@ -238,6 +238,8 @@ function install( tslTexture, useGeometry=USE_BALL, addFeature=ADD_NOTHING ) {
 
 			}
 
+			if ( callback ) callback( model );
+
 			break;
 
 		case USE_CUBE:
@@ -250,6 +252,8 @@ function install( tslTexture, useGeometry=USE_BALL, addFeature=ADD_NOTHING ) {
 				model.material.map = texture;
 
 			}
+
+			if ( callback ) callback( model );
 
 			break;
 
@@ -266,6 +270,7 @@ function install( tslTexture, useGeometry=USE_BALL, addFeature=ADD_NOTHING ) {
 					model = new THREE.Mesh( geometry, model.material );
 					geometry.needsUpdate = true;
 					scene.add( model );
+					if ( callback ) callback( model );
 
 				} );
 			break;
@@ -303,6 +308,7 @@ function install( tslTexture, useGeometry=USE_BALL, addFeature=ADD_NOTHING ) {
 					action.play();
 
 					scene.add( model );
+					if ( callback ) callback( model );
 
 				} );
 			break;

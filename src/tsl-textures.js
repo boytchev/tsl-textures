@@ -56,4 +56,5 @@ export { isolayers } from './isolayers.js';
 export { turbulentSmoke } from './turbulent-smoke.js';
 export { caustics } from './caustics.js';
 export { bricks } from './bricks.js';
+export { halftone } from './halftone.js';
 //export { aaa } from './aaa.js';
