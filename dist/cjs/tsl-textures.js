@@ -296,7 +296,7 @@ const selectPlanar = tsl.Fn( ([ pos, selAngles, selCenter, selWidth ])=>{
 	]
 } );
 
-var defaults$O = {
+var defaults$P = {
 	$name: 'Brain',
 
 	position: tsl.positionGeometry,
@@ -378,7 +378,7 @@ var brainNormalRaw = tsl.Fn( ([ position, scale, xsmooth, wave, speed, time, /*c
 
 function brain( params={} ) {
 
-	var { position, scale, smooth, /*wave, speed, time,*/ color, background, seed } = { ...defaults$O, ...params };
+	var { position, scale, smooth, /*wave, speed, time,*/ color, background, seed } = { ...defaults$P, ...params };
 
 	return brainRaw( position, scale, smooth, /*wave, speed, time,*/ color, background, seed );
 
@@ -388,7 +388,7 @@ function brain( params={} ) {
 
 brain.normal = function ( params={} ) {
 
-	var { position, scale, smooth, wave, speed, time, /*color, background,*/ seed } = { ...defaults$O, ...params };
+	var { position, scale, smooth, wave, speed, time, /*color, background,*/ seed } = { ...defaults$P, ...params };
 
 	return brainNormalRaw( position, scale, smooth, wave, speed, time, /*color, background,*/ seed );
 
@@ -396,9 +396,9 @@ brain.normal = function ( params={} ) {
 
 
 
-brain.defaults = defaults$O;
+brain.defaults = defaults$P;
 
-var defaults$N = {
+var defaults$O = {
 	$name: 'Camouflage',
 
 	position: tsl.positionGeometry,
@@ -459,7 +459,7 @@ var camouflageRaw = tsl.Fn( ([ position, scale, colorA, colorB, colorC, colorD, 
 
 function camouflage( params={} ) {
 
-	var { position, scale, colorA, colorB, colorC, colorD, seed } = { ...defaults$N, ...params };
+	var { position, scale, colorA, colorB, colorC, colorD, seed } = { ...defaults$O, ...params };
 
 	return camouflageRaw( position, scale, colorA, colorB, colorC, colorD, seed );
 
@@ -467,9 +467,9 @@ function camouflage( params={} ) {
 
 
 
-camouflage.defaults = defaults$N;
+camouflage.defaults = defaults$O;
 
-var defaults$M = {
+var defaults$N = {
 	$name: 'Cave art',
 
 	position: tsl.positionGeometry,
@@ -528,7 +528,7 @@ var caveArtRaw = tsl.Fn( ([ position, scale, thinness, xnoise, color, background
 
 function caveArt( params={} ) {
 
-	var { position, scale, thinness, noise, color, background, seed } = { ...defaults$M, ...params };
+	var { position, scale, thinness, noise, color, background, seed } = { ...defaults$N, ...params };
 
 	return caveArtRaw( position, scale, thinness, noise, color, background, seed );
 
@@ -536,9 +536,9 @@ function caveArt( params={} ) {
 
 
 
-caveArt.defaults = defaults$M;
+caveArt.defaults = defaults$N;
 
-var defaults$L = {
+var defaults$M = {
 	$name: 'Circles',
 
 	position: tsl.positionGeometry,
@@ -597,7 +597,7 @@ var circlesRaw = tsl.Fn( ([ position, scale, variety, color, seed ]) => {
 
 function circles( params={} ) {
 
-	var { position, scale, variety, color, seed } = { ...defaults$L, ...params };
+	var { position, scale, variety, color, seed } = { ...defaults$M, ...params };
 
 	return circlesRaw( position, scale, variety, color, seed );
 
@@ -605,9 +605,9 @@ function circles( params={} ) {
 
 
 
-circles.defaults = defaults$L;
+circles.defaults = defaults$M;
 
-var defaults$K = {
+var defaults$L = {
 	$name: 'Clouds',
 
 	position: tsl.positionGeometry,
@@ -687,7 +687,7 @@ var cloudsOpacityRaw = tsl.Fn( ([ position, scale, density, opacity, /*color,sub
 
 function clouds( params={} ) {
 
-	var { position, scale, density, /*opacity,*/color, subcolor, seed } = { ...defaults$K, ...params };
+	var { position, scale, density, /*opacity,*/color, subcolor, seed } = { ...defaults$L, ...params };
 
 	return cloudsRaw( position, scale, density, /*opacity,*/color, subcolor, seed );
 
@@ -697,7 +697,7 @@ function clouds( params={} ) {
 
 clouds.opacity = function ( params={} ) {
 
-	var { position, scale, density, opacity, /*color,subcolor,*/seed } = { ...defaults$K, ...params };
+	var { position, scale, density, opacity, /*color,subcolor,*/seed } = { ...defaults$L, ...params };
 
 	return cloudsOpacityRaw( position, scale, density, opacity, /*color,subcolor,*/seed );
 
@@ -705,9 +705,9 @@ clouds.opacity = function ( params={} ) {
 
 
 
-clouds.defaults = defaults$K;
+clouds.defaults = defaults$L;
 
-var defaults$J = {
+var defaults$K = {
 	$name: 'Concrete',
 	$normalNode: true,
 
@@ -779,7 +779,7 @@ var concreteRaw = tsl.Fn( ([ position, normal, tangent, scale, density, bump, se
 
 function concrete( params={} ) {
 
-	var { position, scale, density, bump, seed } = { ...defaults$J, ...params };
+	var { position, scale, density, bump, seed } = { ...defaults$K, ...params };
 
 	return concreteRaw( position, tsl.normalLocal, tsl.tangentLocal, scale, density, bump, seed );
 
@@ -787,9 +787,9 @@ function concrete( params={} ) {
 
 
 
-concrete.defaults = defaults$J;
+concrete.defaults = defaults$K;
 
-var defaults$I = {
+var defaults$J = {
 	$name: 'Cork',
 
 	position: tsl.positionGeometry,
@@ -869,7 +869,7 @@ var corkRaw = tsl.Fn( ([ position, scale, straight, xnoise, color, background, s
 
 function cork( params={} ) {
 
-	var { position, scale, straight, noise, color, background, seed } = { ...defaults$I, ...params };
+	var { position, scale, straight, noise, color, background, seed } = { ...defaults$J, ...params };
 
 	return corkRaw( position, scale, straight, noise, color, background, seed );
 
@@ -877,9 +877,9 @@ function cork( params={} ) {
 
 
 
-cork.defaults = defaults$I;
+cork.defaults = defaults$J;
 
-var defaults$H = {
+var defaults$I = {
 	$name: 'Dalmatian spots',
 	$width: 260,
 
@@ -935,7 +935,7 @@ var dalmatianSpotsRaw = tsl.Fn( ([ position, scale, density, color, background, 
 
 function dalmatianSpots( params={} ) {
 
-	var { position, scale, density, color, background, seed } = { ...defaults$H, ...params };
+	var { position, scale, density, color, background, seed } = { ...defaults$I, ...params };
 
 	return dalmatianSpotsRaw( position, scale, density, color, background, seed );
 
@@ -943,9 +943,9 @@ function dalmatianSpots( params={} ) {
 
 
 
-dalmatianSpots.defaults = defaults$H;
+dalmatianSpots.defaults = defaults$I;
 
-var defaults$G = {
+var defaults$H = {
 	$name: 'Darth Maul',
 
 	position: tsl.positionGeometry,
@@ -1005,7 +1005,7 @@ var darthMaulRaw = tsl.Fn( ([ position, scale, shift, complexity, angle, distanc
 
 function darthMaul( params={} ) {
 
-	var { position, scale, shift, complexity, angle, distance, color, background, balance, seed } = { ...defaults$G, ...params };
+	var { position, scale, shift, complexity, angle, distance, color, background, balance, seed } = { ...defaults$H, ...params };
 
 	return darthMaulRaw( position, scale, shift, complexity, angle, distance, color, background, balance, seed );
 
@@ -1013,9 +1013,9 @@ function darthMaul( params={} ) {
 
 
 
-darthMaul.defaults = defaults$G;
+darthMaul.defaults = defaults$H;
 
-var defaults$F = {
+var defaults$G = {
 	$name: 'Dyson sphere',
 
 	position: tsl.positionGeometry,
@@ -1136,7 +1136,7 @@ var dysonSphereRaw = tsl.Fn( ([ position, scale, complexity, color, background, 
 
 function dysonSphere( params={} ) {
 
-	var { position, scale, complexity, color, background, seed } = { ...defaults$F, ...params };
+	var { position, scale, complexity, color, background, seed } = { ...defaults$G, ...params };
 
 	return dysonSphereRaw( position, scale, complexity, color, background, seed );
 
@@ -1144,9 +1144,9 @@ function dysonSphere( params={} ) {
 
 
 
-dysonSphere.defaults = defaults$F;
+dysonSphere.defaults = defaults$G;
 
-var defaults$E = {
+var defaults$F = {
 	$name: 'Entangled',
 
 	position: tsl.positionGeometry,
@@ -1197,7 +1197,7 @@ var entangledRaw = tsl.Fn( ([ position, scale, density, color, background, seed 
 
 function entangled( params={} ) {
 
-	var { position, scale, density, color, background, seed } = { ...defaults$E, ...params };
+	var { position, scale, density, color, background, seed } = { ...defaults$F, ...params };
 
 	return entangledRaw( position, scale, density, color, background, seed );
 
@@ -1205,9 +1205,9 @@ function entangled( params={} ) {
 
 
 
-entangled.defaults = defaults$E;
+entangled.defaults = defaults$F;
 
-var defaults$D = {
+var defaults$E = {
 	$name: 'Fordite',
 
 	position: tsl.positionGeometry,
@@ -1252,7 +1252,7 @@ var forditeRaw = tsl.Fn( ([ position, scale, color, seed ]) => {
 
 function fordite( params={} ) {
 
-	var { position, scale, color, seed } = { ...defaults$D, ...params };
+	var { position, scale, color, seed } = { ...defaults$E, ...params };
 
 	return forditeRaw( position, scale, color, seed );
 
@@ -1260,9 +1260,9 @@ function fordite( params={} ) {
 
 
 
-fordite.defaults = defaults$D;
+fordite.defaults = defaults$E;
 
-var defaults$C = {
+var defaults$D = {
 	$name: 'Gas giant',
 
 	position: tsl.positionGeometry,
@@ -1332,7 +1332,7 @@ var gasGiantRaw = tsl.Fn( ([ position, scale, turbulence, blur, colorA, colorB, 
 
 function gasGiant( params={} ) {
 
-	var { position, scale, turbulence, blur, colorA, colorB, colorC, seed } = { ...defaults$C, ...params };
+	var { position, scale, turbulence, blur, colorA, colorB, colorC, seed } = { ...defaults$D, ...params };
 
 	return gasGiantRaw( position, scale, turbulence, blur, colorA, colorB, colorC, seed );
 
@@ -1340,9 +1340,9 @@ function gasGiant( params={} ) {
 
 
 
-gasGiant.defaults = defaults$C;
+gasGiant.defaults = defaults$D;
 
-var defaults$B = {
+var defaults$C = {
 	$name: 'Grid',
 	$replaceExportUVS: tsl.screenUV,
 	$replaceExportASP: tsl.screenSize.x.div( tsl.screenSize.y ).log2(),
@@ -1403,7 +1403,7 @@ var gridRaw = tsl.Fn( ([ uvs, countU, countV, aspect, thinness, equirectangular,
 
 function grid( params={} ) {
 
-	var { uvs, countU, countV, aspect, thinness, equirectangular, color, background } = { ...defaults$B, ...params };
+	var { uvs, countU, countV, aspect, thinness, equirectangular, color, background } = { ...defaults$C, ...params };
 
 	return gridRaw( uvs, countU, countV, aspect, thinness, equirectangular, color, background );
 
@@ -1411,9 +1411,9 @@ function grid( params={} ) {
 
 
 
-grid.defaults = defaults$B;
+grid.defaults = defaults$C;
 
-var defaults$A = {
+var defaults$B = {
 	$name: 'Isolines',
 
 	position: tsl.positionGeometry,
@@ -1461,7 +1461,7 @@ var isolinesRaw = tsl.Fn( ([ position, scale, density, blur, thinness, color, ba
 
 function isolines( params={} ) {
 
-	var { position, scale, density, blur, thinness, color, background, seed } = { ...defaults$A, ...params };
+	var { position, scale, density, blur, thinness, color, background, seed } = { ...defaults$B, ...params };
 
 	return isolinesRaw( position, scale, density, blur, thinness, color, background, seed );
 
@@ -1469,9 +1469,9 @@ function isolines( params={} ) {
 
 
 
-isolines.defaults = defaults$A;
+isolines.defaults = defaults$B;
 
-var defaults$z = {
+var defaults$A = {
 	$name: 'Karst rock',
 
 	position: tsl.positionGeometry,
@@ -1514,7 +1514,7 @@ var karstRockRaw = tsl.Fn( ([ position, scale, color, background, seed ])=>{
 
 function karstRock( params={} ) {
 
-	var { position, scale, color, background, seed } = { ...defaults$z, ...params };
+	var { position, scale, color, background, seed } = { ...defaults$A, ...params };
 
 	return karstRockRaw( position, scale, color, background, seed );
 
@@ -1522,9 +1522,9 @@ function karstRock( params={} ) {
 
 
 
-karstRock.defaults = defaults$z;
+karstRock.defaults = defaults$A;
 
-var defaults$y = {
+var defaults$z = {
 	$name: 'Marble',
 
 	position: tsl.positionGeometry,
@@ -1596,7 +1596,7 @@ var marbleRaw = tsl.Fn( ([ position, scale, thinness, xnoise, color, background,
 
 function marble( params={} ) {
 
-	var { position, scale, thinness, noise, color, background, seed } = { ...defaults$y, ...params };
+	var { position, scale, thinness, noise, color, background, seed } = { ...defaults$z, ...params };
 
 	return marbleRaw( position, scale, thinness, noise, color, background, seed );
 
@@ -1604,9 +1604,9 @@ function marble( params={} ) {
 
 
 
-marble.defaults = defaults$y;
+marble.defaults = defaults$z;
 
-var defaults$x = {
+var defaults$y = {
 	$name: 'Neon Lights',
 
 	position: tsl.positionGeometry,
@@ -1689,7 +1689,7 @@ var neonLightsRaw = tsl.Fn( ([ position, scale, thinness, mode, colorA, colorB, 
 
 function neonLights( params={} ) {
 
-	var { position, scale, thinness, mode, colorA, colorB, colorC, background, seed } = { ...defaults$x, ...params };
+	var { position, scale, thinness, mode, colorA, colorB, colorC, background, seed } = { ...defaults$y, ...params };
 
 	return neonLightsRaw( position, scale, thinness, mode, colorA, colorB, colorC, background, seed );
 
@@ -1697,9 +1697,9 @@ function neonLights( params={} ) {
 
 
 
-neonLights.defaults = defaults$x;
+neonLights.defaults = defaults$y;
 
-var defaults$w = {
+var defaults$x = {
 	$name: 'Perlin noise',
 
 	position: tsl.positionGeometry,
@@ -1741,7 +1741,7 @@ var perlinNoiseRaw = tsl.Fn( ([ position, scale, balance, contrast, color, backg
 
 function perlinNoise( params={} ) {
 
-	var { position, scale, balance, contrast, color, background, seed } = { ...defaults$w, ...params };
+	var { position, scale, balance, contrast, color, background, seed } = { ...defaults$x, ...params };
 
 	return perlinNoiseRaw( position, scale, balance, contrast, color, background, seed );
 
@@ -1749,9 +1749,9 @@ function perlinNoise( params={} ) {
 
 
 
-perlinNoise.defaults = defaults$w;
+perlinNoise.defaults = defaults$x;
 
-var defaults$v = {
+var defaults$w = {
 	$name: 'Photosphere',
 
 	position: tsl.positionGeometry,
@@ -1800,7 +1800,7 @@ var photosphereRaw = tsl.Fn( ([ position, scale, color, background, seed ]) => {
 
 function photosphere( params={} ) {
 
-	var { position, scale, color, background, seed } = { ...defaults$v, ...params };
+	var { position, scale, color, background, seed } = { ...defaults$w, ...params };
 
 	return photosphereRaw( position, scale, color, background, seed );
 
@@ -1808,9 +1808,9 @@ function photosphere( params={} ) {
 
 
 
-photosphere.defaults = defaults$v;
+photosphere.defaults = defaults$w;
 
-var defaults$u = {
+var defaults$v = {
 	$name: 'Planet',
 
 	position: tsl.positionGeometry,
@@ -1953,7 +1953,7 @@ var planetRaw = tsl.Fn( ([ position, scale, iterations, levelSea, levelMountain,
 
 function planet( params={} ) {
 
-	var { position, scale, iterations, levelSea, levelMountain, balanceWater, balanceSand, balanceSnow, colorDeep, colorShallow, colorBeach, colorGrass, colorForest, colorSnow, seed } = { ...defaults$u, ...params };
+	var { position, scale, iterations, levelSea, levelMountain, balanceWater, balanceSand, balanceSnow, colorDeep, colorShallow, colorBeach, colorGrass, colorForest, colorSnow, seed } = { ...defaults$v, ...params };
 
 	return planetRaw( position, scale, iterations, levelSea, levelMountain, balanceWater, balanceSand, balanceSnow, colorDeep, colorShallow, colorBeach, colorGrass, colorForest, colorSnow, seed );
 
@@ -1961,9 +1961,9 @@ function planet( params={} ) {
 
 
 
-planet.defaults = defaults$u;
+planet.defaults = defaults$v;
 
-var defaults$t = {
+var defaults$u = {
 	$name: 'Polka dots',
 
 	position: tsl.positionGeometry,
@@ -2045,7 +2045,7 @@ var polkaDotsRaw = tsl.Fn( ([ position, count, size, blur, color, background, xf
 
 function polkaDots( params={} ) {
 
-	var { position, count, size, blur, color, background, flat } = { ...defaults$t, ...params };
+	var { position, count, size, blur, color, background, flat } = { ...defaults$u, ...params };
 
 	return polkaDotsRaw( position, count, size, blur, color, background, flat );
 
@@ -2053,9 +2053,9 @@ function polkaDots( params={} ) {
 
 
 
-polkaDots.defaults = defaults$t;
+polkaDots.defaults = defaults$u;
 
-var defaults$s = {
+var defaults$t = {
 	$name: 'Processed wood',
 	$width: 260,
 
@@ -2111,7 +2111,7 @@ var processedWoodRaw = tsl.Fn( ([ position, scale, lengths, strength, angle, col
 
 function processedWood( params={} ) {
 
-	var { position, scale, lengths, strength, angle, color, background, seed } = { ...defaults$s, ...params };
+	var { position, scale, lengths, strength, angle, color, background, seed } = { ...defaults$t, ...params };
 
 	return processedWoodRaw( position, scale, lengths, strength, angle, color, background, seed );
 
@@ -2119,9 +2119,9 @@ function processedWood( params={} ) {
 
 
 
-processedWood.defaults = defaults$s;
+processedWood.defaults = defaults$t;
 
-var defaults$r = {
+var defaults$s = {
 	$name: 'Protozoa',
 
 	position: tsl.positionGeometry,
@@ -2207,7 +2207,7 @@ var protozoaRaw = tsl.Fn( ([ position, matcap, scale, fat, amount, color, subcol
 
 function protozoa( params={} ) {
 
-	var { position, matcap, scale, fat, amount, color, subcolor, background, seed } = { ...defaults$r, ...params };
+	var { position, matcap, scale, fat, amount, color, subcolor, background, seed } = { ...defaults$s, ...params };
 
 	return protozoaRaw( position, matcap, scale, fat, amount, color, subcolor, background, seed );
 
@@ -2215,9 +2215,9 @@ function protozoa( params={} ) {
 
 
 
-protozoa.defaults = defaults$r;
+protozoa.defaults = defaults$s;
 
-var defaults$q = {
+var defaults$r = {
 	$name: 'Rotator',
 	$positionNode: true,
 	$selectorPlanar: true,
@@ -2303,7 +2303,7 @@ var rotatorNormalRaw = tsl.Fn( ([ angles, center, selectorAngles, selectorCenter
 
 function rotator( params={} ) {
 
-	var { angles, center, selectorAngles, selectorCenter, selectorWidth } = { ...defaults$q, ...params };
+	var { angles, center, selectorAngles, selectorCenter, selectorWidth } = { ...defaults$r, ...params };
 
 	return rotatorRaw( angles, center, selectorAngles, selectorCenter, selectorWidth );
 
@@ -2313,7 +2313,7 @@ function rotator( params={} ) {
 
 rotator.normal = function ( params={} ) {
 
-	var { angles, center, selectorAngles, selectorCenter, selectorWidth } = { ...defaults$q, ...params };
+	var { angles, center, selectorAngles, selectorCenter, selectorWidth } = { ...defaults$r, ...params };
 
 	return rotatorNormalRaw( angles, center, selectorAngles, selectorCenter, selectorWidth );
 
@@ -2321,9 +2321,9 @@ rotator.normal = function ( params={} ) {
 
 
 
-rotator.defaults = defaults$q;
+rotator.defaults = defaults$r;
 
-var defaults$p = {
+var defaults$q = {
 	$name: 'Rough clay',
 	$normalNode: true,
 
@@ -2390,7 +2390,7 @@ var roughClayRaw = tsl.Fn( ([ position, normal, tangent, scale, bump, curvature,
 
 function roughClay( params={} ) {
 
-	var { position, scale, bump, curvature, seed } = { ...defaults$p, ...params };
+	var { position, scale, bump, curvature, seed } = { ...defaults$q, ...params };
 
 	return roughClayRaw( position, tsl.normalLocal, tsl.tangentLocal, scale, bump, curvature, seed );
 
@@ -2398,9 +2398,9 @@ function roughClay( params={} ) {
 
 
 
-roughClay.defaults = defaults$p;
+roughClay.defaults = defaults$q;
 
-var defaults$o = {
+var defaults$p = {
 	$name: 'Runny eggs',
 
 	position: tsl.positionGeometry,
@@ -2536,7 +2536,7 @@ var runnyEggsRoughnessRaw = tsl.Fn( ([ position, scale, sizeYolk, /*sizeWhite, c
 
 function runnyEggs( params={} ) {
 
-	var { position, scale, sizeYolk, sizeWhite, colorYolk, colorWhite, colorBackground, seed } = { ...defaults$o, ...params };
+	var { position, scale, sizeYolk, sizeWhite, colorYolk, colorWhite, colorBackground, seed } = { ...defaults$p, ...params };
 
 	return runnyEggsRaw( position, scale, sizeYolk, sizeWhite, colorYolk, colorWhite, colorBackground, seed );
 
@@ -2546,7 +2546,7 @@ function runnyEggs( params={} ) {
 
 runnyEggs.normal = function ( params={} ) {
 
-	var { position, scale, sizeYolk, sizeWhite, /*colorYolk, colorWhite, colorBackground,*/ seed } = { ...defaults$o, ...params };
+	var { position, scale, sizeYolk, sizeWhite, /*colorYolk, colorWhite, colorBackground,*/ seed } = { ...defaults$p, ...params };
 
 	return runnyEggsNormalRaw( position, tsl.normalLocal, tsl.tangentLocal, scale, sizeYolk, sizeWhite, /*colorYolk, colorWhite, colorBackground,*/ seed );
 
@@ -2556,7 +2556,7 @@ runnyEggs.normal = function ( params={} ) {
 
 runnyEggs.roughness = function ( params={} ) {
 
-	var { position, scale, sizeYolk, /*sizeWhite, colorYolk, colorWhite, colorBackground,*/ seed } = { ...defaults$o, ...params };
+	var { position, scale, sizeYolk, /*sizeWhite, colorYolk, colorWhite, colorBackground,*/ seed } = { ...defaults$p, ...params };
 
 	return runnyEggsRoughnessRaw( position, scale, sizeYolk, /*sizeWhite, colorYolk, colorWhite, colorBackground,*/ seed );
 
@@ -2564,9 +2564,9 @@ runnyEggs.roughness = function ( params={} ) {
 
 
 
-runnyEggs.defaults = defaults$o;
+runnyEggs.defaults = defaults$p;
 
-var defaults$n = {
+var defaults$o = {
 	$name: 'rust',
 
 	position: tsl.positionGeometry,
@@ -2676,7 +2676,7 @@ var rustOpacityRaw = tsl.Fn( ([ position, scale, iterations, amount, opacity, /*
 
 function rust( params={} ) {
 
-	var { position, scale, iterations, amount, /*opacity,*/ noise, noiseScale, color, background, seed } = { ...defaults$n, ...params };
+	var { position, scale, iterations, amount, /*opacity,*/ noise, noiseScale, color, background, seed } = { ...defaults$o, ...params };
 
 	return rustRaw( position, scale, iterations, amount, /*opacity,*/noise, noiseScale, color, background, seed );
 
@@ -2686,7 +2686,7 @@ function rust( params={} ) {
 
 rust.opacity = function ( params={} ) {
 
-	var { position, scale, iterations, amount, opacity, /*xnoise, noiseScale, color, background,*/ seed } = { ...defaults$n, ...params };
+	var { position, scale, iterations, amount, opacity, /*xnoise, noiseScale, color, background,*/ seed } = { ...defaults$o, ...params };
 
 	return rustOpacityRaw( position, scale, iterations, amount, opacity, /*xnoise, noiseScale, color, background,*/ seed );
 
@@ -2694,9 +2694,9 @@ rust.opacity = function ( params={} ) {
 
 
 
-rust.defaults = defaults$n;
+rust.defaults = defaults$o;
 
-var defaults$m = {
+var defaults$n = {
 	$name: 'Satin',
 
 	position: tsl.positionGeometry,
@@ -2741,7 +2741,7 @@ var satinRaw = tsl.Fn( ([ position, scale, color, background, seed ]) => {
 
 function satin( params={} ) {
 
-	var { position, scale, color, background, seed } = { ...defaults$m, ...params };
+	var { position, scale, color, background, seed } = { ...defaults$n, ...params };
 
 	return satinRaw( position, scale, color, background, seed );
 
@@ -2749,9 +2749,9 @@ function satin( params={} ) {
 
 
 
-satin.defaults = defaults$m;
+satin.defaults = defaults$n;
 
-var defaults$l = {
+var defaults$m = {
 	$name: 'Scaler',
 	$positionNode: true,
 	$selectorPlanar: true,
@@ -2828,7 +2828,7 @@ var scalerNormalRaw = tsl.Fn( ([ scales, center, selectorAngles, selectorCenter,
 
 function scaler( params={} ) {
 
-	var { scales, center, selectorAngles, selectorCenter, selectorWidth } = { ...defaults$l, ...params };
+	var { scales, center, selectorAngles, selectorCenter, selectorWidth } = { ...defaults$m, ...params };
 
 	return scalerRaw( scales, center, selectorAngles, selectorCenter, selectorWidth );
 
@@ -2838,7 +2838,7 @@ function scaler( params={} ) {
 
 scaler.normal = function ( params={} ) {
 
-	var { scales, center, selectorAngles, selectorCenter, selectorWidth } = { ...defaults$l, ...params };
+	var { scales, center, selectorAngles, selectorCenter, selectorWidth } = { ...defaults$m, ...params };
 
 	return scalerNormalRaw( scales, center, selectorAngles, selectorCenter, selectorWidth );
 
@@ -2846,9 +2846,9 @@ scaler.normal = function ( params={} ) {
 
 
 
-scaler.defaults = defaults$l;
+scaler.defaults = defaults$m;
 
-var defaults$k = {
+var defaults$l = {
 	$name: 'Scepter head',
 
 	position: tsl.positionGeometry,
@@ -2918,7 +2918,7 @@ var scepterHeadRaw = tsl.Fn( ([ position, xFactor, yFactor, zFactor, colorRim, c
 
 function scepterHead( params={} ) {
 
-	var { position, xFactor, yFactor, zFactor, colorRim, colorA, colorB } = { ...defaults$k, ...params };
+	var { position, xFactor, yFactor, zFactor, colorRim, colorA, colorB } = { ...defaults$l, ...params };
 
 	return scepterHeadRaw( position, xFactor, yFactor, zFactor, colorRim, colorA, colorB );
 
@@ -2926,9 +2926,9 @@ function scepterHead( params={} ) {
 
 
 
-scepterHead.defaults = defaults$k;
+scepterHead.defaults = defaults$l;
 
-var defaults$j = {
+var defaults$k = {
 	$name: 'Scream',
 
 	position: tsl.positionGeometry,
@@ -2976,7 +2976,7 @@ var screamRaw = tsl.Fn( ([ position, scale, variety, color, background, seed ]) 
 
 function scream( params={} ) {
 
-	var { position, scale, variety, color, background, seed } = { ...defaults$j, ...params };
+	var { position, scale, variety, color, background, seed } = { ...defaults$k, ...params };
 
 	return screamRaw( position, scale, variety, color, background, seed );
 
@@ -2984,9 +2984,9 @@ function scream( params={} ) {
 
 
 
-scream.defaults = defaults$j;
+scream.defaults = defaults$k;
 
-var defaults$i = {
+var defaults$j = {
 	$name: 'Stars',
 
 	position: tsl.positionGeometry,
@@ -3034,7 +3034,7 @@ var starsRaw = tsl.Fn( ([ position, scale, density, variation, color, background
 
 function stars( params={} ) {
 
-	var { position, scale, density, variation, color, background, seed } = { ...defaults$i, ...params };
+	var { position, scale, density, variation, color, background, seed } = { ...defaults$j, ...params };
 
 	return starsRaw( position, scale, density, variation, color, background, seed );
 
@@ -3042,9 +3042,9 @@ function stars( params={} ) {
 
 
 
-stars.defaults = defaults$i;
+stars.defaults = defaults$j;
 
-var defaults$h = {
+var defaults$i = {
 	$name: 'Static noise',
 
 	position: tsl.screenCoordinate,
@@ -3094,7 +3094,7 @@ var staticNoiseRaw = tsl.Fn( ([ position, time, scale, balance, contrast, delay,
 
 function staticNoise( params={} ) {
 
-	var { position, time, scale, balance, contrast, delay, seed } = { ...defaults$h, ...params };
+	var { position, time, scale, balance, contrast, delay, seed } = { ...defaults$i, ...params };
 
 	return staticNoiseRaw( position, time, scale, balance, contrast, delay, seed );
 
@@ -3102,9 +3102,9 @@ function staticNoise( params={} ) {
 
 
 
-staticNoise.defaults = defaults$h;
+staticNoise.defaults = defaults$i;
 
-var defaults$g = {
+var defaults$h = {
 	$name: 'Supersphere',
 	$positionNode: true,
 
@@ -3179,7 +3179,7 @@ var supersphereNormalRaw = tsl.Fn( ([ exponent ]) => {
 
 function supersphere( params={} ) {
 
-	var { exponent } = { ...defaults$g, ...params };
+	var { exponent } = { ...defaults$h, ...params };
 
 	return supersphereRaw( exponent );
 
@@ -3189,7 +3189,7 @@ function supersphere( params={} ) {
 
 supersphere.normal = function ( params={} ) {
 
-	var { exponent } = { ...defaults$g, ...params };
+	var { exponent } = { ...defaults$h, ...params };
 
 	return supersphereNormalRaw( exponent );
 
@@ -3197,9 +3197,9 @@ supersphere.normal = function ( params={} ) {
 
 
 
-supersphere.defaults = defaults$g;
+supersphere.defaults = defaults$h;
 
-var defaults$f = {
+var defaults$g = {
 	$name: 'Tiger fur',
 
 	position: tsl.positionGeometry,
@@ -3252,7 +3252,7 @@ var tigerFurRaw = tsl.Fn( ([ position, scale, lengths, blur, strength, hairs, co
 
 function tigerFur( params={} ) {
 
-	var { position, scale, lengths, blur, strength, hairs, color, bottomColor, seed } = { ...defaults$f, ...params };
+	var { position, scale, lengths, blur, strength, hairs, color, bottomColor, seed } = { ...defaults$g, ...params };
 
 	return tigerFurRaw( position, scale, lengths, blur, strength, hairs, color, bottomColor, seed );
 
@@ -3260,9 +3260,9 @@ function tigerFur( params={} ) {
 
 
 
-tigerFur.defaults = defaults$f;
+tigerFur.defaults = defaults$g;
 
-var defaults$e = {
+var defaults$f = {
 	$name: 'Translator',
 	$positionNode: true,
 	$selectorPlanar: true,
@@ -3344,7 +3344,7 @@ var translatorNormalRaw = tsl.Fn( ([ distance, selectorAngles, selectorCenter, s
 
 function translator( params={} ) {
 
-	var { distance, selectorAngles, selectorCenter, selectorWidth } = { ...defaults$e, ...params };
+	var { distance, selectorAngles, selectorCenter, selectorWidth } = { ...defaults$f, ...params };
 
 	return translatorRaw( distance, selectorAngles, selectorCenter, selectorWidth );
 
@@ -3354,7 +3354,7 @@ function translator( params={} ) {
 
 translator.normal = function ( params={} ) {
 
-	var { distance, selectorAngles, selectorCenter, selectorWidth } = { ...defaults$e, ...params };
+	var { distance, selectorAngles, selectorCenter, selectorWidth } = { ...defaults$f, ...params };
 
 	return translatorNormalRaw( distance, selectorAngles, selectorCenter, selectorWidth );
 
@@ -3362,9 +3362,9 @@ translator.normal = function ( params={} ) {
 
 
 
-translator.defaults = defaults$e;
+translator.defaults = defaults$f;
 
-var defaults$d = {
+var defaults$e = {
 	$name: 'Voronoi cells',
 
 	position: tsl.positionGeometry,
@@ -3439,7 +3439,7 @@ var voronoiCellsRaw = tsl.Fn( ([ position, scale, variation, facet, color, backg
 
 function voronoiCells( params={} ) {
 
-	var { position, scale, variation, facet, color, background, seed } = { ...defaults$d, ...params };
+	var { position, scale, variation, facet, color, background, seed } = { ...defaults$e, ...params };
 
 	return voronoiCellsRaw( position, scale, variation, facet, color, background, seed );
 
@@ -3447,9 +3447,9 @@ function voronoiCells( params={} ) {
 
 
 
-voronoiCells.defaults = defaults$d;
+voronoiCells.defaults = defaults$e;
 
-var defaults$c = {
+var defaults$d = {
 	$name: 'Water Drops',
 	$normalNode: true,
 
@@ -3522,7 +3522,7 @@ var waterDropsRaw = tsl.Fn( ([ position, normal, tangent, scale, density, bump, 
 
 function waterDrops( params={} ) {
 
-	var { position, scale, density, bump, seed } = { ...defaults$c, ...params };
+	var { position, scale, density, bump, seed } = { ...defaults$d, ...params };
 
 	return waterDropsRaw( position, tsl.normalLocal, tsl.tangentLocal, scale, density, bump, seed );
 
@@ -3530,9 +3530,9 @@ function waterDrops( params={} ) {
 
 
 
-waterDrops.defaults = defaults$c;
+waterDrops.defaults = defaults$d;
 
-var defaults$b = {
+var defaults$c = {
 	$name: 'Watermelon',
 	$replaceExportUVS: tsl.screenUV,
 
@@ -3595,7 +3595,7 @@ var watermelonRaw = tsl.Fn( ([ position, uvs, scale, stripes, variation, xnoise,
 
 function watermelon( params={} ) {
 
-	var { position, uvs, scale, stripes, variation, noise, color, background, seed } = { ...defaults$b, ...params };
+	var { position, uvs, scale, stripes, variation, noise, color, background, seed } = { ...defaults$c, ...params };
 
 	return watermelonRaw( position, uvs, scale, stripes, variation, noise, color, background, seed );
 
@@ -3603,9 +3603,9 @@ function watermelon( params={} ) {
 
 
 
-watermelon.defaults = defaults$b;
+watermelon.defaults = defaults$c;
 
-var defaults$a = {
+var defaults$b = {
 	$name: 'Waves',
 
 	position: tsl.positionGeometry,
@@ -3722,7 +3722,7 @@ var wavesOpacityRaw = tsl.Fn( ([ position, scale, speed, time, level, rough, hei
 
 function waves( params={} ) {
 
-	var { position, scale, speed, time, level, rough, height, foamSize, /*foamEdge,*/ color, background, seed } = { ...defaults$a, ...params };
+	var { position, scale, speed, time, level, rough, height, foamSize, /*foamEdge,*/ color, background, seed } = { ...defaults$b, ...params };
 
 	return wavesRaw( position, scale, speed, time, level, rough, height, foamSize, /*foamEdge,*/ color, background, seed );
 
@@ -3732,7 +3732,7 @@ function waves( params={} ) {
 
 waves.opacity = function ( params={} ) {
 
-	var { position, scale, speed, time, level, rough, height, foamSize, foamEdge, /*color,background,*/seed } = { ...defaults$a, ...params };
+	var { position, scale, speed, time, level, rough, height, foamSize, foamEdge, /*color,background,*/seed } = { ...defaults$b, ...params };
 
 	return wavesOpacityRaw( position, scale, speed, time, level, rough, height, foamSize, foamEdge, /*color,background,*/seed );
 
@@ -3740,9 +3740,9 @@ waves.opacity = function ( params={} ) {
 
 
 
-waves.defaults = defaults$a;
+waves.defaults = defaults$b;
 
-var defaults$9 = {
+var defaults$a = {
 	$name: 'Wood',
 
 	position: tsl.positionGeometry,
@@ -3817,7 +3817,7 @@ var woodRaw = tsl.Fn( ([ position, scale, rings, lengths, angle, fibers, fibersD
 
 function wood( params={} ) {
 
-	var { position, scale, rings, lengths, angle, fibers, fibersDensity, color, background, seed } = { ...defaults$9, ...params };
+	var { position, scale, rings, lengths, angle, fibers, fibersDensity, color, background, seed } = { ...defaults$a, ...params };
 
 	return woodRaw( position, scale, rings, lengths, angle, fibers, fibersDensity, color, background, seed );
 
@@ -3825,9 +3825,9 @@ function wood( params={} ) {
 
 
 
-wood.defaults = defaults$9;
+wood.defaults = defaults$a;
 
-var defaults$8 = {
+var defaults$9 = {
 	$name: 'Zebra lines',
 
 	position: tsl.positionGeometry,
@@ -3880,7 +3880,7 @@ var zebraLinesRaw = tsl.Fn( ([ position, scale, thinness, phi, theta, color, bac
 
 function zebraLines( params={} ) {
 
-	var { position, scale, thinness, phi, theta, color, background, flat } = { ...defaults$8, ...params };
+	var { position, scale, thinness, phi, theta, color, background, flat } = { ...defaults$9, ...params };
 
 	return zebraLinesRaw( position, scale, thinness, phi, theta, color, background, flat );
 
@@ -3888,9 +3888,9 @@ function zebraLines( params={} ) {
 
 
 
-zebraLines.defaults = defaults$8;
+zebraLines.defaults = defaults$9;
 
-var defaults$7 = {
+var defaults$8 = {
 	$name: 'Circle decor',
 
 	position: tsl.positionGeometry,
@@ -3942,7 +3942,7 @@ var circleDecorRaw = tsl.Fn( ([ position, scale, grains, complexity, blur, color
 
 function circleDecor( params={} ) {
 
-	var { position, scale, grains, complexity, blur, color, background, seed } = { ...defaults$7, ...params };
+	var { position, scale, grains, complexity, blur, color, background, seed } = { ...defaults$8, ...params };
 
 	return circleDecorRaw( position, scale, grains, complexity, blur, color, background, seed );
 
@@ -3950,9 +3950,9 @@ function circleDecor( params={} ) {
 
 
 
-circleDecor.defaults = defaults$7;
+circleDecor.defaults = defaults$8;
 
-var defaults$6 = {
+var defaults$7 = {
 	$name: 'Reticular veins',
 
 	position: tsl.positionGeometry,
@@ -4000,7 +4000,7 @@ var reticularVeinsRaw = tsl.Fn( ([ position, scale, reticulation, strength, orga
 
 function reticularVeins( params={} ) {
 
-	var { position, scale, reticulation, strength, organelles, color, background, seed } = { ...defaults$6, ...params };
+	var { position, scale, reticulation, strength, organelles, color, background, seed } = { ...defaults$7, ...params };
 
 	return reticularVeinsRaw( position, scale, reticulation, strength, organelles, color, background, seed );
 
@@ -4008,9 +4008,9 @@ function reticularVeins( params={} ) {
 
 
 
-reticularVeins.defaults = defaults$6;
+reticularVeins.defaults = defaults$7;
 
-var defaults$5 = {
+var defaults$6 = {
 	$name: 'Roman paving',
 
 	position: tsl.positionGeometry,
@@ -4045,7 +4045,7 @@ var romanPavingRaw = tsl.Fn( ([ position, scale, depth, seed ])=>{
 
 function romanPaving( params={} ) {
 
-	var { position, scale, depth, seed } = { ...defaults$5, ...params };
+	var { position, scale, depth, seed } = { ...defaults$6, ...params };
 
 	return romanPavingRaw( position, scale, depth, seed );
 
@@ -4053,9 +4053,9 @@ function romanPaving( params={} ) {
 
 
 
-romanPaving.defaults = defaults$5;
+romanPaving.defaults = defaults$6;
 
-var defaults$4 = {
+var defaults$5 = {
 	$name: 'Crumpled fabric',
 	$width: 260,
 
@@ -4112,7 +4112,7 @@ var crumpledFabricRaw = tsl.Fn( ([ position, scale, pinch, color, subcolor, back
 
 function crumpledFabric( params={} ) {
 
-	var { position, scale, pinch, color, subcolor, background, seed } = { ...defaults$4, ...params };
+	var { position, scale, pinch, color, subcolor, background, seed } = { ...defaults$5, ...params };
 
 	return crumpledFabricRaw( position, scale, pinch, color, subcolor, background, seed );
 
@@ -4120,9 +4120,9 @@ function crumpledFabric( params={} ) {
 
 
 
-crumpledFabric.defaults = defaults$4;
+crumpledFabric.defaults = defaults$5;
 
-var defaults$3 = {
+var defaults$4 = {
 	$name: 'Isolayers',
 
 	position: tsl.positionGeometry,
@@ -4177,7 +4177,7 @@ var isolayersRaw = tsl.Fn( ([ position, scale, layers, edge, darkness, color, ba
 
 function isolayers( params={} ) {
 
-	var { position, scale, layers, edge, darkness, color, background, seed } = { ...defaults$3, ...params };
+	var { position, scale, layers, edge, darkness, color, background, seed } = { ...defaults$4, ...params };
 
 	return isolayersRaw( position, scale, layers, edge, darkness, color, background, seed );
 
@@ -4185,9 +4185,9 @@ function isolayers( params={} ) {
 
 
 
-isolayers.defaults = defaults$3;
+isolayers.defaults = defaults$4;
 
-var defaults$2 = {
+var defaults$3 = {
 	$name: 'Turbulent smoke',
 	$width: 260,
 
@@ -4237,7 +4237,7 @@ var turbulentSmokeRaw = tsl.Fn( ([ position, scale, speed, details, time, seed ]
 
 function turbulentSmoke( params={} ) {
 
-	var { position, scale, speed, details, time, seed } = { ...defaults$2, ...params };
+	var { position, scale, speed, details, time, seed } = { ...defaults$3, ...params };
 
 	return turbulentSmokeRaw( position, scale, speed, details, time, seed );
 
@@ -4245,9 +4245,9 @@ function turbulentSmoke( params={} ) {
 
 
 
-turbulentSmoke.defaults = defaults$2;
+turbulentSmoke.defaults = defaults$3;
 
-var defaults$1 = {
+var defaults$2 = {
 	$name: 'Caustics',
 
 	position: tsl.positionGeometry,
@@ -4298,7 +4298,7 @@ var causticsRaw = tsl.Fn( ([ position, scale, speed, time, color, seed ])=>{
 
 function caustics( params={} ) {
 
-	var { position, scale, speed, time, color, seed } = { ...defaults$1, ...params };
+	var { position, scale, speed, time, color, seed } = { ...defaults$2, ...params };
 
 	return causticsRaw( position, scale, speed, time, color, seed );
 
@@ -4306,9 +4306,9 @@ function caustics( params={} ) {
 
 
 
-caustics.defaults = defaults$1;
+caustics.defaults = defaults$2;
 
-var defaults = {
+var defaults$1 = {
 	$name: 'Bricks',
 
 	position: tsl.positionGeometry,
@@ -4400,7 +4400,7 @@ var bricksRaw = tsl.Fn( ([ position, scale, brickSize, brickShift, jointSize, jo
 
 function bricks( params={} ) {
 
-	var { position, scale, brickSize, brickShift, jointSize, jointSpan, jointJitter, jointBlur, noiseSize, noiseStrength, colorShade, color, additional, background, seed } = { ...defaults, ...params };
+	var { position, scale, brickSize, brickShift, jointSize, jointSpan, jointJitter, jointBlur, noiseSize, noiseStrength, colorShade, color, additional, background, seed } = { ...defaults$1, ...params };
 
 	return bricksRaw( position, scale, brickSize, brickShift, jointSize, jointSpan, jointJitter, jointBlur, noiseSize, noiseStrength, colorShade, color, additional, background, seed );
 
@@ -4408,7 +4408,247 @@ function bricks( params={} ) {
 
 
 
-bricks.defaults = defaults;
+bricks.defaults = defaults$1;
+
+var defaults = {
+	$name: 'Halftone',
+
+	position: tsl.screenCoordinate,
+	scale: 2,
+	radius: 0.5,
+	pattern: 1,
+
+	attenuation: 0,
+	near: 6,
+	far: 14,
+
+	color: tsl.vertexColor(),
+
+	positionView: tsl.positionView,
+
+};
+
+
+
+// square grid of circles
+var halftoneGridRaw = tsl.Fn( ([ position, scale, radius, attenuation, far, near, color, positionView ]) => {
+
+	var xscale = tsl.float( 5 ).sub( scale ).exp().toVar(),
+		pos = position.toVar(),
+		xradius = radius.div( Math.sqrt( 2 ) ).toVar();
+
+	var center = pos.div( xscale ).round().mul( xscale );
+
+
+	tsl.If( attenuation.notEqual( 0 ), ()=>{
+
+		xradius.mulAssign( positionView.z.mul( -1 ).smoothstep( far, near ).pow( 1/2 ) );
+
+	} );
+
+	tsl.If( pos.distance( center ).greaterThan( xscale.mul( xradius ) ), ()=>tsl.Discard() );
+
+	return color;
+
+} ).setLayout( {
+	name: 'halftoneGridRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'radius', type: 'float' },
+		{ name: 'attenuation', type: 'int' },
+		{ name: 'far', type: 'float' },
+		{ name: 'near', type: 'float' },
+		{ name: 'color', type: 'vec3' },
+		{ name: 'positionView', type: 'vec3' },
+	] }
+);
+
+
+
+// diagonal geid of circles
+var halftoneDiagRaw = tsl.Fn( ([ position, scale, radius, attenuation, far, near, color, positionView ]) => {
+
+	var xscale = tsl.float( 5 ).sub( scale ).exp().toVar(),
+		pos = position.toVar(),
+		xradius = radius.div( Math.sqrt( 2 ) ).toVar();
+
+	var shift = pos.y.div( xscale ).round().mod( 2 );
+
+	var centerA = pos.div( xscale ).round().mulAssign( xscale ).toVar();
+
+	tsl.If( shift.equal( 0 ), ()=>{
+
+		centerA.x.addAssign( xscale.mul( 0.5 ) );
+
+	} );
+	var centerB = tsl.vec2( centerA.x.sub( xscale ), centerA.y ).toVar();
+
+
+	tsl.If( attenuation.notEqual( 0 ), ()=>{
+
+		xradius.mulAssign( positionView.z.mul( -1 ).smoothstep( far, near ).pow( 1/2 ) );
+
+	} );
+
+	tsl.If( tsl.min( pos.distance( centerA ), pos.distance( centerB ) ).greaterThan( xscale.mul( xradius ) ), ()=>tsl.Discard() );
+
+	return color;
+
+} ).setLayout( {
+	name: 'halftoneDiagRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'radius', type: 'float' },
+		{ name: 'attenuation', type: 'int' },
+		{ name: 'far', type: 'float' },
+		{ name: 'near', type: 'float' },
+		{ name: 'color', type: 'vec3' },
+		{ name: 'positionView', type: 'vec3' },
+	] }
+);
+
+
+
+// trigonetric pattern
+var halftoneTrigRaw = tsl.Fn( ([ position, scale, radius, pattern, attenuation, far, near, color, positionView ]) => {
+
+	var pos = position.mul( scale.sub( 3.5 ).exp() ).sin().add( 1 ).div( 2 ).toVar(),
+		x = pos.x,
+		y = pos.y,
+		xradius = radius.div( Math.sqrt( 2 ) ).toVar();
+
+	var dist = tsl.float( 0 );
+
+	tsl.Switch( pattern )
+		.Case( 2, ()=>{
+
+			dist.assign( x.add( y ).div( 2 ) );
+
+		} )
+		.Case( 3, ()=>{
+
+			dist.assign( x.sub( y ).abs().oneMinus() );
+
+		} )
+		.Case( 10, ()=>{
+
+			dist.assign( x.sub( y ).abs() );
+
+		} )
+		.Case( 4, ()=>{
+
+			dist.assign( x.mul( y ).oneMinus() );
+
+		} )
+		.Case( 9, ()=>{
+
+			dist.assign( x.mul( y ) );
+
+		} )
+		.Case( 5, ()=>{
+
+			dist.assign( x.max( y ) );
+
+		} )
+		.Case( 6, ()=>{
+
+			dist.assign( x.min( y ) );
+
+		} )
+		.Case( 7, ()=>{
+
+			dist.assign( x );
+
+		} )
+		.Case( 8, ()=>{
+
+			dist.assign( y );
+
+		} );
+
+	tsl.If( attenuation.notEqual( 0 ), ()=>{
+
+		xradius.mulAssign( positionView.z.mul( -1 ).smoothstep( far, near ).pow( 1/2 ) );
+
+	} );
+
+	tsl.If( dist.greaterThan( xradius ), ()=>tsl.Discard() );
+
+	return color;
+
+} ).setLayout( {
+	name: 'halftoneTrigRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'radius', type: 'float' },
+		{ name: 'pattern', type: 'int' },
+		{ name: 'attenuation', type: 'int' },
+		{ name: 'far', type: 'float' },
+		{ name: 'near', type: 'float' },
+		{ name: 'color', type: 'vec3' },
+		{ name: 'positionView', type: 'vec3' },
+	] }
+);
+
+
+
+var halftoneRaw = tsl.Fn( ([ position, scale, radius, pattern, attenuation, far, near, color, positionView ]) => {
+
+	var result = tsl.vec3( 0 ).toVar();
+
+	tsl.Switch( pattern )
+		.Case( 0, ()=>{
+
+			result.assign( halftoneGridRaw( position, scale, radius, attenuation, far, near, color, positionView ) );
+
+		} )
+		.Case( 1, ()=>{
+
+			result.assign( halftoneDiagRaw( position, scale, radius, attenuation, far, near, color, positionView ) );
+
+		} )
+		.Default( ()=>{
+
+			result.assign( halftoneTrigRaw( position, scale, radius, pattern, attenuation, far, near, color, positionView ) );
+
+		} );
+
+	return result;
+
+} ).setLayout( {
+	name: 'halftoneRaw',
+	type: 'vec3',
+	inputs: [
+		{ name: 'position', type: 'vec3' },
+		{ name: 'scale', type: 'float' },
+		{ name: 'radius', type: 'float' },
+		{ name: 'pattern', type: 'int' },
+		{ name: 'attenuation', type: 'int' },
+		{ name: 'far', type: 'float' },
+		{ name: 'near', type: 'float' },
+		{ name: 'color', type: 'vec3' },
+		{ name: 'positionView', type: 'vec3' },
+	] }
+);
+
+
+function halftone( params={} ) {
+
+	var { position, scale, radius, pattern, attenuation, far, near, color, positionView } = { ...defaults, ...params };
+
+	return halftoneRaw( position, scale, radius, pattern, attenuation, far, near, color, positionView );
+
+}
+
+
+
+halftone.defaults = defaults;
 
 window.__TSL_TEXTURES__ = 3.0;
 //export { aaa } from './aaa.js';
@@ -4460,6 +4700,7 @@ exports.entangled = entangled;
 exports.fordite = fordite;
 exports.gasGiant = gasGiant;
 exports.grid = grid;
+exports.halftone = halftone;
 exports.hideFallbackWarning = hideFallbackWarning;
 exports.hsl = hsl;
 exports.isolayers = isolayers;

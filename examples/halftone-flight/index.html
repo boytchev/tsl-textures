@@ -1,0 +1,55 @@
+﻿<!DOCTYPE html>
+
+
+<html>
+
+
+<head>
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+	<link rel="shortcut icon" type="image/png" href="../../assets/logo/logo.png"/>
+	<link rel="stylesheet" href="../../online/styles.css">
+
+	<style>
+		button {
+			font-family: Roboto;
+			position: absolute;
+			z-index: 100;
+			padding: 0.5em;
+			cursor: pointer;
+			background: none;
+			border: none;
+			text-align: left;
+		}		
+		
+		.thin {
+			font-size: 80%;
+			font-weight: 300;
+		}
+
+		.fat {
+			font-size: 110%;
+			font-weight: 900;
+		}
+	</style>
+	
+	<script type="importmap">
+	  {
+		"imports": {
+			"three": "https://cdn.jsdelivr.net/npm/three@0.183.0/build/three.webgpu.min.js",
+			"three/webgpu": "https://cdn.jsdelivr.net/npm/three@0.183.0/build/three.webgpu.min.js",
+			"three/tsl": "https://cdn.jsdelivr.net/npm/three@0.183.0/build/three.tsl.min.js",
+			"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.183.0/examples/jsm/",
+			"tsl-textures": "../../dist/tsl-textures.min.js"
+		}
+	  }
+	</script>
+</head>
+
+<body>
+	<button id="toggle"><div class="thin">NOW HALFTONING</div><div id="info" class="fat">DISTANT OBJECTS</div><div class="thin">TAP HERE TO TOGGLE</div></button>
+	<script type="module">
+		import "./script.js";
+	</script>
+</body>
+</html>

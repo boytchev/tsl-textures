@@ -3,6 +3,7 @@
 ## 3.0.2
 * Added "Waves" in *waves.js*
 * Added "Halftone" in *halftone.js"
+* Added example "Halftone Flight"
 
 ## 3.0.1
 * Upgraded to Three.js r183
