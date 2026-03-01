@@ -69,7 +69,7 @@ var protozoaRaw = Fn( ([ position, matcap, scale, fat, amount, color, subcolor, 
 
 		pos.assign( mix( pos.mul( dPos ), 0, 0.4 ) );
 
-		scale.mulAssign( 0.9 );
+		xscale.mulAssign( 0.9 );
 
 	} );
 

@@ -1,5 +1,8 @@
 # TSL Textures
 
+## 3.0.3
+Fixed Protozoa for WebGPU
+
 ## 3.0.2
 * Added "Waves" in *waves.js*
 * Added "Halftone" in *halftone.js"

@@ -2181,7 +2181,7 @@ var protozoaRaw = tsl.Fn( ([ position, matcap, scale, fat, amount, color, subcol
 
 		pos.assign( tsl.mix( pos.mul( dPos ), 0, 0.4 ) );
 
-		scale.mulAssign( 0.9 );
+		xscale.mulAssign( 0.9 );
 
 	} );
 
