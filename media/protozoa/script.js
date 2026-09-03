@@ -91,7 +91,7 @@ var inLight = new THREE.PointLight( 'white', 10, 5 );
 var outLight = new THREE.SpotLight( 'azure', 5, 10, 1.5, 1 );
 outLight.position.set( 0, 0, 7 );
 
-var deckLight = new THREE.SpotLight( 'LightSteelBlue', 10.2, 0, 0.5, 1, 1 );
+var deckLight = new THREE.SpotLight( 'LightSteelBlue', 0.2, 0, 0.5, 1, 1 );
 deckLight.position.copy( camera.position );
 deckLight.target = new THREE.Object3D();
 
