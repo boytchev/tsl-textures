@@ -5,7 +5,7 @@ import { uniform, vec3 } from "three/tsl";
 import { mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js';
 import { SimplexNoise } from "three/addons/math/SimplexNoise.js";
 
-import { dysonSphere, gasGiant, planet, protozoa, simplexNoise, stars } from "tsl-textures";
+import { dysonSphere, gasGiant, planet, protozoa, perlinNoise, stars } from "tsl-textures";
 
 
 
@@ -91,7 +91,7 @@ var inLight = new THREE.PointLight( 'white', 10, 5 );
 var outLight = new THREE.SpotLight( 'azure', 5, 10, 1.5, 1 );
 outLight.position.set( 0, 0, 7 );
 
-var deckLight = new THREE.SpotLight( 'LightSteelBlue', 0.2, 0, 0.5, 1, 1 );
+var deckLight = new THREE.SpotLight( 'LightSteelBlue', 10.2, 0, 0.5, 1, 1 );
 deckLight.position.copy( camera.position );
 deckLight.target = new THREE.Object3D();
 
@@ -244,8 +244,8 @@ deckMap.wrapS = deckMap.wrapT = THREE.MirroredRepeatWrapping;
 deckMap.repeat.set( 70, 2 );
 deckMap.offset.set( 0.5, 0 );
 
-var deckColorNode = simplexNoise( {
-	...simplexNoise.defaults,
+var deckColorNode = perlinNoise( {
+	...perlinNoise.defaults,
 	balance: 0.3,
 	scale: 5.5,
 	color: new THREE.Color( 'lightgray' ),
@@ -297,7 +297,6 @@ deck.add( deckFloor, deckCeiling );
 // Jupiter
 
 var jupiterParams = {
-	...gasGiant.defaults,
 	turbulence: 0.5,
 	blur: 0.4,
 	scale: 2.5,
