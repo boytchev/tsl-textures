@@ -106,7 +106,6 @@ scene.add( inLight, outLight, deckLight, deckLight.target, planetLight );
 // space stars
 
 var starsParams = {
-	...stars.defaults,
 	scale: -2,
 	density: 0,
 	background: new THREE.Color( 'black' ),
@@ -127,7 +126,6 @@ scene.add( cosmos );
 // space station
 
 var stationParams = {
-	...dysonSphere.defaults,
 	scale: 1,
 	color: new THREE.Color( 'white' ),
 	background: new THREE.Color( 'black' ),
@@ -166,7 +164,6 @@ var	blobNervous = 0;
 var	blobExplode = 0;
 
 var blobParams = {
-	...protozoa.defaults,
 	scale: uniform( 1 ),
 	fat: uniform( 0.3 ),
 	amount: uniform( 0.5 ),
@@ -245,7 +242,6 @@ deckMap.repeat.set( 70, 2 );
 deckMap.offset.set( 0.5, 0 );
 
 var deckColorNode = perlinNoise( {
-	...perlinNoise.defaults,
 	balance: 0.3,
 	scale: 5.5,
 	color: new THREE.Color( 'lightgray' ),
